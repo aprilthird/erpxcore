@@ -1,0 +1,128 @@
+﻿@page "/maestros/generales/estado"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Estados</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12">
+		<div class="table-responsive">
+            @if(StatusList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Entidad</th>
+						<th>Observación</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in StatusList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>@item.Entity</td>
+							<td>@item.Observation</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Status" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" Status="Status" />
+</ModalForm>
+
+@code {
+	private Status Status = new Status();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private Status[]? StatusList;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		StatusList = await Http.GetFromJsonAsync<Status[]>(RouteConfig.Management.General.STATUS_ROUTE);
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, Status status = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
+		Status = status ?? new Status();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(Status.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.General.STATUS_ROUTE, Status);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.General.STATUS_ROUTE + "/" + Status.Id, Status);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(Status status)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.General.STATUS_ROUTE + "/" + status.Id);
+		await Load();
+    }
+}

@@ -1,0 +1,63 @@
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+@using Layout
+@inject IJSRuntime JS
+
+@Body
+
+<_LayoutScripts></_LayoutScripts>
+<script suppress-error="BL9992">
+window.emptyBody = function(){
+    document.body.className = '';
+}
+</script>
+
+@code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        JS.InvokeVoidAsync("KTThemeMode.init");
+        JS.InvokeVoidAsync("emptyBody");
+        if (firstRender)
+        {
+            JS.InvokeVoidAsync("scrollTo", 0, 0);
+            JS.InvokeVoidAsync("KTDialer.init");
+            JS.InvokeVoidAsync("KTDrawer.init");
+            JS.InvokeVoidAsync("KTMenu.init");
+            JS.InvokeVoidAsync("KTImageInput.init");
+            JS.InvokeVoidAsync("KTPasswordMeter.init");
+            JS.InvokeVoidAsync("KTScroll.init");
+            JS.InvokeVoidAsync("KTScrolltop.init");
+            JS.InvokeVoidAsync("KTSticky.init");
+            JS.InvokeVoidAsync("KTSwapper.init");
+            JS.InvokeVoidAsync("KTToggle.init");
+            JS.InvokeVoidAsync("KTMenu.updateByLinkAttribute", $"/{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}");
+        }
+        JS.InvokeVoidAsync("KTLayoutSearch.init");
+        JS.InvokeVoidAsync("KTAppSidebar.init");
+    }
+
+
+    protected override void OnInitialized() {
+    NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    async void OnLocationChanged(object sender, LocationChangedEventArgs args) {
+        await JS.InvokeVoidAsync("scrollTo", 0, 0);
+        await JS.InvokeVoidAsync("KTDrawer.createInstances");
+        await JS.InvokeVoidAsync("KTMenu.createInstances");
+        await JS.InvokeVoidAsync("KTImageInput.createInstances");
+        await JS.InvokeVoidAsync("KTPasswordMeter.createInstances");
+        await JS.InvokeVoidAsync("KTScroll.createInstances");
+        await JS.InvokeVoidAsync("KTScrolltop.createInstances");
+        await JS.InvokeVoidAsync("KTSticky.createInstances");
+        await JS.InvokeVoidAsync("KTSwapper.createInstances");
+        await JS.InvokeVoidAsync("KTToggle.createInstances");
+        await JS.InvokeVoidAsync("KTMenu.updateByLinkAttribute", $"/{NavigationManager.ToBaseRelativePath(args.Location)}");
+        await JS.InvokeVoidAsync("KTAppSidebar.init");
+    }
+
+    public void Dispose() {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

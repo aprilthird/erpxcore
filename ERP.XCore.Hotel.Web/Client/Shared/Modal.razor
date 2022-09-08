@@ -1,0 +1,21 @@
+﻿@inherits ModalTemplate
+
+<ModalTemplate @ref="ModalTemplate" Title="@Title" Type="Type" Size="Size">
+    <div class="modal-body">
+        @ChildContent
+    </div>
+</ModalTemplate>
+
+@code {
+    ModalTemplate ModalTemplate;
+
+    public override async Task OpenAsync()
+    {
+        await ModalTemplate.OpenAsync();
+    }
+
+    public override async Task CloseAsync()
+    {
+        await ModalTemplate.CloseAsync();
+    }
+}

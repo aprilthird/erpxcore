@@ -1,0 +1,60 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="CompanyHeadquarter.Description" id="description" class="form-control" placeholder="Descripción" />
+            <ValidationMessage For="() => CompanyHeadquarter.Description" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Dirección</label>
+            <InputText @bind-Value="CompanyHeadquarter.Address" id="description" class="form-control" placeholder="Dirección" />
+            <ValidationMessage For="() => CompanyHeadquarter.Address" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Empresa</label>
+            <InputSelect @bind-Value="CompanyHeadquarter.CompanyId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Companies)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => CompanyHeadquarter.CompanyId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Estado</label>
+            <InputSelect @bind-Value="CompanyHeadquarter.StatusId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Status)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => CompanyHeadquarter.StatusId" />
+        </div>
+    </div>
+</div>
+@code {
+    
+    [Parameter]
+    public CompanyHeadquarter CompanyHeadquarter { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Companies { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
+}

@@ -1,0 +1,165 @@
+﻿@page "/maestros/seguridad/usuarios"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Colaboradores</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12 row">
+		<div class="col-md-3">
+			<label>&emsp;</label>
+			<input class="form-control" placeholder="Buscar" />
+		</div>
+		<div class="col-md-3">
+			<label>Empresa</label>
+			<select class="form-control">
+				<option>Seleccione...</option>
+			</select>
+		</div>
+		<div class="col-md-3">
+			<label>Area</label>
+			<select class="form-control">
+				<option>Seleccione...</option>
+			</select>
+		</div>
+		<div class="col-md-3">
+			<label>Cargo</label>
+			<select class="form-control">
+				<option>Seleccione...</option>
+			</select>
+		</div>
+	</div>
+	<hr/>
+	<div class="col-md-12">
+		<div class="table-responsive">
+            @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Correo</th>
+						<th>Teléfono</th>
+						<th>Empleado</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Email</td>
+							<td>@item.PhoneNumber</td>
+							<td>@item.Employee.FirstName @item.Employee.LastName</td>
+							<td>@item.Status.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="ApplicationUser" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" ApplicationUser="ApplicationUser" Employees="Employees" Status="Status" />
+</ModalForm>
+
+@code {
+	private ApplicationUser ApplicationUser = new ApplicationUser();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private ApplicationUser[]? ItemsList;
+	private SelectResource<Guid>[]? Employees;
+	private SelectResource<Guid>[]? Status;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			await LoadSelects();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<ApplicationUser[]>(RouteConfig.Management.Business.EMPLOYEE_ROUTE);
+	}
+
+	public async Task LoadSelects()
+	{
+		Employees = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empleados");
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, ApplicationUser applicationUser = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Usuario";
+		ApplicationUser = applicationUser ?? new ApplicationUser();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(ApplicationUser.Id == string.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.Security.USER_ROUTE, ApplicationUser);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.Security.USER_ROUTE + "/" + ApplicationUser.Id, ApplicationUser);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(ApplicationUser applicationUser)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.Security.USER_ROUTE + "/" + applicationUser.Id);
+		await Load();
+    }
+}

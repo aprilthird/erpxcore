@@ -1,0 +1,107 @@
+﻿<div class="modal fade @ModalClass" tabindex="-1" role="dialog" id="@Id" style="display:@ModalDisplay">
+    <div class="modal-dialog @GetModalSizeClass() @GetModalTypeClass()" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseAsync">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade @ModalClass"></div>
+}
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public ModalType Type { get; set; } = ModalType.BrandPrimary;
+
+    [Parameter]
+    public ModalSize Size { get; set; } = ModalSize.Normal;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private Guid Id { get; set; } = Guid.NewGuid();
+    public string ModalDisplay = "none;";
+    public string ModalClass = "";
+    public bool ShowBackdrop = false;
+
+    public virtual async Task OpenAsync()
+    {
+        ModalDisplay = "block;";
+        ShowBackdrop = true;
+        StateHasChanged();
+        await Task.Delay(100);
+        ModalClass = "show";
+        StateHasChanged();
+    }
+
+    public virtual async Task CloseAsync()
+    {
+        ModalClass = "";
+        ShowBackdrop = false;
+        StateHasChanged();
+        await Task.Delay(500);
+        ModalDisplay = "none";
+        StateHasChanged();
+    }
+
+    public enum ModalType
+    {
+        BrandPrimary, BrandSecondary, BrandThird, Primary, Success, Danger, Info, Warning
+    }
+
+    public enum ModalSize
+    {
+        Normal, Large, ExtraLarge
+    }
+
+    private string GetModalTypeClass()
+    {
+        switch (Type)
+        {
+            case ModalType.BrandPrimary:
+                return "modal-brand-primary";
+            case ModalType.BrandSecondary:
+                return "modal-brand-secondary";
+            case ModalType.BrandThird:
+                return "modal-brand-third";
+            case ModalType.Primary:
+                return "modal-primary";
+            case ModalType.Success:
+                return "modal-success";
+            case ModalType.Danger:
+                return "modal-danger";
+            case ModalType.Info:
+                return "modal-info";
+            case ModalType.Warning:
+                return "modal-warning";
+            default:
+                return "modal-brand-primary";
+        }
+    }
+
+    private string GetModalSizeClass()
+    {
+        switch(Size)
+        {
+            case ModalSize.Normal:
+                return "";
+            case ModalSize.Large:
+                return "modal-lg";
+            case ModalSize.ExtraLarge:
+                return "modal-xl";
+            default:
+                return "";
+        }
+    }
+}

@@ -1,0 +1,25 @@
+﻿@using ERP.XCore.Entities.Models
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="DocumentType.Description" id="description" class="form-control" placeholder="Descripción" />
+            <ValidationMessage For="() => DocumentType.Description" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Entidad</label>
+            <InputText @bind-Value="DocumentType.Abbreviation" id="entity" class="form-control" placeholder="Abreviación" />
+            <ValidationMessage For="() => DocumentType.Abbreviation" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public DocumentType DocumentType { get; set; }
+}

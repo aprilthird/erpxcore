@@ -1,0 +1,34 @@
+﻿@using ERP.XCore.Entities.Models
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="Status.Description" id="description" class="form-control" placeholder="Nombre" />
+            <ValidationMessage For="() => Status.Description" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Entidad</label>
+            <InputText @bind-Value="Status.Entity" id="entity" class="form-control" placeholder="Entidad" />
+            <ValidationMessage For="() => Status.Entity" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="observation">Observación</label>
+            <InputTextArea @bind-Value="Status.Observation" id="observation" class="form-control" placeholder="Observación" />
+            <ValidationMessage For="() => Status.Observation" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public Status Status { get; set; }
+}

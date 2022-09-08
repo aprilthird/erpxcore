@@ -1,0 +1,16 @@
+﻿@using ERP.XCore.Entities.Models
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="WorkPosition.Description" id="description" class="form-control" placeholder="Descripción" />
+            <ValidationMessage For="() => WorkPosition.Description" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public WorkPosition WorkPosition { get; set; }
+}

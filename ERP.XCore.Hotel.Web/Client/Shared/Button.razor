@@ -1,0 +1,114 @@
+﻿@using Microsoft.JSInterop;
+
+<button id="btn_@Id" class="btn @GetButtonClass() @GetButtonShape() ladda-button @(IsEnabled ? "" : "disabled")" data-style="zoom-out" type="@GetButtonType()" @onclick="OnClickCallback">
+    <span class="ladda-label">
+        @if (!string.IsNullOrEmpty(Icon))
+        {
+            <i class="@Icon"></i>
+        }
+        <span>@Text</span>
+    </span>
+</button>
+
+@code {
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public ButtonTheme Theme { get; set; } = ButtonTheme.Primary;
+
+    [Parameter]
+    public ButtonType Type { get; set; } = ButtonType.Button;
+
+    [Parameter]
+    public ButtonShape Shape { get; set; } = ButtonShape.Default;
+
+    [Parameter]
+    public EventCallback OnClickCallback { get; set; }
+
+    public bool IsEnabled { get; set; } = true;
+
+    private Guid Id = Guid.NewGuid();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if(firstRender)
+        //    await JSRuntime.InvokeVoidAsync("TuKarta.createLaddaButton", Id);
+    }
+
+    public async Task ShowLoaderAsync()
+    {
+        IsEnabled = false;
+        //await JSRuntime.InvokeVoidAsync("TuKarta.showLaddaLoader", Id);
+    }
+
+    public async Task HideLoaderAsync()
+    {
+        IsEnabled = true;
+        //await JSRuntime.InvokeVoidAsync("TuKarta.hideLaddaLoader", Id);
+    }
+
+    public enum ButtonType
+    {
+        Button, Submit
+    }
+
+    public enum ButtonTheme
+    {
+        Primary, Success, Danger, Info, Warning
+    }
+
+    public enum ButtonShape
+    {
+        Default, Square, Pill
+    }
+
+    private string GetButtonClass()
+    {
+        switch (Theme)
+        {
+            case ButtonTheme.Primary:
+                return "btn-primary";
+            case ButtonTheme.Success:
+                return "btn-success";
+            case ButtonTheme.Danger:
+                return "btn-danger";
+            case ButtonTheme.Info:
+                return "btn-info";
+            case ButtonTheme.Warning:
+                return "btn-warning";
+            default:
+                return "btn-primary";
+        }
+    }
+
+    private string GetButtonType()
+    {
+        switch (Type)
+        {
+            case ButtonType.Submit:
+                return "submit";
+            default:
+                return "button";
+        }
+    }
+
+    private string GetButtonShape()
+    {
+        switch(Shape)
+        {
+            case ButtonShape.Square:
+                return "btn-square";
+            case ButtonShape.Pill:
+                return "btn-pill";
+            default:
+                return "";
+        }
+    }
+}

@@ -1,0 +1,60 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="PointOfSale.Description" id="description" class="form-control" placeholder="Descripción" />
+            <ValidationMessage For="() => PointOfSale.Description" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Impresora</label>
+            <InputText @bind-Value="PointOfSale.TicketPrinter" id="description" class="form-control" placeholder="Impresora" />
+            <ValidationMessage For="() => PointOfSale.TicketPrinter" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Sede</label>
+            <InputSelect @bind-Value="PointOfSale.CompanyHeadquarterId" id="entity" class="form-control" placeholder="Sede">
+                @foreach(var item in CompanyHeadquarters)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => PointOfSale.CompanyHeadquarterId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Estado</label>
+            <InputSelect @bind-Value="PointOfSale.StatusId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Status)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => PointOfSale.StatusId" />
+        </div>
+    </div>
+</div>
+@code {
+    
+    [Parameter]
+    public PointOfSale PointOfSale { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> CompanyHeadquarters { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
+}

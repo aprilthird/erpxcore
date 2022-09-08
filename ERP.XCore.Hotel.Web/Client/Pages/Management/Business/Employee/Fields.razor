@@ -1,0 +1,120 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Nombres</label>
+            <InputText @bind-Value="Employee.FirstName" id="description" class="form-control" placeholder="Nombres" />
+            <ValidationMessage For="() => Employee.FirstName" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Apellidos</label>
+            <InputText @bind-Value="Employee.LastName" id="entity" class="form-control" placeholder="Apellidos" />
+            <ValidationMessage For="() => Employee.LastName" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Tipo Documento</label>
+            <InputSelect @bind-Value="Employee.DocumentTypeId" id="entity" class="form-control" placeholder="Tipo Documento">
+                @foreach(var item in DocumentTypes)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Employee.DocumentTypeId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Documento</label>
+            <InputText @bind-Value="Employee.Document" id="entity" class="form-control" placeholder="Documento" />
+            <ValidationMessage For="() => Employee.Document" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Empresa</label>
+            <InputSelect @bind-Value="Employee.CompanyId" id="entity" class="form-control" placeholder="Empresa">
+                @foreach(var item in Companies)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Employee.CompanyId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Area</label>
+            <InputSelect @bind-Value="Employee.WorkAreaId" id="entity" class="form-control" placeholder="Area">
+                @foreach(var item in WorkAreas)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Employee.WorkAreaId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Cargo</label>
+            <InputSelect @bind-Value="Employee.WorkPositionId" id="entity" class="form-control" placeholder="Cargo">
+                @foreach(var item in WorkPositions)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Employee.WorkPositionId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Estado</label>
+            <InputSelect @bind-Value="Employee.StatusId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Status)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Employee.StatusId" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public Employee Employee { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> DocumentTypes { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Companies { get; set; }
+    
+    [Parameter]
+    public ICollection<SelectResource<Guid>> WorkAreas { get; set; }
+    
+    [Parameter]
+    public ICollection<SelectResource<Guid>> WorkPositions { get; set; }
+    
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
+}

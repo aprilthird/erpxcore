@@ -1,0 +1,126 @@
+﻿@page "/maestros/generales/tipo-de-documento"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Tipo de Documento</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12">
+		<div class="table-responsive">
+            @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Abreviación</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>@item.Abbreviation</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="DocumentType" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" DocumentType="DocumentType" />
+</ModalForm>
+
+@code {
+	private DocumentType DocumentType = new DocumentType();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private DocumentType[]? ItemsList;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<DocumentType[]>(RouteConfig.Management.General.DOCUMENT_TYPE_ROUTE);
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, DocumentType documentType = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
+		DocumentType = documentType ?? new DocumentType();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(DocumentType.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.General.DOCUMENT_TYPE_ROUTE, DocumentType);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.General.DOCUMENT_TYPE_ROUTE + "/" + DocumentType.Id, DocumentType);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(DocumentType documentType)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.General.DOCUMENT_TYPE_ROUTE + "/" + documentType.Id);
+		await Load();
+    }
+}

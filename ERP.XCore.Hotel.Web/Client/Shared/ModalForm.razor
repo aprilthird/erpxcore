@@ -1,0 +1,79 @@
+﻿@inherits ModalTemplate
+
+<ModalTemplate @ref="ModalTemplate" Title="@Title" Type="Type" Size="Size">
+    <Microsoft.AspNetCore.Components.Forms.EditForm Model="Model" OnValidSubmit="OnValidSubmitAsync" OnInvalidSubmit="OnInvalidSubmitAsync">
+        @*<FluentValidationValidator />*@
+        <div class="modal-body">
+            <div class="alert alert-danger alert-dismissible fade @AlertDisplayClass" role="alert" style="display:@AlertDisplayCss">
+                <h5 class="alert-heading">Error</h5>
+                <p>@ErrorMessage</p>
+                <button class="close" type="button" @onclick="CloseAlertAsync"><span>×</span></button>
+            </div>
+            @ChildContent
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-icon btn-secondary" data-dismiss="modal" @onclick="CloseAsync">
+                <i class="c-icon cil-x"></i>
+                <span>Cerrar</span>
+            </button>
+            <Button @ref="SubmitButton" Text="Guardar" Icon="c-icon cil-save" Type="Button.ButtonType.Submit" />
+        </div>
+    </Microsoft.AspNetCore.Components.Forms.EditForm>
+</ModalTemplate>
+
+
+@code {
+    [Parameter]
+    public EventCallback ValidSubmitCallback { get; set; }
+
+    [Parameter]
+    public EventCallback InvalidSubmitCallback { get; set; }
+
+    [Parameter]
+    public object Model { get; set; }
+
+    private ModalTemplate ModalTemplate;
+    private string ErrorMessage = null;
+    private string AlertDisplayClass = "hide";
+    private string AlertDisplayCss = "none;";
+
+    public Button SubmitButton { get; set; }
+
+    public override async Task OpenAsync()
+    {
+        await ModalTemplate.OpenAsync();
+    }
+
+    public override async Task CloseAsync()
+    {
+        await ModalTemplate.CloseAsync();
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        await SubmitButton.ShowLoaderAsync();
+        await ValidSubmitCallback.InvokeAsync(this);
+        await SubmitButton.HideLoaderAsync();
+    }
+
+    private async Task OnInvalidSubmitAsync()
+    {
+        await InvalidSubmitCallback.InvokeAsync(this);
+    }
+
+    public async Task ShowAlertAsync(string message)
+    {
+        ErrorMessage = message;
+        AlertDisplayCss = "block;";
+        await Task.Delay(500);
+        AlertDisplayClass = "show";
+    }
+
+    public async Task CloseAlertAsync()
+    {
+        ErrorMessage = null;
+        AlertDisplayClass = "hide";
+        await Task.Delay(1000);
+        AlertDisplayCss = "none;";
+    }
+}

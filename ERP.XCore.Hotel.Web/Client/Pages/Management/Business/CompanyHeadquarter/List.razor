@@ -1,0 +1,143 @@
+﻿@page "/maestros/empresas/sede"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Sedes</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12 row">
+	</div>
+	<hr/>
+	<div class="col-md-12">
+		<div class="table-responsive">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Dirección</th>
+						<th>Empresa</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>@item.Address</td>
+							<td>@item.Company?.Description</td>
+							<td>@item.Status?.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="CompanyHeadquarter" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<ERP.XCore.Hotel.Web.Client.Pages.Management.Business.CompanyHeadquarter.Fields @ref="Fields" CompanyHeadquarter="CompanyHeadquarter" Companies="Companies" Status="Status"/>
+</ModalForm>
+
+@code {
+	private CompanyHeadquarter CompanyHeadquarter = new CompanyHeadquarter();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private CompanyHeadquarter[]? ItemsList;
+	private SelectResource<Guid>[]? Companies;
+	private SelectResource<Guid>[]? Status;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			await LoadSelects();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<CompanyHeadquarter[]>(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE);
+	}
+	
+	public async Task LoadSelects()
+	{
+		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, CompanyHeadquarter companyHeadquarter = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Sede";
+		CompanyHeadquarter = companyHeadquarter ?? new CompanyHeadquarter();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(CompanyHeadquarter.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE, CompanyHeadquarter);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + CompanyHeadquarter.Id, CompanyHeadquarter);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(CompanyHeadquarter companyHeadquarter)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + companyHeadquarter.Id);
+		await Load();
+    }
+}

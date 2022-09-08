@@ -1,0 +1,60 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Correo</label>
+            <InputText @bind-Value="ApplicationUser.Email" id="description" class="form-control" placeholder="Nombres" />
+            <ValidationMessage For="() => ApplicationUser.Email" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Teléfono</label>
+            <InputText @bind-Value="ApplicationUser.PhoneNumber" id="entity" class="form-control" placeholder="Apellidos" />
+            <ValidationMessage For="() => ApplicationUser.PhoneNumber" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Empleado</label>
+            <InputSelect @bind-Value="ApplicationUser.EmployeeId" id="entity" class="form-control" placeholder="Empleado">
+                @foreach(var item in Employees)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => ApplicationUser.EmployeeId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Estado</label>
+            <InputSelect @bind-Value="ApplicationUser.StatusId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Status)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => ApplicationUser.StatusId" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public ApplicationUser ApplicationUser { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Employees { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
+}

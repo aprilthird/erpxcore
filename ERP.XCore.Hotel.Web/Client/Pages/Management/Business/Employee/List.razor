@@ -1,0 +1,206 @@
+﻿@page "/maestros/empresas/colaborador"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Colaboradores</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12 row">
+		<div class="col-md-3">
+			<label>&emsp;</label>
+            <InputText @bind-Value="Filter" class="form-control" placeholder="Buscar" />
+		</div>
+		<div class="col-md-3">
+			<label>Empresa</label>
+			<InputSelect @bind-Value="FilterCompany" class="form-control" placeholder="Area">
+                <option value="" selected>Todas</option>
+				@if(Companies != null)
+				{
+					
+                @foreach(var item in Companies)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+				}
+            </InputSelect>
+		</div>
+		<div class="col-md-3">
+			<label>Area</label>
+			<InputSelect @bind-Value="FilterArea" class="form-control" placeholder="Area">
+                <option value="" selected>Todas</option>
+				@if(WorkAreas != null)
+				{
+					
+                @foreach(var item in WorkAreas)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+				}
+            </InputSelect>
+		</div>
+		<div class="col-md-3">
+			<label>Cargo</label>
+			<InputSelect @bind-Value="FilterPosition" class="form-control" placeholder="Area">
+                <option value="" selected>Todos</option>
+				@if(WorkPositions != null)
+				{
+					
+                @foreach(var item in WorkPositions)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+					
+				}
+            </InputSelect>
+		</div>
+	</div>
+	<hr/>
+	<div class="col-md-12">
+		<div class="table-responsive">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Nombres</th>
+						<th>Apellidos</th>
+						<th>Documento</th>
+						<th>Empresa</th>
+						<th>Area</th>
+						<th>Cargo</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.FirstName</td>
+							<td>@item.LastName</td>
+							<td>@item.Document (@(item.DocumentType?.Abbreviation ?? "DNI"))</td>
+							<td>@item.Company.Description</td>
+							<td>@(item.WorkArea?.Description ?? "Gerencia")</td>
+							<td>@(item.WorkPosition?.Description ?? "Administrador")</td>
+							<td>@item.Status.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Employee" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" Employee="Employee" DocumentTypes="DocumentTypes" Companies="Companies" WorkAreas="WorkAreas" WorkPositions="WorkPositions" Status="Status" />
+</ModalForm>
+
+@code {
+	private Employee Employee = new Employee();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private Employee[]? ItemsList;
+	private SelectResource<Guid>[]? DocumentTypes;
+	private SelectResource<Guid>[]? Companies;
+	private SelectResource<Guid>[]? WorkAreas;
+	private SelectResource<Guid>[]? WorkPositions;
+	private SelectResource<Guid>[]? Status;
+	private string? Filter;
+	private Guid? FilterArea;
+	private Guid? FilterPosition;
+	private Guid? FilterCompany;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			await LoadSelects();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<Employee[]>(RouteConfig.Management.Business.EMPLOYEE_ROUTE + "?filtro=" + Filter + "&empresa=" + FilterCompany + "&area=" + FilterArea + "&cargo=" + FilterPosition);
+	}
+
+	public async Task LoadSelects()
+	{
+		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
+		WorkAreas = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/areas");
+		WorkPositions = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/cargos");
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, Employee employee = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Colaborador";
+		Employee = employee ?? new Employee();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(Employee.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.Business.EMPLOYEE_ROUTE, Employee);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + Employee.Id, Employee);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(Employee employee)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + employee.Id);
+		await Load();
+    }
+}
