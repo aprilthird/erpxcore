@@ -126,6 +126,21 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
+            if(!context.RoomTypes.Any())
+            {
+                var roomTypes = new List<RoomType>
+                {
+                    new RoomType { Description = "Matrimonial" }, 
+                    new RoomType { Description = "Doble" }, 
+                    new RoomType { Description = "Triple" }, 
+                    new RoomType { Description = "Suite Queen" }, 
+                    new RoomType { Description = "Ejecutivo" },
+                    new RoomType { Description = "Suite King" },
+                };
+                await context.RoomTypes.AddRangeAsync(roomTypes);
+                await context.SaveChangesAsync();
+            }
+
             if (userManager.FindByEmailAsync("sysadmin@erpxcore.com").Result == null)
             {
                 var employees = await context.Employees.ToListAsync();

@@ -17,17 +17,27 @@ namespace ERP.XCore.Data.Context
 
         public DbSet<CompanyHeadquarter> CompanyHeadquarters { get; set; }
 
+        public DbSet<Customer> Customers { get; set; }
+
         public DbSet<DocumentType> DocumentTypes { get; set; }
 
         public DbSet<Employee> Employees { get; set; }
 
+        public DbSet<Guest> Guests { get; set; }
+
         public DbSet<Module> Modules { get; set; }
+
+        public DbSet<PersonType> PersonTypes { get; set; }
 
         public DbSet<Permission> Permissions { get; set; }
 
         public DbSet<PermissionLevel> PermissionLevels { get; set; }
 
         public DbSet<PointOfSale> PointsOfSale { get; set; }
+
+        public DbSet<Room> Rooms { get; set; }
+
+        public DbSet<RoomType> RoomTypes { get; set; }
 
         public DbSet<Status> Status { get; set; }
 
