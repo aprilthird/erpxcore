@@ -1,4 +1,4 @@
-﻿@page "/maestros/habitaciones/tipo"
+﻿@page "/maestros/habitaciones/tipo-de-habitacion"
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using ERP.XCore.Hotel.Shared.Resources.Base
@@ -7,7 +7,7 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Colaboradores</h3>
+		<h3>Tipo de Habitación</h3>
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
@@ -55,13 +55,13 @@
 </div>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="RoomType" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <_Fields @ref="Fields" RoomType="RoomType"/>
+    <ERP.XCore.Hotel.Web.Client.Pages.Management.Rooms.RoomType.Fields @ref="Fields" RoomType="RoomType"/>
 </ModalForm>
 
 @code {
 	private RoomType RoomType = new RoomType();
 	private ModalForm Modal;
-	private _Fields Fields;
+	private Fields Fields;
 	private string ModalTitle;
 	private RoomType[]? ItemsList;
 
@@ -85,7 +85,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<RoomType[]>(RouteConfig.Management.Business.ROOMTYPE_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<RoomType[]>(RouteConfig.Management.Rooms.ROOMTYPE_ROUTE);
 	}
 
 
@@ -102,11 +102,11 @@
 		{
 			if(RoomType.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.ROOMTYPE_ROUTE, RoomType);
+				await Http.PostAsJsonAsync(RouteConfig.Management.Rooms.ROOMTYPE_ROUTE, RoomType);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.ROOMTYPE_ROUTE + "/" + RoomType.Id, RoomType);
+				await Http.PutAsJsonAsync(RouteConfig.Management.Rooms.ROOMTYPE_ROUTE + "/" + RoomType.Id, RoomType);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -123,7 +123,7 @@
 
 	public async Task DeleteAsync(RoomType rt)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.ROOMTYPE_ROUTE+ "/" + rt.Id);
+		await Http.DeleteAsync(RouteConfig.Management.Rooms.ROOMTYPE_ROUTE+ "/" + rt.Id);
 		await Load();
     }
 }

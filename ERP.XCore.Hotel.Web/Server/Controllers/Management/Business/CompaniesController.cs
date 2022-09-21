@@ -1,4 +1,5 @@
-﻿using ERP.XCore.Data.Context;
+﻿using ERP.XCore.Core.Helpers;
+using ERP.XCore.Data.Context;
 using ERP.XCore.Entities.Models;
 using ERP.XCore.Hotel.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,9 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
         {
             var result = await _context.Companies
                 .Include(x => x.Status)
+                .Where(x => x.StatusId == Constants.Status.ENABLED_ID)
+                .OrderByDescending(x => x.CreatedAt)
+                .AsNoTracking()
                 .ToListAsync();
 
             return Ok(result);
@@ -62,7 +66,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
             if (company == null)
                 return NotFound();
 
-            _context.Companies.Remove(company);
+            company.StatusId = Constants.Status.DISABLED_ID;
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -72,7 +76,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
             entity.Code = model.Code;
             entity.Description = model.Description;
             entity.Address = model.Address;
-            entity.StatusId = model.StatusId;
+            entity.StatusId = Constants.Status.ENABLED_ID;
         }
     }
 }

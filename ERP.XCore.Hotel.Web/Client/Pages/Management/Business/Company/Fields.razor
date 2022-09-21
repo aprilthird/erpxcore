@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="form-group">
-            <label for="description">Código</label>
+            <label for="description">RUC</label>
             <InputText @bind-Value="Company.Code" id="description" class="form-control" placeholder="Código" />
             <ValidationMessage For="() => Company.Code" />
         </div>
@@ -28,25 +28,9 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Estado</label>
-            <InputSelect @bind-Value="Company.StatusId" id="entity" class="form-control" placeholder="Estado">
-                @foreach(var item in Status)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Company.StatusId" />
-        </div>
-    </div>
-</div>
+
 @code {
     
     [Parameter]
     public Company Company { get; set; }
-
-    [Parameter]
-    public ICollection<SelectResource<Guid>> Status { get; set; }
 }

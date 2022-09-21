@@ -4,10 +4,10 @@ using ERP.XCore.Hotel.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
+namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
 {
     [ApiController]
-    [Route(RouteConfig.Management.Business.ROOMTYPE_ROUTE)]
+    [Route(RouteConfig.Management.Rooms.ROOMTYPE_ROUTE)]
     public class RoomTypeController : BaseController
     {
         public RoomTypeController(ApplicationDbContext context)
@@ -19,6 +19,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
         public async Task<IActionResult> GetAll()
         {
             var query = _context.RoomTypes
+                .OrderByDescending(x => x.CreatedAt)
                 .AsNoTracking()
                 .AsQueryable();
 

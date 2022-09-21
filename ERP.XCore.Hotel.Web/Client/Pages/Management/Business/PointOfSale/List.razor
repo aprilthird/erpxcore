@@ -7,7 +7,7 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Puntos de Venta</h3>
+		<h3>Punto de Venta</h3>
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
@@ -62,7 +62,7 @@
 </div>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="PointOfSale" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" PointOfSale="PointOfSale" CompanyHeadquarters="CompanyHeadquarters" Status="Status"/>
+    <Fields @ref="Fields" PointOfSale="PointOfSale" CompanyHeadquarters="CompanyHeadquarters" />
 </ModalForm>
 
 @code {
@@ -72,7 +72,6 @@
 	private string ModalTitle;
 	private PointOfSale[]? ItemsList;
 	private SelectResource<Guid>[]? CompanyHeadquarters;
-	private SelectResource<Guid>[]? Status;
 
 	public enum ModalType
 	{
@@ -100,7 +99,6 @@
 	public async Task LoadSelects()
 	{
 		CompanyHeadquarters = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/sedes");
-		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, PointOfSale pointOfSale = null)

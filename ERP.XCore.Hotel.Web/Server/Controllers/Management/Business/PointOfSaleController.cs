@@ -1,4 +1,5 @@
-﻿using ERP.XCore.Data.Context;
+﻿using ERP.XCore.Core.Helpers;
+using ERP.XCore.Data.Context;
 using ERP.XCore.Entities.Models;
 using ERP.XCore.Hotel.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,8 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
         public async Task<IActionResult> GetAll()
         {
             var result = await _context.PointsOfSale
+                .Where(x => x.StatusId == Constants.Status.ENABLED_ID)
+                .OrderByDescending(x => x.CreatedAt)
                 .Select(x => new PointOfSale
                 {
                     Id = x.Id,
@@ -43,6 +46,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
                         Entity = x.Status.Entity,
                     }
                 })
+                .AsNoTracking()
                 .ToListAsync();
 
             return Ok(result);
@@ -85,7 +89,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
             if (pointOfSale == null)
                 return NotFound();
 
-            _context.PointsOfSale.Remove(pointOfSale);
+            pointOfSale.StatusId = Constants.Status.DISABLED_ID;
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -95,7 +99,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
             entity.Description = model.Description;
             entity.TicketPrinter = model.TicketPrinter;
             entity.CompanyHeadquarterId = model.CompanyHeadquarterId;
-            entity.StatusId = model.StatusId;
+            entity.StatusId = Constants.Status.ENABLED_ID;
         }
     }
 }

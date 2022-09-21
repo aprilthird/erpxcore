@@ -24,7 +24,7 @@ namespace ERP.XCore.Hotel.Shared.Helpers
                 public const string GENERAL_ROUTE = MANAGEMENT_ROUTE + "/generales";
 
                 public const string STATUS_ROUTE = GENERAL_ROUTE + "/estados";
-                public const string DOCUMENT_TYPE_ROUTE = GENERAL_ROUTE + "/tipo-de-documentos";
+                public const string DOCUMENT_TYPE_ROUTE = GENERAL_ROUTE + "/tipos-de-documentos";
                 public const string UBIGEO_ROUTE = GENERAL_ROUTE + "/ubigeo";
             }
 
@@ -36,11 +36,24 @@ namespace ERP.XCore.Hotel.Shared.Helpers
                 public const string COMPANY_HEADQUARTER_ROUTE = BUSINESS_ROUTE + "/sedes";
                 public const string POINT_OF_SALE_ROUTE = BUSINESS_ROUTE + "/pos";
                 public const string EMPLOYEE_ROUTE = BUSINESS_ROUTE + "/colaboradores";
-                public const string ROOM_ROUTE = BUSINESS_ROUTE + "/habitacion";
-                public const string ROOMTYPE_ROUTE = BUSINESS_ROUTE + "/tipos-habitacion";
                 public const string WORK_AREA_ROUTE = BUSINESS_ROUTE + "/areas";
                 public const string WORK_POSITION_ROUTE = BUSINESS_ROUTE + "/cargos";
 
+            }
+
+            public static class Rooms
+            {
+                public const string ROOMS_ROUTE = MANAGEMENT_ROUTE + "/habitaciones";
+
+                public const string ROOM_ROUTE = ROOMS_ROUTE + "/habitaciones";
+                public const string ROOMTYPE_ROUTE = ROOMS_ROUTE + "/tipos-de-habitacion";
+            }
+
+            public static class Guests
+            {
+                public const string GUESTS_ROUTE = MANAGEMENT_ROUTE + "/huespedes";
+
+                public const string GUEST_ROUTE = GUESTS_ROUTE + "/huespedes";
             }
 
             public static class Security

@@ -7,7 +7,7 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Empresas</h3>
+		<h3>Empresa</h3>
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
@@ -60,7 +60,7 @@
 </div>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Company" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" Company="Company" Status="Status" />
+    <Fields @ref="Fields" Company="Company" />
 </ModalForm>
 
 @code {
@@ -69,7 +69,6 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private Company[]? ItemsList;
-	private SelectResource<Guid>[]? Status;
 
 	public enum ModalType
 	{
@@ -81,7 +80,6 @@
 		try
 		{
 			await Load();
-			await LoadSelects();
 		}
 		catch (AccessTokenNotAvailableException exception)
 		{
@@ -92,11 +90,6 @@
 	public async Task Load()
 	{
 		ItemsList = await Http.GetFromJsonAsync<Company[]>(RouteConfig.Management.Business.COMPANY_ROUTE);
-	}
-	
-	public async Task LoadSelects()
-	{
-		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Company company = null)

@@ -1,4 +1,4 @@
-﻿@page "/maestros/habitaciones/lista"
+﻿@page "/maestros/huespedes/huesped"
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using ERP.XCore.Hotel.Shared.Resources.Base
@@ -7,27 +7,13 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Colaboradores</h3>
+		<h3>Huésped</h3>
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
 		</button>
 	</div>
 	<div class="col-md-12 row">
-		<div class="col-md-3">
-			<label>Tipo de Habitación</label>
-			<InputSelect @bind-Value="FilterType" class="form-control" placeholder="Area">
-                <option value="" selected>Todas</option>
-				@if(RoomTypes != null)
-				{
-					
-                @foreach(var item in RoomTypes)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-				}
-            </InputSelect>
-		</div>
 	
 	</div>
 	<hr/>
@@ -42,8 +28,8 @@
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr class="fw-bold">
-						<th>Nombre</th>
-						<th>Tipo de Habitacion</th>
+						<th>Nombres</th>
+						<th>Apellidos</th>
 						<th>Estado</th>
 						<th>Acciones</th>
 					</tr>
@@ -52,8 +38,8 @@
 					@foreach(var item in ItemsList)
 					{
 						<tr>
-							<td>@item.Description</td>
-							<td>@item.RoomType.Description</td>
+							<td>@item.FirstName</td>
+							<td>@item.LastName</td>
 							<td>@item.Status.Description</td>
 							<td>
 								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
@@ -74,18 +60,18 @@
 	</div>
 </div>
 
-<ModalForm @ref="Modal" Title="@ModalTitle" Model="Room" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" Room="Room" RoomTypes="RoomTypes" Status="Status" />
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Guest" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" Guest="Guest" DocumentTypes="DocumentTypes" Ubigeos="Ubigeos" />
 </ModalForm>
 
 @code {
-	private Room Room = new Room();
+	private Guest Guest = new Guest();
 	private ModalForm Modal;
 	private Fields Fields;
 	private string ModalTitle;
-	private Room[]? ItemsList;
-	private SelectResource<Guid>[]? RoomTypes;
-	private SelectResource<Guid>[]? Status;
+	private Guest[]? ItemsList;
+	private SelectResource<Guid>[]? DocumentTypes;
+	private SelectResource<Guid>[]? Ubigeos;
 	private Guid? FilterType;
 
 	public enum ModalType
@@ -108,19 +94,19 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Room[]>(RouteConfig.Management.Business.ROOM_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Guest[]>(RouteConfig.Management.Guests.GUEST_ROUTE);
 	}
 
 	public async Task LoadSelects()
 	{
-		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
-		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
+		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+		Ubigeos = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/ubigeos");
 	}
 
-	public async Task ShowModalAsync(ModalType modalType, Room room = null)
+	public async Task ShowModalAsync(ModalType modalType, Guest guest = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Habitación";
-		Room = room ?? new Room();
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Huésped";
+		Guest = guest ?? new Guest();
 		await Modal.OpenAsync();
 	}
 
@@ -128,13 +114,13 @@
 	{
 		try
 		{
-			if(Room.Id == Guid.Empty)
+			if(Guest.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.ROOM_ROUTE, Room);
+				await Http.PostAsJsonAsync(RouteConfig.Management.Guests.GUEST_ROUTE, Guest);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.ROOM_ROUTE + "/" + Room.Id, Room);
+				await Http.PutAsJsonAsync(RouteConfig.Management.Guests.GUEST_ROUTE + "/" + Guest.Id, Guest);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -149,9 +135,9 @@
 	{
 	}
 
-	public async Task DeleteAsync(Room room)
+	public async Task DeleteAsync(Guest guest)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.ROOM_ROUTE + "/" + room.Id);
+		await Http.DeleteAsync(RouteConfig.Management.Guests.GUEST_ROUTE + "/" + guest.Id);
 		await Load();
     }
 }

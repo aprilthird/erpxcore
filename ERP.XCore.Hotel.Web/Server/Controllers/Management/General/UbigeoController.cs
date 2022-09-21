@@ -18,7 +18,10 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.General
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _context.Ubigeos.ToListAsync();
+            var result = await _context.Ubigeos
+                .OrderByDescending(x => x.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
 
             return Ok(result);
         }

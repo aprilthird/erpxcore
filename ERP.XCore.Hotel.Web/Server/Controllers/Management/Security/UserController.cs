@@ -22,6 +22,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
             var result = await _context.Users
                 .Include(x => x.Employee)
                 .Include(x => x.Status)
+                .AsNoTracking()
                 .ToListAsync();
 
             return Ok(result);

@@ -7,7 +7,7 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Colaboradores</h3>
+		<h3>Colaborador</h3>
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
@@ -128,7 +128,6 @@
 	private SelectResource<Guid>[]? Companies;
 	private SelectResource<Guid>[]? WorkAreas;
 	private SelectResource<Guid>[]? WorkPositions;
-	private SelectResource<Guid>[]? Status;
 	private string? Filter;
 	private Guid? FilterArea;
 	private Guid? FilterPosition;
@@ -163,7 +162,6 @@
 		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
 		WorkAreas = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/areas");
 		WorkPositions = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/cargos");
-		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Employee employee = null)

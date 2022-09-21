@@ -19,7 +19,10 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _context.WorkAreas.ToListAsync();
+            var result = await _context.WorkAreas
+                .OrderByDescending(x => x.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
 
             return Ok(result);
         }

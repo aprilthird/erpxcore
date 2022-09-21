@@ -1,4 +1,5 @@
-﻿using ERP.XCore.Data.Context;
+﻿using ERP.XCore.Core.Helpers;
+using ERP.XCore.Data.Context;
 using ERP.XCore.Entities.Models;
 using ERP.XCore.Hotel.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,8 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
                 .Include(x => x.WorkPosition)
                 .Include(x => x.DocumentType)
                 .Include(x => x.Status)
+                .Where(x => x.StatusId == Constants.Status.ENABLED_ID)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
             return Ok(result);
@@ -82,7 +85,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
             if (employee == null)
                 return NotFound();
 
-            _context.Employees.Remove(employee);
+            employee.StatusId = Constants.Status.DISABLED_ID;
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -98,7 +101,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
             entity.WorkAreaId = model.WorkAreaId;
             entity.WorkPositionId = model.WorkPositionId;
             entity.Address = model.Address;
-            entity.StatusId = model.StatusId;
+            entity.StatusId = Constants.Status.ENABLED_ID;
         }
     }
 }

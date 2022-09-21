@@ -4,6 +4,8 @@ using ERP.XCore.Hotel.Web.Client._keenthemes;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using ERP.XCore.Hotel.Web.Client.Extensions;
+using ERP.XCore.Hotel.Web.Client.Factories;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -17,6 +19,7 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 builder.Services.AddScoped<IKTTheme, KTTheme>();
 builder.Services.AddScoped<IBootstrapBase, BootstrapBase>();
 
-builder.Services.AddApiAuthorization();
+builder.Services.AddApiAuthorization<RemoteAuthenticationState, ApplicationUserAccount>()
+    .AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, ApplicationUserAccount, ApplicationAccountFactory>();
 
 await builder.Build().RunAsync();

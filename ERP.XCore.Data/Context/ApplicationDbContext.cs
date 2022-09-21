@@ -1,4 +1,5 @@
 ﻿using Duende.IdentityServer.EntityFramework.Options;
+using ERP.XCore.Entities.Base;
 using ERP.XCore.Entities.Models;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,60 @@ namespace ERP.XCore.Data.Context
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
+        }
+
+        public override int SaveChanges()
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is BaseEntity && (
+                        e.State == EntityState.Added
+                        || e.State == EntityState.Modified));
+
+            foreach (var entityEntry in entries)
+            {
+                ((BaseEntity)entityEntry.Entity).UpdatedAt = DateTime.Now;
+
+                if (entityEntry.State == EntityState.Added)
+                {
+                    ((BaseEntity)entityEntry.Entity).CreatedAt = DateTime.Now;
+                }
+            }
+
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => (e.Entity is BaseEntity || e.Entity is ApplicationUser) && (
+                        e.State == EntityState.Added
+                        || e.State == EntityState.Modified));
+
+            foreach (var entityEntry in entries)
+            {
+                if (entityEntry.Entity is BaseEntity)
+                {
+                    ((BaseEntity)entityEntry.Entity).UpdatedAt = DateTime.Now;
+
+                    if (entityEntry.State == EntityState.Added)
+                    {
+                        ((BaseEntity)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    }
+                }
+                else
+                {
+                    //((ApplicationUser)entityEntry.Entity).UpdatedAt = DateTime.Now;
+
+                    //if (entityEntry.State == EntityState.Added)
+                    //{
+                    //    ((ApplicationUser)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    //}
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

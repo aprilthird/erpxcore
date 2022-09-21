@@ -1,4 +1,4 @@
-﻿@page "/maestros/empresas/sede"
+﻿@page "/maestros/habitaciones/habitacion"
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using ERP.XCore.Hotel.Shared.Resources.Base
@@ -7,13 +7,28 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Sede</h3>
+		<h3>Habitación</h3>
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
 		</button>
 	</div>
 	<div class="col-md-12 row">
+		<div class="col-md-3">
+			<label>Tipo de Habitación</label>
+			<InputSelect @bind-Value="FilterType" class="form-control" placeholder="Area">
+                <option value="" selected>Todas</option>
+				@if(RoomTypes != null)
+				{
+					
+                @foreach(var item in RoomTypes)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+				}
+            </InputSelect>
+		</div>
+	
 	</div>
 	<hr/>
 	<div class="col-md-12">
@@ -27,9 +42,8 @@
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr class="fw-bold">
-						<th>Descripción</th>
-						<th>Dirección</th>
-						<th>Empresa</th>
+						<th>Nombre</th>
+						<th>Tipo de Habitacion</th>
 						<th>Estado</th>
 						<th>Acciones</th>
 					</tr>
@@ -39,9 +53,8 @@
 					{
 						<tr>
 							<td>@item.Description</td>
-							<td>@item.Address</td>
-							<td>@item.Company?.Description</td>
-							<td>@item.Status?.Description</td>
+							<td>@item.RoomType.Description</td>
+							<td>@item.Status.Description</td>
 							<td>
 								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
@@ -61,17 +74,19 @@
 	</div>
 </div>
 
-<ModalForm @ref="Modal" Title="@ModalTitle" Model="CompanyHeadquarter" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-	<ERP.XCore.Hotel.Web.Client.Pages.Management.Business.CompanyHeadquarter.Fields @ref="Fields" CompanyHeadquarter="CompanyHeadquarter" Companies="Companies" />
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Room" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" Room="Room" RoomTypes="RoomTypes" Status="Status" />
 </ModalForm>
 
 @code {
-	private CompanyHeadquarter CompanyHeadquarter = new CompanyHeadquarter();
+	private Room Room = new Room();
 	private ModalForm Modal;
 	private Fields Fields;
 	private string ModalTitle;
-	private CompanyHeadquarter[]? ItemsList;
-	private SelectResource<Guid>[]? Companies;
+	private Room[]? ItemsList;
+	private SelectResource<Guid>[]? RoomTypes;
+	private SelectResource<Guid>[]? Status;
+	private Guid? FilterType;
 
 	public enum ModalType
 	{
@@ -93,18 +108,19 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<CompanyHeadquarter[]>(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE);
-	}
-	
-	public async Task LoadSelects()
-	{
-		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
+		ItemsList = await Http.GetFromJsonAsync<Room[]>(RouteConfig.Management.Rooms.ROOM_ROUTE);
 	}
 
-	public async Task ShowModalAsync(ModalType modalType, CompanyHeadquarter companyHeadquarter = null)
+	public async Task LoadSelects()
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Sede";
-		CompanyHeadquarter = companyHeadquarter ?? new CompanyHeadquarter();
+		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados?entity=Rooms");
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, Room room = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Habitación";
+		Room = room ?? new Room();
 		await Modal.OpenAsync();
 	}
 
@@ -112,13 +128,13 @@
 	{
 		try
 		{
-			if(CompanyHeadquarter.Id == Guid.Empty)
+			if(Room.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE, CompanyHeadquarter);
+				await Http.PostAsJsonAsync(RouteConfig.Management.Rooms.ROOM_ROUTE, Room);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + CompanyHeadquarter.Id, CompanyHeadquarter);
+				await Http.PutAsJsonAsync(RouteConfig.Management.Rooms.ROOM_ROUTE + "/" + Room.Id, Room);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -133,9 +149,9 @@
 	{
 	}
 
-	public async Task DeleteAsync(CompanyHeadquarter companyHeadquarter)
+	public async Task DeleteAsync(Room room)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + companyHeadquarter.Id);
+		await Http.DeleteAsync(RouteConfig.Management.Rooms.ROOM_ROUTE + "/" + room.Id);
 		await Load();
     }
 }

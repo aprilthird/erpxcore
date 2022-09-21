@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ERP.XCore.Entities.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Entities.Models
 {
-    public class Guest
+    public class Guest : BaseEntity
     {
         public Guid Id { get; set; }
 
         public Guid DocumentTypeId { get; set; }
 
-        public DocumentType DocumentType { get; set; }
+        public DocumentType? DocumentType { get; set; }
 
         public string Document { get; set; }
         
@@ -28,10 +29,10 @@ namespace ERP.XCore.Entities.Models
 
         public Guid UbigeoId { get; set; }
 
-        public Ubigeo Ubigeo { get; set; }
+        public Ubigeo? Ubigeo { get; set; }
 
         public Guid StatusId { get; set; }
 
-        public Status Status { get; set; }
+        public Status? Status { get; set; }
     }
 }

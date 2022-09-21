@@ -1,4 +1,5 @@
-﻿using ERP.XCore.Data.Context;
+﻿using ERP.XCore.Core.Helpers;
+using ERP.XCore.Data.Context;
 using ERP.XCore.Hotel.Shared.Helpers;
 using ERP.XCore.Hotel.Shared.Resources.Base;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,10 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
         }
 
         [HttpGet("estados")]
-        public async Task<IActionResult> Status()
+        public async Task<IActionResult> Status(string entity = Constants.Status.DEFAULT_ENTITY)
         {
             var result = await _context.Status
+                .Where(x => x.Entity == entity)
                 .Select(x => new SelectResource<Guid>()
                 {
                     Value = x.Id,
@@ -36,6 +38,19 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
                 {
                     Value = x.Id,
                     Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("ubigeos")]
+        public async Task<IActionResult> Ubigeos()
+        {
+            var result = await _context.Ubigeos
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = $"{x.DepartmentCode}-{x.ProvinceCode}-{x.DistrictCode}"
                 }).ToListAsync();
 
             return Ok(result);
@@ -67,19 +82,6 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
             return Ok(result);
         }
 
-
-        [HttpGet("tipos-de-habitacion")]
-        public async Task<IActionResult> RoomTypes()
-        {
-            var result = await _context.RoomTypes
-                .Select(x => new SelectResource<Guid>()
-                {
-                    Value = x.Id,
-                    Text = x.Description
-                }).ToListAsync();
-
-            return Ok(result);
-        }
 
         [HttpGet("areas")]
         public async Task<IActionResult> WorkAreas()
@@ -115,6 +117,19 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
                 {
                     Value = x.Id,
                     Text = $"{x.LastName}, {x.FirstName}"
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("tipos-de-habitacion")]
+        public async Task<IActionResult> RoomTypes()
+        {
+            var result = await _context.RoomTypes
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
                 }).ToListAsync();
 
             return Ok(result);

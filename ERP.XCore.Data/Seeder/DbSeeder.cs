@@ -19,7 +19,13 @@ namespace ERP.XCore.Data.Seeder
                 var status = new List<Status>
                 {
                     new Status { Description = "Activo", Entity = "General" },
-                    new Status { Description = "Inactivo", Entity = "General"  }
+                    new Status { Description = "Inactivo", Entity = "General" },
+                    
+                    new Status { Description = "Disponible", Entity = "Rooms" },
+                    new Status { Description = "Sucio", Entity = "Rooms" },
+                    new Status { Description = "En Limpieza", Entity = "Rooms" },
+                    new Status { Description = "Mantenimiento", Entity = "Rooms" },
+                    new Status { Description = "Ocupado", Entity = "Rooms" },
                 };
                 await context.Status.AddRangeAsync(status);
                 await context.SaveChangesAsync();
@@ -151,7 +157,8 @@ namespace ERP.XCore.Data.Seeder
                     Email = "sysadmin@erpxcore.com",
                     PhoneNumber = "999999999",
                     EmployeeId = employees[0].Id,
-                    StatusId = status[0].Id
+                    StatusId = status[0].Id,
+                    EmailConfirmed = true,
                 };
 
                 var result = userManager.CreateAsync(user, "XCore.2022").Result;
@@ -167,7 +174,8 @@ namespace ERP.XCore.Data.Seeder
                     Email = "nuevousuario@erpxcore.com",
                     PhoneNumber = "999999999",
                     EmployeeId = employees[1].Id,
-                    StatusId = status[0].Id
+                    StatusId = status[0].Id,
+                    EmailConfirmed = true,
                 };
 
                 var result = userManager.CreateAsync(user, "XCore.2022").Result;

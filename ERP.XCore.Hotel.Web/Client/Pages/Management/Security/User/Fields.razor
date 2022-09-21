@@ -5,7 +5,7 @@
     <div class="col-sm-12">
         <div class="form-group">
             <label for="description">Correo</label>
-            <InputText @bind-Value="ApplicationUser.Email" id="description" class="form-control" placeholder="Nombres" />
+            <InputText @bind-Value="ApplicationUser.Email" id="description" class="form-control" placeholder="Correo" />
             <ValidationMessage For="() => ApplicationUser.Email" />
         </div>
     </div>
@@ -14,7 +14,7 @@
     <div class="col-sm-12">
         <div class="form-group">
             <label for="entity">Teléfono</label>
-            <InputText @bind-Value="ApplicationUser.PhoneNumber" id="entity" class="form-control" placeholder="Apellidos" />
+            <InputText @bind-Value="ApplicationUser.PhoneNumber" id="entity" class="form-control" placeholder="Teléfono" />
             <ValidationMessage For="() => ApplicationUser.PhoneNumber" />
         </div>
     </div>

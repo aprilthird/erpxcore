@@ -4,20 +4,24 @@ using ERP.XCore.Hotel.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
+namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
 {
     [ApiController]
-    [Route(RouteConfig.Management.Business.ROOM_ROUTE)]
+    [Route(RouteConfig.Management.Rooms.ROOM_ROUTE)]
     public class RoomController : BaseController
     {
         public RoomController(ApplicationDbContext context)
             : base(context)
         {
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll(Guid? tipo = null)
         {
             var query = _context.Rooms
+                .Include(x => x.Status)
+                .Include(x => x.RoomType)
+                .OrderByDescending(x => x.CreatedAt)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -25,8 +29,6 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
                 query = query.Where(x => x.RoomTypeId == tipo.Value);
 
             var result = await query
-                .Include(x => x.RoomType)
-                .Include(x => x.Status)
                 .ToListAsync();
 
             return Ok(result);

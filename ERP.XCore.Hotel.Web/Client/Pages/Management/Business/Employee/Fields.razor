@@ -84,20 +84,6 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Estado</label>
-            <InputSelect @bind-Value="Employee.StatusId" id="entity" class="form-control" placeholder="Estado">
-                @foreach(var item in Status)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Employee.StatusId" />
-        </div>
-    </div>
-</div>
       
 @code {
     [Parameter]
@@ -114,7 +100,4 @@
     
     [Parameter]
     public ICollection<SelectResource<Guid>> WorkPositions { get; set; }
-    
-    [Parameter]
-    public ICollection<SelectResource<Guid>> Status { get; set; }
 }

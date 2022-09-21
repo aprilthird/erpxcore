@@ -1,0 +1,95 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Nombres</label>
+            <InputText @bind-Value="Guest.FirstName" id="description" class="form-control" placeholder="Nombres" />
+            <ValidationMessage For="() => Guest.FirstName" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Apellidos</label>
+            <InputText @bind-Value="Guest.LastName" id="entity" class="form-control" placeholder="Apellidos" />
+            <ValidationMessage For="() => Guest.LastName" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Correo</label>
+            <InputText @bind-Value="Guest.Email" id="description" class="form-control" placeholder="Correo" />
+            <ValidationMessage For="() => Guest.Email" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Teléfono</label>
+            <InputText @bind-Value="Guest.PhoneNumber" id="entity" class="form-control" placeholder="Teléfono" />
+            <ValidationMessage For="() => Guest.PhoneNumber" />
+        </div>
+    </div>
+</div>
+@*<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Teléfono</label>
+            <InputText @bind-Value="Guest.BirthDate" id="entity" class="form-control" placeholder="Fecha de Nacimiento" />
+            <ValidationMessage For="() => Guest.BirthDate" />
+        </div>
+    </div>
+</div>*@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Ubigeo</label>
+            <InputSelect @bind-Value="Guest.UbigeoId" id="entity" class="form-control" placeholder="Ubigeo">
+                @foreach(var item in Ubigeos)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Guest.UbigeoId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Tipo Documento</label>
+            <InputSelect @bind-Value="Guest.DocumentTypeId" id="entity" class="form-control" placeholder="Tipo Documento">
+                @foreach(var item in DocumentTypes)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Guest.DocumentTypeId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Documento</label>
+            <InputText @bind-Value="Guest.Document" id="entity" class="form-control" placeholder="Documento" />
+            <ValidationMessage For="() => Guest.Document" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public Guest Guest { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> DocumentTypes { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Ubigeos { get; set; }
+}
