@@ -1,0 +1,129 @@
+﻿@page "/maestros/habitaciones/tipo"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Colaboradores</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+
+	<hr/>
+	<div class="col-md-12">
+		<div class="table-responsive">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Nombre</th>
+
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="RoomType" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <_Fields @ref="Fields" RoomType="RoomType"/>
+</ModalForm>
+
+@code {
+	private RoomType RoomType = new RoomType();
+	private ModalForm Modal;
+	private _Fields Fields;
+	private string ModalTitle;
+	private RoomType[]? ItemsList;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<RoomType[]>(RouteConfig.Management.Business.ROOMTYPE_ROUTE);
+	}
+
+
+	public async Task ShowModalAsync(ModalType modalType, RoomType rt = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Tipo de cuarto";
+		RoomType = rt ?? new RoomType();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(RoomType.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.Business.ROOMTYPE_ROUTE, RoomType);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.Business.ROOMTYPE_ROUTE + "/" + RoomType.Id, RoomType);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(RoomType rt)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.Business.ROOMTYPE_ROUTE+ "/" + rt.Id);
+		await Load();
+    }
+}

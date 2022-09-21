@@ -36,6 +36,8 @@ namespace ERP.XCore.Hotel.Shared.Helpers
                 public const string COMPANY_HEADQUARTER_ROUTE = BUSINESS_ROUTE + "/sedes";
                 public const string POINT_OF_SALE_ROUTE = BUSINESS_ROUTE + "/pos";
                 public const string EMPLOYEE_ROUTE = BUSINESS_ROUTE + "/colaboradores";
+                public const string ROOM_ROUTE = BUSINESS_ROUTE + "/habitacion";
+                public const string ROOMTYPE_ROUTE = BUSINESS_ROUTE + "/tipos-habitacion";
                 public const string WORK_AREA_ROUTE = BUSINESS_ROUTE + "/areas";
                 public const string WORK_POSITION_ROUTE = BUSINESS_ROUTE + "/cargos";
 

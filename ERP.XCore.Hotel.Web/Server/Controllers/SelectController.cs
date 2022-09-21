@@ -67,6 +67,20 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("tipos-de-habitacion")]
+        public async Task<IActionResult> RoomTypes()
+        {
+            var result = await _context.RoomTypes
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
         [HttpGet("areas")]
         public async Task<IActionResult> WorkAreas()
         {

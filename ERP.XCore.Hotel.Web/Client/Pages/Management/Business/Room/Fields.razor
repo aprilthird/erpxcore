@@ -1,0 +1,54 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Nombre</label>
+            <InputText @bind-Value="Room.Description" id="description" class="form-control" placeholder="Nombre" />
+            <ValidationMessage For="() => Room.Description" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Tipo de habitación</label>
+            <InputSelect @bind-Value="Room.RoomTypeId" id="entity" class="form-control" placeholder="Tipo de Habitación">
+                @foreach(var item in RoomTypes)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Room.RoomTypeId" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Estado</label>
+            <InputSelect @bind-Value="Room.StatusId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Status)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Room.StatusId" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public Room Room { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> RoomTypes { get; set; }
+
+    
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
+}
