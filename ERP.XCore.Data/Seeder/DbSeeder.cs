@@ -20,12 +20,6 @@ namespace ERP.XCore.Data.Seeder
                 {
                     new Status { Description = "Activo", Entity = "General" },
                     new Status { Description = "Inactivo", Entity = "General" },
-                    
-                    new Status { Description = "Disponible", Entity = "Rooms" },
-                    new Status { Description = "Sucio", Entity = "Rooms" },
-                    new Status { Description = "En Limpieza", Entity = "Rooms" },
-                    new Status { Description = "Mantenimiento", Entity = "Rooms" },
-                    new Status { Description = "Ocupado", Entity = "Rooms" },
                 };
                 await context.Status.AddRangeAsync(status);
                 await context.SaveChangesAsync();
@@ -129,6 +123,20 @@ namespace ERP.XCore.Data.Seeder
                     new Employee { FirstName = "Pablo", LastName = "Zosimo", Document = "10254488", CompanyId = companies[0].Id, StatusId = status[0].Id, DocumentTypeId = documentTypes[0].Id, UbigeoId = ubigeos[0].Id, WorkAreaId = workAreas[1].Id, WorkPositionId = workPositions[1].Id }
                 };
                 await context.Employees.AddRangeAsync(employees);
+                await context.SaveChangesAsync();
+            }
+
+            if(!context.RoomStatus.Any())
+            {
+                var roomStatus = new List<RoomStatus>
+                {
+                    new RoomStatus { Description = "Disponible" },
+                    new RoomStatus { Description = "Sucio" },
+                    new RoomStatus { Description = "En Limpieza" },
+                    new RoomStatus { Description = "Mantenimiento" },
+                    new RoomStatus { Description = "Ocupado" },
+                };
+                await context.RoomStatus.AddRangeAsync(roomStatus);
                 await context.SaveChangesAsync();
             }
 

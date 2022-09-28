@@ -136,7 +136,7 @@
 	{
 		try
 		{
-			if(ApplicationUser.Id == string.Empty)
+			if(ApplicationUser.Id == Guid.Empty)
 			{
 				await Http.PostAsJsonAsync(RouteConfig.Management.Security.USER_ROUTE, ApplicationUser);
 			}
