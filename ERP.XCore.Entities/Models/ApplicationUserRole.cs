@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Entities.Models
 {
-    public class ApplicationRole : IdentityRole<Guid>
+    public class ApplicationUserRole : IdentityUserRole<Guid>
     {
+        public virtual ApplicationUser User { get; set; }
 
+        public virtual ApplicationRole Role { get; set; }
     }
 }

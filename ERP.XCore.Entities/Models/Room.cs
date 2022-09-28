@@ -17,6 +17,10 @@ namespace ERP.XCore.Entities.Models
 
         public RoomType? RoomType { get; set; }
 
+        public Guid RoomStatusId { get; set; }
+
+        public RoomStatus? RoomStatus { get; set; }
+
         public Guid StatusId { get; set; }
 
         public Status? Status { get; set; }

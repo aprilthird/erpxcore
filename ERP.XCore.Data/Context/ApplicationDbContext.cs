@@ -1,7 +1,9 @@
 ﻿using Duende.IdentityServer.EntityFramework.Options;
+using ERP.XCore.Data.Base;
 using ERP.XCore.Entities.Base;
 using ERP.XCore.Entities.Models;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
@@ -12,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Data.Context
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    public class ApplicationDbContext 
+        : ApplicationApiAuthorizationDbContext<ApplicationUser, ApplicationRole, Guid, IdentityUserClaim<Guid>, ApplicationUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
     {
         public DbSet<Company> Companies { get; set; }
 
@@ -37,6 +40,8 @@ namespace ERP.XCore.Data.Context
         public DbSet<PointOfSale> PointsOfSale { get; set; }
 
         public DbSet<Room> Rooms { get; set; }
+
+        public DbSet<RoomStatus> RoomStatus { get; set; }
 
         public DbSet<RoomType> RoomTypes { get; set; }
 
