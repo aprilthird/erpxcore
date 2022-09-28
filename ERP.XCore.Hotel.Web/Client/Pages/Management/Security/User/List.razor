@@ -116,13 +116,13 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<ApplicationUser[]>(RouteConfig.Management.Business.EMPLOYEE_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<ApplicationUser[]>(RouteConfig.Management.Security.USER_ROUTE);
 	}
 
 	public async Task LoadSelects()
 	{
 		Employees = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empleados");
-		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados");
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados?entity=General");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, ApplicationUser applicationUser = null)

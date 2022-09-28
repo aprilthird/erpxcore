@@ -43,6 +43,21 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("tipos-de-persona")]
+        public async Task<IActionResult> PersonTypes()
+        {
+            var result = await _context.PersonTypes
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
+
+
         [HttpGet("ubigeos")]
         public async Task<IActionResult> Ubigeos()
         {

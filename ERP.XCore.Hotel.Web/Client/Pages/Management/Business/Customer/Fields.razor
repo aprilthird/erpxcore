@@ -1,0 +1,194 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using MudBlazor
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="Customer.Description" id="description" class="form-control" placeholder="Descripción" />
+            <ValidationMessage For="() => Customer.Description" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Tipo de persona</label>
+            <InputSelect @bind-Value="Customer.PersonTypeId" id="entity" class="form-control" placeholder="Tipo de persona">
+                @foreach(var item in PersonTypes)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Customer.PersonTypeId" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Tipo Documento</label>
+            <InputSelect @bind-Value="Customer.DocumentTypeId" id="entity" class="form-control" placeholder="Tipo Documento">
+                @foreach(var item in DocumentTypes)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Customer.DocumentTypeId" />
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="Document">Documento</label>
+            <InputText @bind-Value="Customer.Document" id="Document" class="form-control" placeholder="Documento" />
+            <ValidationMessage For="() => Customer.Document" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="Sex">Sexo</label>
+            <InputText @bind-Value="Customer.Sex" id="Sex" class="form-control" placeholder="Sexo" />
+            <ValidationMessage For="() => Customer.Sex" />
+        </div>
+    </div>
+</div>
+<div class="row">
+        <div class="col-sm-12">
+                    <div class="form-group">        
+                         <label for="birthDate">Cumpleaños</label>
+                        <InputDate @bind-Value="Customer.BirthDate"/>
+                    </div>
+        </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="Direction">Dirección</label>
+            <InputText @bind-Value="Customer.Direction" id="Direction" class="form-control" placeholder="Dirección" />
+            <ValidationMessage For="() => Customer.Direction" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="Sex">Teléfono</label>
+            <InputText @bind-Value="Customer.PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Teléfono" />
+            <ValidationMessage For="() => Customer.PhoneNumber" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <InputText @bind-Value="Customer.Email" id="Email" class="form-control" placeholder="Email" />
+            <ValidationMessage For="() => Customer.Email" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="Email">Sitio Web</label>
+            <InputText @bind-Value="Customer.Website" id="Website" class="form-control" placeholder="Sitio Web" />
+            <ValidationMessage For="() => Customer.Website" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="MaritalStatus">Estado Civil</label>
+            <InputText @bind-Value="Customer.MaritalStatus" id="MaritalStatus" class="form-control" placeholder="Estado Civil" />
+            <ValidationMessage For="() => Customer.MaritalStatus" />
+        </div>
+    </div>
+</div>
+
+@*<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="RetentionAgent">Agente</label>
+            <InputCheckbox @bind-Value="Customer.RetentionAgent" id="RetentionAgent" class="form-control" placeholder="Agente" />
+            <ValidationMessage For="() => Customer.RetentionAgent" />
+        </div>
+    </div>
+</div>*@
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Ubigeo</label>
+            <InputSelect @bind-Value="Customer.UbigeoId" id="entity" class="form-control" placeholder="Ubigeo">
+                @foreach(var item in Ubigeos)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Customer.UbigeoId" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Empresa</label>
+            <InputSelect @bind-Value="Customer.CompanyId" id="entity" class="form-control" placeholder="Ubigeo">
+                @foreach(var item in Companies)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Customer.CompanyId" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Estado</label>
+            <InputSelect @bind-Value="Customer.StatusId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Status)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Customer.StatusId" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Customer Customer { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> DocumentTypes { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Ubigeos { get; set; }
+    [Parameter]
+    public ICollection<SelectResource<Guid>> PersonTypes { get; set; }
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Companies { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
+}

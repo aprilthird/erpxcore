@@ -1,0 +1,150 @@
+﻿@page "/maestros/empresas/cliente"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Huésped</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12 row">
+	
+	</div>
+	<hr/>
+	<div class="col-md-12">
+		<div class="table-responsive">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Nombres</th>
+						@*<th>Apellidos</th>
+						<th>Estado</th>
+						<th>Acciones</th>*@
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							@*<td>@item.LastName</td>
+							<td>@item.Status.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>*@
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Customer" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" Customer="Customer" DocumentTypes=" DocumentTypes" Ubigeos="Ubigeos" PersonTypes="PersonTypes"Companies="Companies" Status="Status"/>
+</ModalForm>
+
+@code {
+	private Customer Customer = new Customer();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private Customer[]? ItemsList;
+	private SelectResource<Guid>[]? DocumentTypes;
+	private SelectResource<Guid>[]? Ubigeos;
+	private SelectResource<Guid>[]? PersonTypes;
+	private SelectResource<Guid>[]? Companies;
+	private SelectResource<Guid>[]? Status;
+
+	private Guid? FilterType;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			await LoadSelects();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<Customer[]>(RouteConfig.Management.Business.CUSTOMER_ROUTE);
+	}
+
+	public async Task LoadSelects()
+	{
+		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+		Ubigeos = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/ubigeos");
+		PersonTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-persona");
+		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados?entity=General");
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, Customer c = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Huésped";
+		Customer = c ?? new Customer();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(Customer.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.Business.CUSTOMER_ROUTE, Customer);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.Business.CUSTOMER_ROUTE + "/" + Customer.Id, Customer);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(Customer c)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.Business.CUSTOMER_ROUTE + "/" + c.Id);
+		await Load();
+    }
+}

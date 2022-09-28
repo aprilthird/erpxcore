@@ -1,0 +1,19 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Nombre</label>
+            <InputText @bind-Value="RoomStatus.Description" id="description" class="form-control" placeholder="Nombre" />
+            <ValidationMessage For="() => RoomStatus.Description" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RoomStatus RoomStatus { get; set; }
+
+
+}
