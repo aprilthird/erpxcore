@@ -11,7 +11,7 @@ namespace ERP.XCore.Entities.Models
     {
         public Guid Id { get; set; }
 
-        public string ApplicationId { get; set; }
+        public Guid RoleId { get; set; }
 
         public ApplicationRole? Role { get; set; }
 

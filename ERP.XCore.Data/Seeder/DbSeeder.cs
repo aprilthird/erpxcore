@@ -12,7 +12,7 @@ namespace ERP.XCore.Data.Seeder
 {
     public class DbSeeder
     {
-        public static async void Seed(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public static async void Seed(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             if(!context.Status.Any())
             {
@@ -189,18 +189,74 @@ namespace ERP.XCore.Data.Seeder
                 var result = userManager.CreateAsync(user, "XCore.2022").Result;
             }
 
-            if(!context.Modules.Any())
+            if(roleManager.FindByNameAsync("Prueba").Result == null)
+            {
+                var role = new ApplicationRole("Prueba");
+                await roleManager.CreateAsync(role);
+            }
+
+            if(!userManager.GetUsersInRoleAsync("Prueba").Result.Any())
+            {
+                var user = await userManager.FindByEmailAsync("sysadmin@erpxcore.com");
+                await userManager.AddToRoleAsync(user, "Prueba");
+            }
+
+            if (!context.PermissionLevels.Any())
+            {
+                var permissionLevels = new List<PermissionLevel>
+                {
+                    new PermissionLevel { Description = "Lectura" },
+                    new PermissionLevel { Description = "Escritura" },
+                };
+
+                await context.PermissionLevels.AddRangeAsync(permissionLevels);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Modules.Any())
             {
                 var modules = new List<Module>
                 {
-                    new Module { Description = "Modulo 1" },
-                    new Module { Description = "Modulo 2" },
-                    new Module { Description = "Modulo 3" },
+                    new Module { Description = "Generales" },
+                    new Module { Description = "Empresas" },
+                    new Module { Description = "Seguridad" },
                 };
 
                 await context.Modules.AddRangeAsync(modules);
                 await context.SaveChangesAsync();
             }
+
+            if(!context.SubModules.Any())
+            {
+                var modules = await context.Modules.ToListAsync();
+                var subModules = new List<SubModule>
+                {
+                    new SubModule { Description = "Tipo Documento", ModuleId = modules[0].Id },
+                    new SubModule { Description = "Ubigeo", ModuleId = modules[0].Id },
+                    new SubModule { Description = "Estado", ModuleId = modules[0].Id },
+                };
+
+                await context.SubModules.AddRangeAsync(subModules);
+                await context.SaveChangesAsync();
+            }
+
+
+            if (!context.Permissions.Any())
+            {
+                var role = await roleManager.FindByNameAsync("Prueba");
+                var subModules = await context.SubModules.ToListAsync();
+                var permissionLevels = await context.PermissionLevels.ToListAsync();
+                var permissions = new List<Permission>
+                {
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[0].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[1].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[2].Id, PermissionLevelId = permissionLevels[1].Id, },
+                };
+
+                await context.Permissions.AddRangeAsync(permissions);
+                await context.SaveChangesAsync();
+            }
+
         }
     }
 }

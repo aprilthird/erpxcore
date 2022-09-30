@@ -21,5 +21,12 @@ namespace ERP.XCore.Core.Helpers
 
             public static Guid DISABLED_ID = Guid.Parse("14A541C3-C87B-4940-A672-08DA9C06C7E9");
         }
+
+        public static class PermissionLevel
+        {
+            public static Guid READING_ID = Guid.Parse("E3245CA6-17D9-42BB-A671-08DA9C06C7E9");
+
+            public static Guid WRITING_ID = Guid.Parse("14A541C3-C87B-4940-A672-08DA9C06C7E9");
+        }
     }
 }

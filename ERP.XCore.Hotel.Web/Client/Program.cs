@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using ERP.XCore.Hotel.Web.Client.Extensions;
 using ERP.XCore.Hotel.Web.Client.Factories;
 using MudBlazor.Services;
+using Blazored.LocalStorage;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -17,6 +18,7 @@ builder.Services.AddHttpClient("ERP.XCore.Hotel.Web.ServerAPI", client => client
 
 // Components Library
 builder.Services.AddMudServices();
+builder.Services.AddBlazoredLocalStorage();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ERP.XCore.Hotel.Web.ServerAPI"));
