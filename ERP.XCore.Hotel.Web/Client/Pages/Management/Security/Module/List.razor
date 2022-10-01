@@ -1,0 +1,126 @@
+﻿@page "/maestros/seguridad/modulo"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Modulo</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12">
+		<div class="table-responsive">
+            @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Module" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <ERP.XCore.Hotel.Web.Client.Pages.Management.Security.Module.Fields @ref="Fields" Module="Module" SubModules="SubModules"/>
+</ModalForm>
+
+@code {
+	private Module Module = new Module();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private Module[]? ItemsList;
+
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<Module[]>(RouteConfig.Management.Security.MODULE_ROUTE);
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, Module m = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
+		Module = m ?? new Module();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if(Module.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.Security.MODULE_ROUTE, Module);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.Security.MODULE_ROUTE + "/" + Module.Id, Module);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(Module m)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.Security.MODULE_ROUTE + "/" + m.Id);
+		await Load();
+    }
+}

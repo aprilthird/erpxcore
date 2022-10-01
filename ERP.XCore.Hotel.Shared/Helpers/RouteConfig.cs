@@ -67,8 +67,16 @@ namespace ERP.XCore.Hotel.Shared.Helpers
                 public const string SECURITY_ROUTE = MANAGEMENT_ROUTE + "/seguridad";
 
                 public const string USER_ROUTE = SECURITY_ROUTE + "/usuarios";
+<<<<<<< HEAD
                 public const string PERMISSION_ROUTE = SECURITY_ROUTE + "/permisos";
+=======
+                public const string PERMISSION_ROUTE = SECURITY_ROUTE + "/permsiso";
+                public const string PERMISSIONLEVEL_ROUTE = SECURITY_ROUTE + "/nivel-permsiso";
+                public const string MODULE_ROUTE = SECURITY_ROUTE + "/modulo";
+                public const string SUBMODULE_ROUTE = SECURITY_ROUTE + "/sub-modulo";
+>>>>>>> 30330ec122a1c55acd62cc2631ea683bb1985c57
             }
         }
     }
 }
+
