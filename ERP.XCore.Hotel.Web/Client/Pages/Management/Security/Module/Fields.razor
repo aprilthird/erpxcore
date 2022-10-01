@@ -1,0 +1,19 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="Module.Description" id="description" class="form-control" placeholder="Descripción" />
+            <ValidationMessage For="() => Module.Description" />
+        </div>
+    </div>
+</div>
+
+      
+@code {
+    [Parameter]
+    public Module Module { get; set; }
+
+}

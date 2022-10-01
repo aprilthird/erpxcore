@@ -1,0 +1,35 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <InputText @bind-Value="SubModule.Description" id="description" class="form-control" placeholder="Descripción" />
+            <ValidationMessage For="() => SubModule.Description" />
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="entity">Modulo</label>
+            <InputSelect @bind-Value="SubModule.ModuleId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in Modules)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => SubModule.ModuleId" />
+        </div>
+    </div>
+</div>
+      
+@code {
+    [Parameter]
+    public SubModule SubModule { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Modules { get; set; }
+}
