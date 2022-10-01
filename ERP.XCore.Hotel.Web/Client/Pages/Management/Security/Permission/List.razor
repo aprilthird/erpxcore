@@ -108,7 +108,7 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Permission permission = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Permiso";
 		Permission = permission ?? new Permission();
 		await Modal.OpenAsync();
 	}
