@@ -19,7 +19,7 @@ namespace ERP.XCore.Data.Base
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
     public class ApplicationApiAuthorizationDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> 
-        : IdentityUserContext<TUser, TKey, TUserClaim, TUserLogin, TUserToken>, IPersistedGrantDbContext 
+        : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IPersistedGrantDbContext 
         where TUser : IdentityUser<TKey>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>

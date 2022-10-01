@@ -9,13 +9,14 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ERP.XCore.Data.Context
 {
     public class ApplicationDbContext 
-        : ApplicationApiAuthorizationDbContext<ApplicationUser, ApplicationRole, Guid, IdentityUserClaim<Guid>, ApplicationUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
+        : ApplicationApiAuthorizationDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>
     {
         public DbSet<Company> Companies { get; set; }
 
@@ -62,11 +63,54 @@ namespace ERP.XCore.Data.Context
 
         }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            foreach (var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            modelBuilder.Entity<ApplicationUser>(b =>
+            {
+                // Each User can have many UserClaims
+                b.HasMany(e => e.Claims)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(uc => uc.UserId)
+                    .IsRequired();
+
+                // Each User can have many UserLogins
+                b.HasMany(e => e.Logins)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ul => ul.UserId)
+                    .IsRequired();
+
+                // Each User can have many UserTokens
+                b.HasMany(e => e.Tokens)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ut => ut.UserId)
+                    .IsRequired();
+
+                // Each User can have many entries in the UserRole join table
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<ApplicationRole>(b =>
+            {
+                // Each Role can have many entries in the UserRole join table
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.Role)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
+
+                // Each Role can have many associated RoleClaims
+                b.HasMany(e => e.RoleClaims)
+                    .WithOne(e => e.Role)
+                    .HasForeignKey(rc => rc.RoleId)
+                    .IsRequired();
+            });
+
+
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
