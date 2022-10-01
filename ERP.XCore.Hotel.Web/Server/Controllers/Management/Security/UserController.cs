@@ -20,10 +20,16 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
         public async Task<IActionResult> GetAll()
         {
             var result = await _context.Users
-                .Include(x => x.Employee)
-                .Include(x => x.Status)
-                .AsNoTracking()
-                .ToListAsync();
+                .Select(x => new ApplicationUser()
+                {
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber,
+                    Employee = new Employee
+                    {
+                        FirstName = x.Employee.FirstName,
+                        LastName = x.Employee.LastName
+                    }
+                }).AsNoTracking().ToListAsync();
 
             return Ok(result);
         }

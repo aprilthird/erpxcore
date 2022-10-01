@@ -21,6 +21,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
             var query = _context.Rooms
                 .Include(x => x.Status)
                 .Include(x => x.RoomType)
+                .Include(x => x.RoomStatus)
                 .OrderByDescending(x => x.CreatedAt)
                 .AsNoTracking()
                 .AsQueryable();
@@ -80,6 +81,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
         {
             entity.Description = model.Description;
             entity.RoomTypeId = model.RoomTypeId;
+            entity.RoomStatusId = model.RoomStatusId;
             entity.StatusId = model.StatusId;
         }
     }

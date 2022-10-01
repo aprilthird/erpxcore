@@ -20,8 +20,15 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
         {
             var result = await _context.SubModules
                 .OrderByDescending(x => x.CreatedAt)
-                .AsNoTracking()
-                .ToListAsync();
+                .Select(x => new SubModule
+                {
+                    Description = x.Description,
+                    ModuleId = x.ModuleId,
+                    Module = new Module
+                    {
+                        Description = x.Module.Description,
+                    }
+                }).AsNoTracking().ToListAsync();
 
             return Ok(result);
         }

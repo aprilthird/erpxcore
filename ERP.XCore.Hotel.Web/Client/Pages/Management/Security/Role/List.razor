@@ -1,4 +1,4 @@
-﻿@page "/maestros/seguridad/usuario"
+﻿@page "/maestros/seguridad/rol"
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using ERP.XCore.Hotel.Shared.Resources.Base
@@ -7,12 +7,13 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Cuenta Usuario</h3>
+		<h3>Perfil</h3>
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
 		</button>
 	</div>
+	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
             @if(ItemsList == null)
@@ -24,10 +25,7 @@
 			<table class="table table-bordered table-striped">
 				<thead>
 					<tr class="fw-bold">
-						<th>Correo</th>
-						<th>Teléfono</th>
-						<th>Empleado</th>
-						<th>Estado</th>
+						<th>Descripción</th>
 						<th>Acciones</th>
 					</tr>
 				</thead>
@@ -35,9 +33,7 @@
 					@foreach(var item in ItemsList)
 					{
 						<tr>
-							<td>@item.Email</td>
-							<td>@item.PhoneNumber</td>
-							<td>@item.Employee.FirstName @item.Employee.LastName</td>
+							<td>@item.Name</td>
 							<td>
 								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
@@ -57,17 +53,18 @@
 	</div>
 </div>
 
-<ModalForm @ref="Modal" Title="@ModalTitle" Model="ApplicationUser" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" ApplicationUser="ApplicationUser" Employees="Employees" />
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="ApplicationRole" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" ApplicationRole="ApplicationRole" />
 </ModalForm>
 
 @code {
-	private ApplicationUser ApplicationUser = new ApplicationUser();
+	private ApplicationRole ApplicationRole = new ApplicationRole();
 	private ModalForm Modal;
 	private Fields Fields;
 	private string ModalTitle;
-	private ApplicationUser[]? ItemsList;
+	private ApplicationRole[]? ItemsList;
 	private SelectResource<Guid>[]? Employees;
+	private SelectResource<Guid>[]? Status;
 
 	public enum ModalType
 	{
@@ -79,7 +76,6 @@
 		try
 		{
 			await Load();
-			await LoadSelects();
 		}
 		catch (AccessTokenNotAvailableException exception)
 		{
@@ -89,18 +85,13 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<ApplicationUser[]>(RouteConfig.Management.Security.USER_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<ApplicationRole[]>(RouteConfig.Management.Security.ROLE_ROUTE);
 	}
 
-	public async Task LoadSelects()
+	public async Task ShowModalAsync(ModalType modalType, ApplicationRole applicationRole = null)
 	{
-		Employees = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empleados");
-	}
-
-	public async Task ShowModalAsync(ModalType modalType, ApplicationUser applicationUser = null)
-	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Usuario";
-		ApplicationUser = applicationUser ?? new ApplicationUser();
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Perfil";
+		ApplicationRole = applicationRole ?? new ApplicationRole();
 		await Modal.OpenAsync();
 	}
 
@@ -108,13 +99,13 @@
 	{
 		try
 		{
-			if(ApplicationUser.Id == Guid.Empty)
+			if(ApplicationRole.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Security.USER_ROUTE, ApplicationUser);
+				await Http.PostAsJsonAsync(RouteConfig.Management.Security.ROLE_ROUTE, ApplicationRole);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Security.USER_ROUTE + "/" + ApplicationUser.Id, ApplicationUser);
+				await Http.PutAsJsonAsync(RouteConfig.Management.Security.ROLE_ROUTE + "/" + ApplicationRole.Id, ApplicationRole);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -129,9 +120,9 @@
 	{
 	}
 
-	public async Task DeleteAsync(ApplicationUser applicationUser)
+	public async Task DeleteAsync(ApplicationRole applicationRole)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Security.USER_ROUTE + "/" + applicationUser.Id);
+		await Http.DeleteAsync(RouteConfig.Management.Security.ROLE_ROUTE + "/" + applicationRole.Id);
 		await Load();
     }
 }

@@ -29,9 +29,12 @@
 				<thead>
 					<tr class="fw-bold">
 						<th>Nombres</th>
-						@*<th>Apellidos</th>
-						<th>Estado</th>
-						<th>Acciones</th>*@
+						<th>Documento</th>
+						<th>Empresa</th>
+						<th>Sexo</th>
+						<th>Email</th>
+						<th>Estado Marital</th>
+						<th>Acciones</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -39,8 +42,11 @@
 					{
 						<tr>
 							<td>@item.Description</td>
-							@*<td>@item.LastName</td>
-							<td>@item.Status.Description</td>
+							<td>@item.Document (@(item.DocumentType?.Abbreviation ?? "DNI"))</td>
+							<td>@item.Company.Description</td>
+							<td>@item.Sex</td>
+							<td>@item.Email</td>
+							<td>@item.MaritalStatus</td>
 							<td>
 								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
@@ -50,7 +56,7 @@
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</td>*@
+							</td>
 						</tr>
 					}
 				</tbody>
@@ -112,7 +118,7 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Customer c = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Huésped";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Cliente";
 		Customer = c ?? new Customer();
 		await Modal.OpenAsync();
 	}

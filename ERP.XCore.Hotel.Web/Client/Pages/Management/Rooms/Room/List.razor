@@ -54,7 +54,7 @@
 						<tr>
 							<td>@item.Description</td>
 							<td>@item.RoomType.Description</td>
-							<td>@item.Status.Description</td>
+							<td>@item.RoomStatus.Description</td>
 							<td>
 								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
@@ -75,7 +75,7 @@
 </div>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Room" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" Room="Room" RoomTypes="RoomTypes" Status="Status" />
+    <Fields @ref="Fields" Room="Room" RoomTypes="RoomTypes" RoomStatus="RoomStatus" />
 </ModalForm>
 
 @code {
@@ -85,7 +85,7 @@
 	private string ModalTitle;
 	private Room[]? ItemsList;
 	private SelectResource<Guid>[]? RoomTypes;
-	private SelectResource<Guid>[]? Status;
+	private SelectResource<Guid>[]? RoomStatus;
 	private Guid? FilterType;
 
 	public enum ModalType
@@ -114,7 +114,7 @@
 	public async Task LoadSelects()
 	{
 		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
-		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados?entity=Rooms");
+		RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Room room = null)

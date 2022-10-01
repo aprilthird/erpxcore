@@ -30,13 +30,13 @@
     <div class="col-sm-12">
         <div class="form-group">
             <label for="entity">Estado</label>
-            <InputSelect @bind-Value="Room.StatusId" id="entity" class="form-control" placeholder="Estado">
-                @foreach(var item in Status)
+            <InputSelect @bind-Value="Room.RoomStatusId" id="entity" class="form-control" placeholder="Estado">
+                @foreach(var item in RoomStatus)
                 {
                     <option value="@item.Value">@item.Text</option>
                 }
             </InputSelect>
-            <ValidationMessage For="() => Room.StatusId" />
+            <ValidationMessage For="() => Room.RoomStatusId" />
         </div>
     </div>
 </div>
@@ -47,7 +47,8 @@
 
     [Parameter]
     public ICollection<SelectResource<Guid>> RoomTypes { get; set; }
-    
-    [Parameter]
-    public ICollection<SelectResource<Guid>> Status { get; set; }
+
+    [Parameter]	
+    public ICollection<SelectResource<Guid>> RoomStatus { get; set; }
+
 }

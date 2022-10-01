@@ -13,103 +13,42 @@
 			<span>Agregar</span>
 		</button>
 	</div>
-	<div class="col-md-12 row">
-		<div class="col-md-3">
-			<label>&emsp;</label>
-            <InputText @bind-Value="Filter" class="form-control" placeholder="Buscar" />
-		</div>
-		<div class="col-md-3">
-			<label>Empresa</label>
-			<InputSelect @bind-Value="FilterCompany" class="form-control" placeholder="Area">
-                <option value="" selected>Todas</option>
-				@if(Companies != null)
-				{
-					
-                @foreach(var item in Companies)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-				}
-            </InputSelect>
-		</div>
-		<div class="col-md-3">
-			<label>Area</label>
-			<InputSelect @bind-Value="FilterArea" class="form-control" placeholder="Area">
-                <option value="" selected>Todas</option>
-				@if(WorkAreas != null)
-				{
-					
-                @foreach(var item in WorkAreas)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-				}
-            </InputSelect>
-		</div>
-		<div class="col-md-3">
-			<label>Cargo</label>
-			<InputSelect @bind-Value="FilterPosition" class="form-control" placeholder="Area">
-                <option value="" selected>Todos</option>
-				@if(WorkPositions != null)
-				{
-					
-                @foreach(var item in WorkPositions)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-					
-				}
-            </InputSelect>
-		</div>
-	</div>
-	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
-        @if(ItemsList == null)
-		{
-			<p><em>Cargando...</em></p>
-		}
-		else
-		{
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr class="fw-bold">
-						<th>Nombres</th>
-						<th>Apellidos</th>
-						<th>Documento</th>
-						<th>Empresa</th>
-						<th>Area</th>
-						<th>Cargo</th>
-						<th>Estado</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach(var item in ItemsList)
-					{
-						<tr>
-							<td>@item.FirstName</td>
-							<td>@item.LastName</td>
-							<td>@item.Document (@(item.DocumentType?.Abbreviation ?? "DNI"))</td>
-							<td>@item.Company.Description</td>
-							<td>@(item.WorkArea?.Description ?? "Gerencia")</td>
-							<td>@(item.WorkPosition?.Description ?? "Administrador")</td>
-							<td>@item.Status.Description</td>
-							<td>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Employee, bool>(FilterFunc1)">
+				<ToolBarContent>
+					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+				</ToolBarContent>
+				<HeaderContent>
+				<MudTh>Nombres</MudTh>
+						<MudTh>Apellidos</MudTh>
+						<MudTh>Documento</MudTh>
+						<MudTh>Empresa</MudTh>
+						<MudTh>Area</MudTh>
+						<MudTh>Cargo</MudTh>
+						<MudTh>Estado</MudTh>
+						<MudTh>Acciones</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				<MudTd>@context.FirstName</MudTd>
+							<MudTd>@context.LastName</MudTd>
+							<MudTd>@context.Document (@(context.DocumentType?.Abbreviation ?? "DNI"))</MudTd>
+							<MudTd>@context.Company.Description</MudTd>
+							<MudTd>@(context.WorkArea?.Description ?? "Gerencia")</MudTd>
+							<MudTd>@(context.WorkPosition?.Description ?? "Administrador")</MudTd>
+							<MudTd>@context.Status.Description</MudTd>
+							<MudTd>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		}
+							</MudTd>
+			</RowTemplate>
+		</MudTable>
 		</div>
 	</div>
 </div>
@@ -132,6 +71,7 @@
 	private Guid? FilterArea;
 	private Guid? FilterPosition;
 	private Guid? FilterCompany;
+	private string searchString1 = "";
 
 	public enum ModalType
 	{
@@ -162,6 +102,22 @@
 		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
 		WorkAreas = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/areas");
 		WorkPositions = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/cargos");
+	}
+
+
+	private bool FilterFunc1(Employee employee) => FilterFunc(employee, searchString1);
+
+	private bool FilterFunc(Employee employee, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (employee.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (employee.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if(employee.Document.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		return false;
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Employee employee = null)

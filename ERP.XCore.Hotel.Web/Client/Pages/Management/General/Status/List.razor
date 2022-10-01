@@ -101,7 +101,7 @@
 		var permissionsStr = await localStorage.GetItemAsync<string>("permisos");
 		var permissions = JsonSerializer.Deserialize<Permission[]>(permissionsStr);
 		var permission = permissions.Where(x => x.SubModule.Description == subModule).FirstOrDefault();
-		var canEdit = permission?.PermissionLevel.Description == "Escritura";
+		canEdit = permission?.PermissionLevel.Description == "Escritura";
 	}
 
 	public async Task Load()
