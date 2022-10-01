@@ -149,5 +149,44 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("roles")]
+        public async Task<IActionResult> Roles()
+        {
+            var result = await _context.Roles
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Name
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("submodulos")]
+        public async Task<IActionResult> SubModules()
+        {
+            var result = await _context.SubModules
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("niveles-de-permiso")]
+        public async Task<IActionResult> PermissionLevels()
+        {
+            var result = await _context.PermissionLevels
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
     }
 }

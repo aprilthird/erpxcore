@@ -155,6 +155,16 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
+            if(!context.PersonTypes.Any())
+            {
+                var personTypes = new List<PersonType>
+                {
+                    new PersonType { Description = "Persona Natural" }
+                };
+                await context.PersonTypes.AddRangeAsync(personTypes);
+                await context.SaveChangesAsync();
+            }
+
             if (userManager.FindByEmailAsync("sysadmin@erpxcore.com").Result == null)
             {
                 var employees = await context.Employees.ToListAsync();

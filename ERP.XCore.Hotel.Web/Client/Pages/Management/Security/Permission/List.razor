@@ -1,0 +1,146 @@
+﻿@page "/maestros/seguridad/permiso"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Text.Json
+
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Permiso</h3>
+
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12">
+		<div class="table-responsive">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Rol</th>
+						<th>SubMódulo</th>
+						<th>Permiso</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Role.Name</td>
+							<td>@item.SubModule.Description</td>
+							<td>@item.PermissionLevel.Description</td>
+							<td>
+
+									<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+										<i class="fa fa-edit"></i>
+										<span>Editar</span>
+									</button>
+									<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+										<i class="fa fa-trash"></i>
+										<span>Eliminar</span>
+									</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Permission" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" Permission="Permission" Roles="Roles" SubModules="SubModules" PermissionLevels="PermissionLevels" />
+</ModalForm>
+
+@code {
+	private Permission Permission = new Permission();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private Permission[]? ItemsList;
+
+	private SelectResource<Guid>[]? Roles;
+	private SelectResource<Guid>[]? SubModules;
+	private SelectResource<Guid>[]? PermissionLevels;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			await LoadSelects();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task LoadSelects()
+	{
+		SubModules = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/submodulos");
+		PermissionLevels = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/niveles-de-permiso");
+		Roles = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/roles");
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<Permission[]>(RouteConfig.Management.Security.PERMISSION_ROUTE);
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, Permission permission = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
+		Permission = permission ?? new Permission();
+		await Modal.OpenAsync();
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if (Permission.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(RouteConfig.Management.Security.PERMISSION_ROUTE, Permission);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(RouteConfig.Management.Security.PERMISSION_ROUTE + "/" + Permission.Id, Permission);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(Permission permission)
+	{
+		await Http.DeleteAsync(RouteConfig.Management.Security.PERMISSION_ROUTE + "/" + permission.Id);
+		await Load();
+    }
+}

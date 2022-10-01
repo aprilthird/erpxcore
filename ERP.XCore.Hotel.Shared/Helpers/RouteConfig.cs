@@ -9,7 +9,12 @@ namespace ERP.XCore.Hotel.Shared.Helpers
     public static class RouteConfig
     {
         public const string BASE_API_ROUTE = "/api";
-        
+
+        public static class Security
+        {
+            public const string SECURITY_ROUTE = BASE_API_ROUTE + "/seguridad";
+        }
+
         public static class Select
         {
             public const string SELECT_ROUTE = "/select";
@@ -62,6 +67,7 @@ namespace ERP.XCore.Hotel.Shared.Helpers
                 public const string SECURITY_ROUTE = MANAGEMENT_ROUTE + "/seguridad";
 
                 public const string USER_ROUTE = SECURITY_ROUTE + "/usuarios";
+                public const string PERMISSION_ROUTE = SECURITY_ROUTE + "/permisos";
             }
         }
     }

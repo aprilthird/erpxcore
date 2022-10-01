@@ -2,19 +2,25 @@
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Text.Json
+
 @inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
 		<h3>Tipo de Documento</h3>
+		@if(canEdit)
+		{
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
 			<i class="fa fa-add"></i>
 			<span>Agregar</span>
 		</button>
+		}
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-            @if(ItemsList == null)
+        @if(ItemsList == null)
 		{
 			<p><em>Cargando...</em></p>
 		}
@@ -41,6 +47,9 @@
 							<td>@item.ProvinceName (@item.ProvinceCode)</td>
 							<td>@item.DistrictName (@item.DistrictCode)</td>
 							<td>
+								@if(canEdit)
+								{
+									
 								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
@@ -49,6 +58,7 @@
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
+								}
 							</td>
 						</tr>
 					}
@@ -70,6 +80,9 @@
 	private string ModalTitle;
 	private Ubigeo[]? ItemsList;
 
+	private string subModule = "Ubigeo";
+	private bool canEdit;
+
 	public enum ModalType
 	{
 		New, Edit
@@ -79,12 +92,21 @@
 	{
 		try
 		{
+			await LoadPermissions();
 			await Load();
 		}
 		catch (AccessTokenNotAvailableException exception)
 		{
 			exception.Redirect();
 		}
+	}
+
+	public async Task LoadPermissions()
+	{
+		var permissionsStr = await localStorage.GetItemAsync<string>("permisos");
+		var permissions = JsonSerializer.Deserialize<Permission[]>(permissionsStr);
+		var permission = permissions.Where(x => x.SubModule.Description == subModule).FirstOrDefault();
+		var canEdit = permission?.PermissionLevel.Description == "Escritura";
 	}
 
 	public async Task Load()

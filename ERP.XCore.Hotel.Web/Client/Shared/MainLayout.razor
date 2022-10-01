@@ -1,10 +1,15 @@
 ﻿@inherits LayoutComponentBase
 
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Text.Json
 
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <!--begin::Theme mode setup on page load-->
 <!--end::Theme mode setup on page load-->
@@ -374,10 +379,20 @@
 													<span class="menu-title">Estado</span>
 												</span>
 											</a>
+											<a class="menu-item" href="/maestros/empresas/cliente">
+												<span class="menu-link">
+													<span class="menu-title">Cliente</span>
+												</span>
+											</a>
 											<span class="menu-heading fw-bold text-uppercase">Seguridad</span>
-											<a class="menu-item" href="/maestros/seguridad/usuarios">
+											<a class="menu-item" href="/maestros/seguridad/usuario">
 												<span class="menu-link">
 													<span class="menu-title">Cuenta Usuario</span>
+												</span>
+											</a>
+											<a class="menu-item" href="/maestros/seguridad/permiso">
+												<span class="menu-link">
+													<span class="menu-title">Permiso</span>
 												</span>
 											</a>
 										}
@@ -723,6 +738,13 @@
 				p = c.Claims.Where(x => x.Type == "prueba").Select(x => x.Value).FirstOrDefault();
 			}
 			Console.WriteLine(p);
+
+			var jso = new JsonSerializerOptions();
+			jso.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+			var permissions = await Http.GetFromJsonAsync<Permission[]>(RouteConfig.Security.SECURITY_ROUTE + "/permisos");
+			
+			var permissionsStr = JsonSerializer.Serialize(permissions, jso);
+			await localStorage.SetItemAsync("permisos", permissionsStr);
 		}
     }
 
