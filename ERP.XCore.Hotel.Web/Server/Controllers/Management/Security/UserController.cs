@@ -1,4 +1,5 @@
-﻿using ERP.XCore.Data.Context;
+﻿using ERP.XCore.Core.Helpers;
+using ERP.XCore.Data.Context;
 using ERP.XCore.Entities.Models;
 using ERP.XCore.Hotel.Shared.Helpers;
 using Microsoft.AspNetCore.Identity;
@@ -11,8 +12,8 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
     [Route(RouteConfig.Management.Security.USER_ROUTE)]
     public class UserController : BaseController
     {
-        public UserController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
-            : base(context, userManager)
+        public UserController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+            : base(context, userManager, roleManager)
         {
         }
 
@@ -22,13 +23,16 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
             var result = await _context.Users
                 .Select(x => new ApplicationUser()
                 {
+                    Id = x.Id,
                     Email = x.Email,
                     PhoneNumber = x.PhoneNumber,
+                    EmployeeId = x.EmployeeId,
                     Employee = new Employee
                     {
                         FirstName = x.Employee.FirstName,
                         LastName = x.Employee.LastName
-                    }
+                    },
+                    RoleId = x.UserRoles.Select(r => r.RoleId).FirstOrDefault(),
                 }).AsNoTracking().ToListAsync();
 
             return Ok(result);
@@ -43,7 +47,9 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
             var applicationUser = new ApplicationUser();
             Fill(ref applicationUser, model);
             await _userManager.CreateAsync(applicationUser, "XCore.2022");
-            await _context.SaveChangesAsync();
+            var role = await _roleManager.FindByIdAsync(model.RoleId.ToString());
+            await _userManager.AddToRoleAsync(applicationUser, role.Name);
+            //await _context.SaveChangesAsync();
             return Ok();
         }
 
@@ -53,13 +59,20 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var applicationUser = await _context.Users.FindAsync(id);
+            var applicationUser = await _context.Users
+                .Include(x => x.UserRoles)
+                .ThenInclude(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (applicationUser == null)
                 return NotFound();
 
             Fill(ref applicationUser, model);
-            await _context.SaveChangesAsync();
+            await _userManager.UpdateAsync(applicationUser);
+            var role = await _roleManager.FindByIdAsync(model.RoleId.ToString());
+            await _userManager.RemoveFromRolesAsync(applicationUser, applicationUser.UserRoles.Select(x => x.Role.Name));
+            await _userManager.AddToRoleAsync(applicationUser, role.Name);
+            //await _context.SaveChangesAsync();
             return Ok();
         }
 
@@ -82,7 +95,8 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
             entity.Email = model.Email;
             entity.PhoneNumber = model.PhoneNumber;
             entity.UserName = model.Email;
-            entity.StatusId = model.StatusId;
+            entity.RoleId = model.RoleId;
+            entity.StatusId = Constants.Status.ENABLED_ID;
             entity.EmailConfirmed = true;
         }
     }

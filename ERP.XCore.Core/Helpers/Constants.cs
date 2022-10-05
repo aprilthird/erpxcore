@@ -17,16 +17,16 @@ namespace ERP.XCore.Core.Helpers
         {
             public const string DEFAULT_ENTITY = "General";
 
-            public static Guid ENABLED_ID = Guid.Parse("2F610751-64FD-4A63-86DC-08DAA34B2B5B");
+            public static Guid ENABLED_ID = Guid.Parse("0B7945E8-7718-4692-C72E-08DAA6EB4C41");
 
-            public static Guid DISABLED_ID = Guid.Parse("83034020-65A0-48D8-86DD-08DAA34B2B5B");
+            public static Guid DISABLED_ID = Guid.Parse("2E72DFC0-9439-4AA0-C72F-08DAA6EB4C41");
         }
 
         public static class PermissionLevel
         {
-            public static Guid READING_ID = Guid.Parse("E3245CA6-17D9-42BB-A671-08DA9C06C7E9");
+            public static Guid READING_ID = Guid.Parse("C6BBA607-B515-44F3-6282-08DAA6EB4D62");
 
-            public static Guid WRITING_ID = Guid.Parse("14A541C3-C87B-4940-A672-08DA9C06C7E9");
+            public static Guid WRITING_ID = Guid.Parse("02342ED8-FC30-4E95-6283-08DAA6EB4D62");
         }
     }
 }
