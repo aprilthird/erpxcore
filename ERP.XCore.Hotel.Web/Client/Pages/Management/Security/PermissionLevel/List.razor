@@ -1,4 +1,4 @@
-﻿@page "/maestros/seguridad/niveles-de-permiso"
+﻿@page "/maestros/seguridad/nivel-permiso"
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
@@ -14,32 +14,39 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<PermissionLevel, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Descripción</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+            @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
-
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -54,7 +61,7 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private PermissionLevel[]? ItemsList;
-	private string searchString1 = "";
+
 	public enum ModalType
 	{
 		New, Edit
@@ -79,21 +86,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, PermissionLevel pl = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Nivel de Permiso";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		PermissionLevel = pl ?? new PermissionLevel();
 		await Modal.OpenAsync();
-	}
-		
-	private bool FilterFunc1(PermissionLevel per) => FilterFunc(per, searchString1);
-
-	private bool FilterFunc(PermissionLevel per, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (per.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		
-		return false;
 	}
 
 	public async Task SaveAsync()

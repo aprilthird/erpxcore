@@ -20,41 +20,51 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Ubigeo, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Nacionalidad</MudTh>
-						<MudTh>País</MudTh>
-						<MudTh>Departamento</MudTh>
-						<MudTh>Provincia</MudTh>
-						<MudTh>Distrito</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Citizenship</MudTd>
-							<MudTd>@context.CountryName</MudTd>
-							<MudTd>@context.DepartmentName (@context.DepartmentCode)</MudTd>
-							<MudTd>@context.ProvinceName (@context.ProvinceCode)</MudTd>
-							<MudTd>@context.DistrictName (@context.DistrictCode)</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Nacionalidad</th>
+						<th>País</th>
+						<th>Departamento</th>
+						<th>Provincia</th>
+						<th>Distrito</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Citizenship</td>
+							<td>@item.CountryName (@item.CountryCode)</td>
+							<td>@item.DepartmentName (@item.DepartmentCode)</td>
+							<td>@item.ProvinceName (@item.ProvinceCode)</td>
+							<td>@item.DistrictName (@item.DistrictCode)</td>
+							<td>
+								@if(canEdit)
+								{
+									
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
-
-
+								}
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -69,7 +79,7 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private Ubigeo[]? ItemsList;
-	private string searchString1 = "";
+
 	private string subModule = "Ubigeo";
 	private bool canEdit;
 
@@ -109,25 +119,6 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		Ubigeo = ubigeo ?? new Ubigeo();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(Ubigeo ubigeo) => FilterFunc(ubigeo, searchString1);
-
-	private bool FilterFunc(Ubigeo ubigeo, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (ubigeo.Citizenship.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (ubigeo.CountryName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (ubigeo.DepartmentName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (ubigeo.ProvinceName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (ubigeo.DistrictName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		return false;
 	}
 
 	public async Task SaveAsync()

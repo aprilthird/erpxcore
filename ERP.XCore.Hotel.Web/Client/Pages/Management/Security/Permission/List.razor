@@ -19,37 +19,44 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Rol</th>
+						<th>SubMódulo</th>
+						<th>Permiso</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Role.Name</td>
+							<td>@item.SubModule.Description</td>
+							<td>@item.PermissionLevel.Description</td>
+							<td>
 
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Permission, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Rol</MudTh>
-						<MudTh>SubMódulo</MudTh>
-						<MudTh>Permiso</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Role.Name</MudTd>
-							<MudTd>@context.SubModule.Description</MudTd>
-							<MudTd>@context.PermissionLevel.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
-
-
+									<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+										<i class="fa fa-edit"></i>
+										<span>Editar</span>
+									</button>
+									<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+										<i class="fa fa-trash"></i>
+										<span>Eliminar</span>
+									</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -64,7 +71,7 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private Permission[]? ItemsList;
-	private string searchString1 = "";
+
 	private SelectResource<Guid>[]? Roles;
 	private SelectResource<Guid>[]? SubModules;
 	private SelectResource<Guid>[]? PermissionLevels;
@@ -101,24 +108,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Permission permission = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Permiso";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		Permission = permission ?? new Permission();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(Permission permission) => FilterFunc(permission, searchString1);
-
-	private bool FilterFunc(Permission permission, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (!string.IsNullOrWhiteSpace(permission.Role.Name) && permission.Role.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (!string.IsNullOrWhiteSpace(permission.PermissionLevel.Description) &&permission.PermissionLevel.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (!string.IsNullOrWhiteSpace(permission.SubModule.Description) && permission.SubModule.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		return false;
 	}
 
 	public async Task SaveAsync()

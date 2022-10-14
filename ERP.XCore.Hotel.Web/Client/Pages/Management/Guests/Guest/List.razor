@@ -19,36 +19,43 @@
 	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
-
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Guest, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Nombres</MudTh>
-						<MudTh>Apellidos</MudTh>
-						<MudTh>Estado</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.FirstName</MudTd>
-							<MudTd>@context.LastName</MudTd>
-							<MudTd>@context.Status.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Nombres</th>
+						<th>Apellidos</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.FirstName</td>
+							<td>@item.LastName</td>
+							<td>@item.Status.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
-
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -65,7 +72,6 @@
 	private Guest[]? ItemsList;
 	private SelectResource<Guid>[]? DocumentTypes;
 	private SelectResource<Guid>[]? Ubigeos;
-	private string searchString1 = "";
 	private Guid? FilterType;
 
 	public enum ModalType
@@ -102,22 +108,6 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Huésped";
 		Guest = guest ?? new Guest();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(Guest guest) => FilterFunc(guest, searchString1);
-
-	private bool FilterFunc(Guest guest, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (guest.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (guest.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (!string.IsNullOrWhiteSpace(guest.Status.Description) && guest.Status.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		
-		return false;
 	}
 
 	public async Task SaveAsync()

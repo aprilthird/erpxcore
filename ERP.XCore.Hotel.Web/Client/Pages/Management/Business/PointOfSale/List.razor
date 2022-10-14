@@ -18,36 +18,45 @@
 	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
-
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<PointOfSale, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-						<MudTh>Descrípción</MudTh>
-						<MudTh>Impresora</MudTh>
-						<MudTh>Sede</MudTh>
-						<MudTh>Estado</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-							<MudTd>@context.Description</MudTd>
-							<MudTd>@context.TicketPrinter</MudTd>
-							<MudTd>@context.CompanyHeadquarter.Description</MudTd>
-							<MudTd>@context.Status.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Impresora</th>
+						<th>Sede</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>@item.TicketPrinter</td>
+							<td>@item.CompanyHeadquarter?.Description</td>
+							<td>@item.Status?.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
-
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -63,7 +72,6 @@
 	private string ModalTitle;
 	private PointOfSale[]? ItemsList;
 	private SelectResource<Guid>[]? CompanyHeadquarters;
-	private string searchString1 = "";
 
 	public enum ModalType
 	{
@@ -98,23 +106,6 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Punto de Venta";
 		PointOfSale = pointOfSale ?? new PointOfSale();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(PointOfSale pos) => FilterFunc(pos, searchString1);
-
-	private bool FilterFunc(PointOfSale pos, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (pos.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-
-		if (!string.IsNullOrWhiteSpace(pos.TicketPrinter) 
-		&& pos.TicketPrinter.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (pos.CompanyHeadquarter.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		return false;
 	}
 
 	public async Task SaveAsync()

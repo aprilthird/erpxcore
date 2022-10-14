@@ -10,9 +10,6 @@
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
 		<h3>Estado</h3>
-
-		
-
 		@if (canEdit)
 		{
 		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
@@ -23,34 +20,46 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-<MudTable Items="@StatusList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Status, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Descripción</MudTh>
-						<MudTh>Entidad</MudTh>
-						<MudTh>Observación</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Description</MudTd>
-							<MudTd>@context.Entity</MudTd>
-							<MudTd>@context.Observation</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+            @if(StatusList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Entidad</th>
+						<th>Observación</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in StatusList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>@item.Entity</td>
+							<td>@item.Observation</td>
+							<td>
+									@if (canEdit)
+									{
+											<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+											<i class="fa fa-edit"></i>
+											<span>Editar</span>
+										</button>
+											<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+												<i class="fa fa-trash"></i>
+												<span>Eliminar</span>
+												</button>
+								}
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -65,7 +74,7 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private Status[]? StatusList;
-	private string searchString1 = "";
+
 	private string subModule = "Estado";
 	private bool canEdit;
 
@@ -105,21 +114,6 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		Status = status ?? new Status();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(Status status) => FilterFunc(status, searchString1);
-
-	private bool FilterFunc(Status status, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (status.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (status.Entity.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (!string.IsNullOrWhiteSpace(status.Observation) &&status.Observation.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		return false;
 	}
 
 	public async Task SaveAsync()

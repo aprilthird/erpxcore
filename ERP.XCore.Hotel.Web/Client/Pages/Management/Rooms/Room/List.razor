@@ -33,37 +33,43 @@
 	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
-
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Room, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Nombre</MudTh>
-						<MudTh>Tipo de Habitación</MudTh>
-						<MudTh>Estado</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Description</MudTd>
-							<MudTd>@context.RoomType.Description</MudTd>
-							<MudTd>@context.RoomStatus.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Nombre</th>
+						<th>Tipo de Habitacion</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>@item.RoomType.Description</td>
+							<td>@item.RoomStatus.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
-
-
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -78,7 +84,6 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private Room[]? ItemsList;
-	private string searchString1 = "";
 	private SelectResource<Guid>[]? RoomTypes;
 	private SelectResource<Guid>[]? RoomStatus;
 	private Guid? FilterType;
@@ -117,22 +122,6 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Habitación";
 		Room = room ?? new Room();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(Room room) => FilterFunc(room, searchString1);
-
-	private bool FilterFunc(Room room, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (room.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (!string.IsNullOrWhiteSpace(room.RoomType.Description) &&room.RoomType.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (!string.IsNullOrWhiteSpace(room.RoomStatus.Description) && room.RoomStatus.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		
-		return false;
 	}
 
 	public async Task SaveAsync()

@@ -15,39 +15,45 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Module, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Descripcion</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+            @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Descripción</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
-
-
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Module" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <ERP.XCore.Hotel.Web.Client.Pages.Management.Security.Module.Fields @ref="Fields" Module="Module"/>
+    <ERP.XCore.Hotel.Web.Client.Pages.Management.Security.Module.Fields @ref="Fields" Module="Module" SubModules="SubModules"/>
 </ModalForm>
 
 @code {
@@ -55,7 +61,6 @@
 	private ModalForm Modal;
 	private Fields Fields;
 	private string ModalTitle;
-	private string searchString1 = "";
 	private Module[]? ItemsList;
 
 
@@ -83,21 +88,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Module m = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Modulo";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		Module = m ?? new Module();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(Module module) => FilterFunc(module, searchString1);
-
-	private bool FilterFunc(Module module, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (module.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		
-		return false;
 	}
 
 	public async Task SaveAsync()

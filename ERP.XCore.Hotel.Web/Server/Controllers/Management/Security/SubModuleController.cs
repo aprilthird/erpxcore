@@ -22,7 +22,6 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
                 .OrderByDescending(x => x.CreatedAt)
                 .Select(x => new SubModule
                 {
-                    Id = x.Id,
                     Description = x.Description,
                     ModuleId = x.ModuleId,
                     Module = new Module

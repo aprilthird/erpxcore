@@ -17,30 +17,39 @@
 	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<RoomType, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Nombre</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+        @if(ItemsList == null)
+		{
+			<p><em>Cargando...</em></p>
+		}
+		else
+		{
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr class="fw-bold">
+						<th>Nombre</th>
+
+					</tr>
+				</thead>
+				<tbody>
+					@foreach(var item in ItemsList)
+					{
+						<tr>
+							<td>@item.Description</td>
+							<td>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		}
 		</div>
 	</div>
 </div>
@@ -54,7 +63,6 @@
 	private ModalForm Modal;
 	private Fields Fields;
 	private string ModalTitle;
-	private string searchString1 = "";
 	private RoomType[]? ItemsList;
 
 	public enum ModalType
@@ -86,18 +94,6 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Tipo de cuarto";
 		RoomType = rt ?? new RoomType();
 		await Modal.OpenAsync();
-	}
-
-	private bool FilterFunc1(RoomType room) => FilterFunc(room, searchString1);
-
-	private bool FilterFunc(RoomType room, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (room.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		
-		return false;
 	}
 
 	public async Task SaveAsync()
