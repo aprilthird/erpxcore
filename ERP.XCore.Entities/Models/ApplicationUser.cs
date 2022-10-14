@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,12 @@ namespace ERP.XCore.Entities.Models
 
         public Status? Status { get; set; }
 
-        public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
-        public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
-        public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
-        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
+        [NotMapped]
+        public Guid RoleId { get; set; }
+
+        public virtual ICollection<ApplicationUserClaim>? Claims { get; set; }
+        public virtual ICollection<ApplicationUserLogin>? Logins { get; set; }
+        public virtual ICollection<ApplicationUserToken>? Tokens { get; set; }
+        public virtual ICollection<ApplicationUserRole>? UserRoles { get; set; }
     }
 }
