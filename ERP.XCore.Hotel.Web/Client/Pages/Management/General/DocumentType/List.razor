@@ -20,44 +20,34 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-            @if(ItemsList == null)
-		{
-			<p><em>Cargando...</em></p>
-		}
-		else
-		{
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr class="fw-bold">
-						<th>Descripción</th>
-						<th>Abreviación</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach(var item in ItemsList)
-					{
-						<tr>
-							<td>@item.Description</td>
-							<td>@item.Abbreviation</td>
-							<td>
-								@if(canEdit)
-								{
-										<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
-											<i class="fa fa-edit"></i>
-											<span>Editar</span>
-										</button>
-										<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
-											<i class="fa fa-trash"></i>
-											<span>Eliminar</span>
-										</button>
-								}
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		}
+
+			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<DocumentType, bool>(FilterFunc1)">
+				<ToolBarContent>
+					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+				</ToolBarContent>
+				<HeaderContent>
+				
+						<MudTh>Descripción</MudTh>
+						<MudTh>Abreviación</MudTh>
+						<MudTh>Acciones</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+				
+							<MudTd>@context.Description</MudTd>
+							<MudTd>@context.Abbreviation</MudTd>
+							<MudTd>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+									<i class="fa fa-edit"></i>
+									<span>Editar</span>
+								</button>
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+									<i class="fa fa-trash"></i>
+									<span>Eliminar</span>
+								</button>
+							</MudTd>
+			</RowTemplate>
+		</MudTable>
+
 		</div>
 	</div>
 </div>
@@ -72,7 +62,7 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private DocumentType[]? ItemsList;
-
+	private string searchString1 = "";
 	private string subModule = "Tipo Documento";
 	private bool canEdit;
 
@@ -113,6 +103,19 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		DocumentType = documentType ?? new DocumentType();
 		await Modal.OpenAsync();
+	}
+
+	private bool FilterFunc1(DocumentType doc) => FilterFunc(doc, searchString1);
+
+	private bool FilterFunc(DocumentType doc, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (doc.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (doc.Abbreviation.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		return false;
 	}
 
 	public async Task SaveAsync()
