@@ -47,7 +47,25 @@
         </div>
     </div>
 </div>
-      
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <InputText @bind-Value="ApplicationUser.Password" id="password" class="form-control" placeholder="Contraseña" />
+            <ValidationMessage For="() => ApplicationUser.Password" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="confirm_password">Repetir Contraseña</label>
+            <InputText @bind-Value="ApplicationUser.PasswordConfirm" id="confirm_password" class="form-control" placeholder="Repetir Contraseña" />
+            <ValidationMessage For="() => ApplicationUser.PasswordConfirm" />
+        </div>
+    </div>
+</div>
+
 @code {
     [Parameter]
     public ApplicationUser ApplicationUser { get; set; }

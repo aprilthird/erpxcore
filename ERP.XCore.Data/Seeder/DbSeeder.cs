@@ -1,4 +1,5 @@
-﻿using ERP.XCore.Data.Context;
+﻿using ERP.XCore.Core.Helpers;
+using ERP.XCore.Data.Context;
 using ERP.XCore.Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -215,8 +216,10 @@ namespace ERP.XCore.Data.Seeder
             {
                 var permissionLevels = new List<PermissionLevel>
                 {
-                    new PermissionLevel { Description = "Lectura" },
-                    new PermissionLevel { Description = "Escritura" },
+                    new PermissionLevel { Description = Constants.Permission.CREATE },
+                    new PermissionLevel { Description = Constants.Permission.READ },
+                    new PermissionLevel { Description = Constants.Permission.UPDATE },
+                    new PermissionLevel { Description = Constants.Permission.DELETE },
                 };
 
                 await context.PermissionLevels.AddRangeAsync(permissionLevels);
@@ -241,9 +244,9 @@ namespace ERP.XCore.Data.Seeder
                 var modules = await context.Modules.ToListAsync();
                 var subModules = new List<SubModule>
                 {
-                    new SubModule { Description = "Tipo Documento", ModuleId = modules[0].Id },
-                    new SubModule { Description = "Ubigeo", ModuleId = modules[0].Id },
-                    new SubModule { Description = "Estado", ModuleId = modules[0].Id },
+                    new SubModule { Description = "Tipo Documento", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/tipo-de-documento" },
+                    new SubModule { Description = "Ubigeo", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/ubigeo" },
+                    new SubModule { Description = "Estado", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/estado" },
                 };
 
                 await context.SubModules.AddRangeAsync(subModules);
@@ -259,8 +262,13 @@ namespace ERP.XCore.Data.Seeder
                 var permissions = new List<Permission>
                 {
                     new Permission { RoleId = role.Id, SubModuleId = subModules[0].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[0].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[0].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[0].Id, PermissionLevelId = permissionLevels[3].Id, },
                     new Permission { RoleId = role.Id, SubModuleId = subModules[1].Id, PermissionLevelId = permissionLevels[0].Id, },
-                    new Permission { RoleId = role.Id, SubModuleId = subModules[2].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[1].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[1].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[2].Id, PermissionLevelId = permissionLevels[0].Id, },
                 };
 
                 await context.Permissions.AddRangeAsync(permissions);

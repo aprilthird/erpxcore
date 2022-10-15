@@ -300,17 +300,31 @@
 												</span>
 												<!--end:Menu link-->
 											</div>
-											<!--end:Menu item-->
-										} 
-										else 
+									<!--end:Menu item-->
+								} 
+								else 
+								{
+									<style>
+										.aside-menu .menu-item .menu-link {
+										padding-top: 0.45rem;
+										padding-bottom: 0.45rem;
+										}	
+									</style>
+									@foreach (var menu in Modules)
+									{
+										<span class="menu-heading fw-bold text-uppercase">@menu.Description</span>
+										@foreach(var submenu in menu.SubModules)
 										{
-											<style>
-												.aside-menu .menu-item .menu-link {
-													padding-top: 0.45rem;
-													padding-bottom: 0.45rem;
-												}	
-											</style>
-											<span class="menu-heading fw-bold text-uppercase">Empresas</span>
+											<a class="menu-item" href="@submenu.RouteUrl">
+												<span class="menu-link">
+													<span class="menu-title">@submenu.Description</span>
+												</span>
+											</a>
+										}
+									}
+								}
+
+											@*<span class="menu-heading fw-bold text-uppercase">Empresas</span>
 											<a class="menu-item" href="/maestros/empresas/empresa">
 												<span class="menu-link">
 													<span class="menu-title">Empresa</span>
@@ -414,7 +428,7 @@
 												<span class="menu-link">
 													<span class="menu-title">SubMódulo</span>
 												</span>
-											</a>
+											</a>*@
 										}
 									</Authorized>
 								</AuthorizeView>
@@ -742,6 +756,10 @@
 	[Inject]
 	NavigationManager NavigationManager { get; set; }
 
+	private Permission[] Permissions { get; set; }
+
+	private List<Module> Modules { get; set; }
+
 	protected async override Task OnInitializedAsync()
 	{
 		base.OnInitialized();
@@ -761,9 +779,22 @@
 
 			var jso = new JsonSerializerOptions();
 			jso.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-			var permissions = await Http.GetFromJsonAsync<Permission[]>(RouteConfig.Security.SECURITY_ROUTE + "/permisos");
-			
-			var permissionsStr = JsonSerializer.Serialize(permissions, jso);
+			Permissions = await Http.GetFromJsonAsync<Permission[]>(RouteConfig.Security.SECURITY_ROUTE + "/permisos");
+
+			Modules = Permissions
+				.DistinctBy(x => x.SubModuleId)
+				.GroupBy(x => x.SubModule.Module)
+				.Select(x => new Module
+					{
+						Description = x.Key.Description,
+						SubModules = x.Select(s => new SubModule
+						{
+							RouteUrl = s.SubModule.RouteUrl,
+							Description = s.SubModule.Description,
+						}).ToList()
+					}).ToList();
+
+			var permissionsStr = JsonSerializer.Serialize(Permissions, jso);
 			await localStorage.SetItemAsync("permisos", permissionsStr);
 		}
     }

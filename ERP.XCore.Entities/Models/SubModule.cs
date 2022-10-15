@@ -16,5 +16,7 @@ namespace ERP.XCore.Entities.Models
         public Guid ModuleId { get; set; }
 
         public Module? Module { get; set; }
+
+        public string RouteUrl { get; set; }
     }
 }

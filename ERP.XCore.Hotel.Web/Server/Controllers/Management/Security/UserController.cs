@@ -46,7 +46,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
 
             var applicationUser = new ApplicationUser();
             Fill(ref applicationUser, model);
-            await _userManager.CreateAsync(applicationUser, "XCore.2022");
+            await _userManager.CreateAsync(applicationUser, model.Password);
             var role = await _roleManager.FindByIdAsync(model.RoleId.ToString());
             await _userManager.AddToRoleAsync(applicationUser, role.Name);
             //await _context.SaveChangesAsync();

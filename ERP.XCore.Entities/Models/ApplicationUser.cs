@@ -21,6 +21,12 @@ namespace ERP.XCore.Entities.Models
         [NotMapped]
         public Guid RoleId { get; set; }
 
+        [NotMapped]
+        public string Password { get; set; }
+
+        [NotMapped]
+        public string PasswordConfirm { get; set; }
+
         public virtual ICollection<ApplicationUserClaim>? Claims { get; set; }
         public virtual ICollection<ApplicationUserLogin>? Logins { get; set; }
         public virtual ICollection<ApplicationUserToken>? Tokens { get; set; }
