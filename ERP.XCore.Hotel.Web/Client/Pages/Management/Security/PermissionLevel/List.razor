@@ -1,4 +1,4 @@
-﻿@page "/maestros/seguridad/niveles-de-permiso"
+﻿@page "/maestros/seguridad/nivel-permiso"
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
@@ -86,7 +86,7 @@
 
 	public async Task ShowModalAsync(ModalType modalType, PermissionLevel pl = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Nivel de Permiso";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		PermissionLevel = pl ?? new PermissionLevel();
 		await Modal.OpenAsync();
 	}

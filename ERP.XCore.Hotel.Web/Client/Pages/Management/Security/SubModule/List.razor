@@ -97,7 +97,7 @@
 
 	public async Task ShowModalAsync(ModalType modalType, SubModule sm = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Sub Modulo";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		SubModule = sm ?? new SubModule();
 		await Modal.OpenAsync();
 	}

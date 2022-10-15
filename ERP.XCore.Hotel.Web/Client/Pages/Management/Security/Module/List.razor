@@ -53,7 +53,7 @@
 </div>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Module" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <ERP.XCore.Hotel.Web.Client.Pages.Management.Security.Module.Fields @ref="Fields" Module="Module"/>
+    <ERP.XCore.Hotel.Web.Client.Pages.Management.Security.Module.Fields @ref="Fields" Module="Module" SubModules="SubModules"/>
 </ModalForm>
 
 @code {
@@ -88,7 +88,7 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Module m = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Modulo";
+		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
 		Module = m ?? new Module();
 		await Modal.OpenAsync();
 	}
