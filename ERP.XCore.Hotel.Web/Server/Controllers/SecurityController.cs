@@ -44,7 +44,13 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
                         {
                             ModuleId = x.SubModule.ModuleId,
                             Description = x.SubModule.Description,
+                            RouteUrl = x.SubModule.RouteUrl,    
+                            Module = new Module
+                            {
+                                Description = x.SubModule.Module.Description
+                            }
                         },
+
                         PermissionLevel = new PermissionLevel
                         {
                             Description = x.PermissionLevel.Description,
