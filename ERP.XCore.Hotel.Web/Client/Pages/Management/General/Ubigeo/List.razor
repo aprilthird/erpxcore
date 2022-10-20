@@ -10,12 +10,12 @@
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
 		<h3>Tipo de Documento</h3>
-		@if(canEdit)
+		@if(canAdd)
 		{
-		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-			<i class="fa fa-add"></i>
-			<span>Agregar</span>
-		</button>
+			<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+				<i class="fa fa-add"></i>
+				<span>Agregar</span>
+			</button>
 		}
 	</div>
 	<div class="col-md-12">
@@ -49,15 +49,17 @@
 							<td>
 								@if(canEdit)
 								{
-									
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
+									<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+										<i class="fa fa-edit"></i>
+										<span>Editar</span>
+									</button>
+								}
+								@if(canDelete)
+								{
+									<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+										<i class="fa fa-trash"></i>
+										<span>Eliminar</span>
+									</button>
 								}
 							</td>
 						</tr>
@@ -82,6 +84,8 @@
 
 	private string subModule = "Ubigeo";
 	private bool canEdit;
+	private bool canAdd;
+	private bool canDelete;
 
 	public enum ModalType
 	{
@@ -106,7 +110,10 @@
 		var permissionsStr = await localStorage.GetItemAsync<string>("permisos");
 		var permissions = JsonSerializer.Deserialize<Permission[]>(permissionsStr);
 		var permission = permissions.Where(x => x.SubModule.Description == subModule).FirstOrDefault();
-		canEdit = permission?.PermissionLevel.Description == "Escritura";
+		canAdd = permission?.PermissionLevel.Description == ERP.XCore.Core.Helpers.Constants.Permission.CREATE;
+		canEdit = permission?.PermissionLevel.Description == ERP.XCore.Core.Helpers.Constants.Permission.UPDATE;
+		canDelete = permission?.PermissionLevel.Description == ERP.XCore.Core.Helpers.Constants.Permission.DELETE;
+		StateHasChanged();
 	}
 
 	public async Task Load()

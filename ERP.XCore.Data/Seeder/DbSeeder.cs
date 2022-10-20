@@ -208,7 +208,7 @@ namespace ERP.XCore.Data.Seeder
 
             if(!userManager.GetUsersInRoleAsync("Prueba").Result.Any())
             {
-                var user = await userManager.FindByEmailAsync("sysadmin@erpxcore.com");
+                var user = await userManager.FindByEmailAsync("nuevousuario@erpxcore.com");
                 await userManager.AddToRoleAsync(user, "Prueba");
             }
 
