@@ -23,6 +23,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
                 .Select(x => new SubModule
                 {
                     Description = x.Description,
+                    RouteUrl = x.RouteUrl,
                     ModuleId = x.ModuleId,
                     Module = new Module
                     {
@@ -78,6 +79,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
         private void Fill(ref SubModule entity, SubModule model)
         {
             entity.Description = model.Description;
+            entity.RouteUrl = model.RouteUrl;
             entity.ModuleId = model.ModuleId;
         }
     }

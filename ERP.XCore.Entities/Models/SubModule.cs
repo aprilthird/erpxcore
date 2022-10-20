@@ -17,6 +17,6 @@ namespace ERP.XCore.Entities.Models
 
         public Module? Module { get; set; }
 
-        public string RouteUrl { get; set; }
+        public string? RouteUrl { get; set; }
     }
 }
