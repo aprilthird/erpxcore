@@ -18,43 +18,37 @@
 	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
-        @if(ItemsList == null)
-		{
-			<p><em>Cargando...</em></p>
-		}
-		else
-		{
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr class="fw-bold">
-						<th>Código</th>
-						<th>Dirección</th>
-						<th>Estado</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach(var item in ItemsList)
-					{
-						<tr>
-							<td>@item.Code</td>
-							<td>@item.Address</td>
-							<td>@item.Status.Description</td>
-							<td>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+
+	
+			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Company, bool>(FilterFunc1)">
+				<ToolBarContent>
+					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+				</ToolBarContent>
+				<HeaderContent>
+						<MudTh>Codigo</MudTh>
+						<MudTh>Dirección</MudTh>
+						<MudTh>Estado</MudTh>
+						<MudTh>Acciones</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+							<MudTd>@context.Code</MudTd>
+							<MudTd>@context.Address</MudTd>
+							<MudTd>@context.Status.Description</MudTd>
+							<MudTd>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		}
+							</MudTd>
+			</RowTemplate>
+		</MudTable>
+
+	
+		
 		</div>
 	</div>
 </div>
@@ -69,7 +63,7 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private Company[]? ItemsList;
-
+	private string searchString1 = "";
 	public enum ModalType
 	{
 		New, Edit
@@ -97,6 +91,20 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Empresa";
 		Company = company ?? new Company();
 		await Modal.OpenAsync();
+	}
+
+	private bool FilterFunc1(Company company) => FilterFunc(company, searchString1);
+
+	private bool FilterFunc(Company company, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (company.Code.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (company.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+
+		return false;
 	}
 
 	public async Task SaveAsync()
