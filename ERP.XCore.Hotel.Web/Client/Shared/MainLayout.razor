@@ -277,54 +277,30 @@
 					<div class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500 ms-5" style="font-size:0.75rem !important;" id="#kt_aside_menu" data-kt-menu="true">
 						<AuthorizeView>
 									<Authorized>
-										@if(context.User.Identity.Name.Contains("nuevo"))
-										{
-											<!--begin:Menu item-->
-											<div data-kt-menu-trigger="click" class="menu-item here show menu-accordion">
-												<!--begin:Menu link-->
-												<span class="menu-link">
-													<span class="menu-icon">
-														<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-														<span class="svg-icon svg-icon-2">
-															<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																<rect x="2" y="2" width="9" height="9" rx="2" fill="currentColor" />
-																<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="currentColor" />
-																<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="currentColor" />
-																<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="currentColor" />
-															</svg>
-														</span>
-														<!--end::Svg Icon-->
-													</span>
-													<span class="menu-title">Modulo 3</span>
-													<span class="menu-arrow"></span>
-												</span>
-												<!--end:Menu link-->
-											</div>
-									<!--end:Menu item-->
-								} 
-								else 
-								{
-									<style>
-										.aside-menu .menu-item .menu-link {
-										padding-top: 0.45rem;
-										padding-bottom: 0.45rem;
-										}	
-									</style>
-									@foreach (var menu in Modules)
+										@if(!context.User.Identity.Name.Contains("sysadmin"))
 									{
-										<span class="menu-heading fw-bold text-uppercase">@menu.Description</span>
-										@foreach(var submenu in menu.SubModules)
+										<style>
+											.aside-menu .menu-item .menu-link {
+												padding-top: 0.45rem;
+												padding-bottom: 0.45rem;
+											}	
+										</style>
+										@foreach (var menu in Modules)
 										{
-											<a class="menu-item" href="@submenu.RouteUrl">
-												<span class="menu-link">
-													<span class="menu-title">@submenu.Description</span>
-												</span>
-											</a>
+											<span class="menu-heading fw-bold text-uppercase">@menu.Description</span>
+											@foreach(var submenu in menu.SubModules)
+											{
+												<a class="menu-item" href="@submenu.RouteUrl">
+													<span class="menu-link">
+														<span class="menu-title">@submenu.Description</span>
+													</span>
+												</a>
+											}
 										}
 									}
-								}
-
-											@*<span class="menu-heading fw-bold text-uppercase">Empresas</span>
+									else
+									{
+										<span class="menu-heading fw-bold text-uppercase">Empresas</span>
 											<a class="menu-item" href="/maestros/empresas/empresa">
 												<span class="menu-link">
 													<span class="menu-title">Empresa</span>
@@ -423,8 +399,9 @@
 												<span class="menu-link">
 													<span class="menu-title">SubMódulo</span>
 												</span>
-											</a>*@
-										}
+											</a>
+										
+									}
 									</Authorized>
 								</AuthorizeView>
 						
@@ -755,10 +732,13 @@
 
 	private List<Module> Modules { get; set; }
 
+	private bool IsAdmin { get; set; }
+
 	protected async override Task OnInitializedAsync()
 	{
 		base.OnInitialized();
 		var user = (await AuthStat).User;
+		IsAdmin = user.Identity.Name == "sysadmin@erpxcore.com";
 		if(!user.Identity.IsAuthenticated)
 		{
 			NavigationManager.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}");
