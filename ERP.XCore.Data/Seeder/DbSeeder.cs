@@ -232,6 +232,8 @@ namespace ERP.XCore.Data.Seeder
                 {
                     new Module { Description = "Generales" },
                     new Module { Description = "Empresas" },
+                    new Module { Description = "Huespedes" },
+                    new Module { Description = "Habitaciones" },
                     new Module { Description = "Seguridad" },
                 };
 
@@ -244,9 +246,28 @@ namespace ERP.XCore.Data.Seeder
                 var modules = await context.Modules.ToListAsync();
                 var subModules = new List<SubModule>
                 {
+
+                    
                     new SubModule { Description = "Tipo Documento", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/tipo-de-documento" },
                     new SubModule { Description = "Ubigeo", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/ubigeo" },
                     new SubModule { Description = "Estado", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/estado" },
+                    new SubModule { Description = "Empresa", ModuleId = modules[1].Id, RouteUrl = "/maestros/empresas/empresa" },
+                    new SubModule { Description = "Sede", ModuleId = modules[1].Id, RouteUrl = "/maestros/empresas/sede" },
+                    new SubModule { Description = "POS", ModuleId = modules[1].Id, RouteUrl = "/maestros/empresas/pos" },
+                    new SubModule { Description = "Colaborador", ModuleId = modules[1].Id, RouteUrl = "/maestros/empresas/colaborador" },
+                    new SubModule { Description = "Area", ModuleId = modules[1].Id, RouteUrl = "/maestros/empresas/area" },
+                    new SubModule { Description = "Cargo", ModuleId = modules[1].Id, RouteUrl = "/maestros/empresas/cargo" },
+                    new SubModule { Description = "Cliente", ModuleId = modules[1].Id, RouteUrl = "/maestros/empresas/cliente" },
+                    new SubModule { Description = "Huésped", ModuleId = modules[2].Id, RouteUrl = "/maestros/huespedes/huesped" },
+                    new SubModule { Description = "Tipo Habitación", ModuleId = modules[3].Id, RouteUrl = "/maestros/habitaciones/tipo-de-habitacion" },
+                    new SubModule { Description = "Estado Habitación", ModuleId = modules[3].Id, RouteUrl = "/maestros/habitaciones/estado-habitacion" },
+                    new SubModule { Description = "Habitación", ModuleId = modules[3].Id, RouteUrl = "/maestros/habitaciones/habitacion" },
+                    new SubModule { Description = "Cuenta Usuario", ModuleId = modules[4].Id, RouteUrl = "/maestros/seguridad/usuario" },
+                    new SubModule { Description = "Permiso", ModuleId = modules[4].Id, RouteUrl = "/maestros/seguridad/permiso" },
+                    new SubModule { Description = "Perfil", ModuleId = modules[4].Id, RouteUrl = "/maestros/seguridad/rol" },
+                    new SubModule { Description = "Módulo", ModuleId = modules[4].Id, RouteUrl = "/maestros/seguridad/modulo" },
+                    new SubModule { Description = "SubMódulo", ModuleId = modules[4].Id, RouteUrl = "/maestros/seguridad/submodulo" },
+
                 };
 
                 await context.SubModules.AddRangeAsync(subModules);
@@ -269,6 +290,70 @@ namespace ERP.XCore.Data.Seeder
                     new Permission { RoleId = role.Id, SubModuleId = subModules[1].Id, PermissionLevelId = permissionLevels[1].Id, },
                     new Permission { RoleId = role.Id, SubModuleId = subModules[1].Id, PermissionLevelId = permissionLevels[2].Id, },
                     new Permission { RoleId = role.Id, SubModuleId = subModules[2].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[3].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[3].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[3].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[3].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[4].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[4].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[4].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[4].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[5].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[5].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[5].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[5].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[6].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[6].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[6].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[6].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[7].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[7].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[7].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[7].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[8].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[8].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[8].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[8].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[9].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[9].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[9].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[9].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[10].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[10].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[10].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[10].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[11].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[11].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[11].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[11].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[12].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[12].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[12].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[12].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[13].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[13].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[13].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[13].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[14].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[14].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[14].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[14].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[15].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[15].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[15].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[15].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[16].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[16].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[16].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[16].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[17].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[17].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[17].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[17].Id, PermissionLevelId = permissionLevels[3].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[18].Id, PermissionLevelId = permissionLevels[0].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[18].Id, PermissionLevelId = permissionLevels[1].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[18].Id, PermissionLevelId = permissionLevels[2].Id, },
+                    new Permission { RoleId = role.Id, SubModuleId = subModules[18].Id, PermissionLevelId = permissionLevels[3].Id, },
                 };
 
                 await context.Permissions.AddRangeAsync(permissions);
@@ -278,3 +363,4 @@ namespace ERP.XCore.Data.Seeder
         }
     }
 }
+
