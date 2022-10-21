@@ -52,7 +52,7 @@
 </div>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="ApplicationUser" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" ApplicationUser="ApplicationUser" Employees="Employees" />
+    <Fields @ref="Fields" ApplicationUser="ApplicationUser" Employees="Employees" Roles="Roles" />
 </ModalForm>
 
 @code {
@@ -63,6 +63,7 @@
 	private ApplicationUser[]? ItemsList;
 	private string searchString1 = "";
 	private SelectResource<Guid>[]? Employees;
+	private SelectResource<Guid>[]? Roles;
 
 	public enum ModalType
 	{
@@ -90,6 +91,7 @@
 	public async Task LoadSelects()
 	{
 		Employees = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empleados");
+		Roles = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/roles");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, ApplicationUser applicationUser = null)

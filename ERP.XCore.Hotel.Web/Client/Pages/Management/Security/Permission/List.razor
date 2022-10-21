@@ -9,17 +9,18 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 <div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Permiso</h3>
-
-		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-			<i class="fa fa-add"></i>
-			<span>Agregar</span>
-		</button>
-	</div>
-	<div class="col-md-12">
+<div class="d-flex justify-content-between">
+	<h3>Permiso</h3>
+	<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+		<i class="fa fa-add"></i>
+		<span>Agregar</span>
+	</button>
+</div>
+<div class="col-md-12" style="
+      height: 600px;
+      overflow: scroll;
+    ">
 		<div class="table-responsive">
-
 			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Permission, bool>(FilterFunc1)">
 				<ToolBarContent>
 					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -53,7 +54,6 @@
 		</div>
 	</div>
 </div>
-
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Permission" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" Permission="Permission" Roles="Roles" SubModules="SubModules" PermissionLevels="PermissionLevels" />
 </ModalForm>

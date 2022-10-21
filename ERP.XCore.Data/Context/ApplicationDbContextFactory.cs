@@ -22,6 +22,7 @@ namespace ERP.XCore.Data.Context
                 //DataConnectionString
                 //"Server=(localdb)\\mssqllocaldb;Database=aspnet-ERP.XCore.Hotel.Web.Server-36CFA546-D67D-4BE7-B733-3FFF351E9E26;Trusted_Connection=True;MultipleActiveResultSets=true",
                 "Server=localhost;Database=ERP.XCORE.DB;Trusted_Connection=True;MultipleActiveResultSets=true",
+                //"Server=HRNBK00977\\MSSQLSERVER01;Database=ERP.XCORE.DB;Trusted_Connection=True;MultipleActiveResultSets=true",
                 opts =>
                 {
                     opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds);

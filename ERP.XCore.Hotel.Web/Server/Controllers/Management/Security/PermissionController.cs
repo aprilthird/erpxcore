@@ -53,8 +53,8 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
             var exists = await _context.Permissions
                 .AnyAsync(x => x.RoleId == model.RoleId && x.SubModuleId == model.SubModuleId);
 
-            if (exists)
-                return BadRequest();
+            //if (exists)
+            //    return BadRequest();
 
             var status = new Permission();
             Fill(ref status, model);
@@ -72,8 +72,8 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
             var exists = await _context.Permissions
                 .AnyAsync(x => x.RoleId == model.RoleId && x.SubModuleId == model.SubModuleId && x.Id != id);
 
-            if (exists)
-                return BadRequest();
+            //if (exists)
+            //    return BadRequest();
 
             var status = await _context.Permissions.FindAsync(id);
 

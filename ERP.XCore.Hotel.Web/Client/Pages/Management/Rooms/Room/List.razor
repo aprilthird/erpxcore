@@ -13,24 +13,6 @@
 			<span>Agregar</span>
 		</button>
 	</div>
-	<div class="col-md-12 row">
-		<div class="col-md-3">
-			<label>Tipo de Habitación</label>
-			<InputSelect @bind-Value="FilterType" class="form-control" placeholder="Area">
-                <option value="" selected>Todas</option>
-				@if(RoomTypes != null)
-				{
-					
-                @foreach(var item in RoomTypes)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-				}
-            </InputSelect>
-		</div>
-	
-	</div>
-	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
 
