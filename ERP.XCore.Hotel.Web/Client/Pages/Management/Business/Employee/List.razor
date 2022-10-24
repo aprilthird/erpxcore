@@ -26,6 +26,7 @@
 						<MudTh>Empresa</MudTh>
 						<MudTh>Area</MudTh>
 						<MudTh>Cargo</MudTh>
+						<MudTh>Estado</MudTh>
 						<MudTh>Acciones</MudTh>
 			</HeaderContent>
 			<RowTemplate>
@@ -35,6 +36,7 @@
 							<MudTd>@context.Company.Description</MudTd>
 							<MudTd>@(context.WorkArea?.Description ?? "Gerencia")</MudTd>
 							<MudTd>@(context.WorkPosition?.Description ?? "Administrador")</MudTd>
+							<MudTd>@context.Status.Description</MudTd>
 							<MudTd>
 								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
 									<i class="fa fa-edit"></i>

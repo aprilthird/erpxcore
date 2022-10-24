@@ -19,49 +19,41 @@
 	<hr/>
 	<div class="col-md-12">
 		<div class="table-responsive">
-        @if(ItemsList == null)
-		{
-			<p><em>Cargando...</em></p>
-		}
-		else
-		{
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr class="fw-bold">
-						<th>Nombres</th>
-						<th>Documento</th>
-						<th>Empresa</th>
-						<th>Sexo</th>
-						<th>Email</th>
-						<th>Estado Marital</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach(var item in ItemsList)
-					{
-						<tr>
-							<td>@item.Description</td>
-							<td>@item.Document (@(item.DocumentType?.Abbreviation ?? "DNI"))</td>
-							<td>@item.Company.Description</td>
-							<td>@item.Sex</td>
-							<td>@item.Email</td>
-							<td>@item.MaritalStatus</td>
-							<td>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+
+			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Customer, bool>(FilterFunc1)">
+				<ToolBarContent>
+					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+				</ToolBarContent>
+				<HeaderContent>
+						<MudTh>Nombres</MudTh>
+						<MudTh>Documento</MudTh>
+						<MudTh>Empresa</MudTh>
+						<MudTh>Sexo</MudTh>
+						<MudTh>Email</MudTh>
+						<MudTh>Estado Marital</MudTh>
+						<MudTh>Acciones</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+		
+							<MudTd>@context.Description</MudTd>
+							<MudTd>@context.Document (@(context.DocumentType?.Abbreviation ?? "DNI"))</MudTd>
+							<MudTd>@context.Company.Description</MudTd>
+							<MudTd>@context.Sex</MudTd>
+							<MudTd>@context.Email</MudTd>
+							<MudTd>@context.MaritalStatus</MudTd>
+							<MudTd>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		}
+							</MudTd>
+			</RowTemplate>
+		</MudTable>
+
 		</div>
 	</div>
 </div>
@@ -81,7 +73,7 @@
 	private SelectResource<Guid>[]? PersonTypes;
 	private SelectResource<Guid>[]? Companies;
 	private SelectResource<Guid>[]? Status;
-
+	private string searchString1 = "";
 	private Guid? FilterType;
 
 	public enum ModalType
@@ -121,6 +113,27 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Cliente";
 		Customer = c ?? new Customer();
 		await Modal.OpenAsync();
+	}
+
+	private bool FilterFunc1(Customer customer) => FilterFunc(customer, searchString1);
+
+	private bool FilterFunc(Customer customer, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (customer.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (customer.Document.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (customer.Company.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (customer.Sex.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (customer.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		if (customer.MaritalStatus.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		return false;
 	}
 
 	public async Task SaveAsync()

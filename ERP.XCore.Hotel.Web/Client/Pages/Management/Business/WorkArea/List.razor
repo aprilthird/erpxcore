@@ -15,39 +15,28 @@
 	</div>
 	<div class="col-md-12">
 		<div class="table-responsive">
-        @if(ItemsList == null)
-		{
-			<p><em>Cargando...</em></p>
-		}
-		else
-		{
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr class="fw-bold">
-						<th>Descripción</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach(var item in ItemsList)
-					{
-						<tr>
-							<td>@item.Description</td>
-							<td>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
+        <MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<WorkArea, bool>(FilterFunc1)">
+				<ToolBarContent>
+					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+				</ToolBarContent>
+				<HeaderContent>
+						<MudTh>Descrípción</MudTh>
+						<MudTh>Acciones</MudTh>
+			</HeaderContent>
+			<RowTemplate>
+							<MudTd>@context.Description</MudTd>
+							<MudTd>
+								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
 									<i class="fa fa-edit"></i>
 									<span>Editar</span>
 								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
+								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
 									<i class="fa fa-trash"></i>
 									<span>Eliminar</span>
 								</button>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		}
+							</MudTd>
+			</RowTemplate>
+		</MudTable>
 		</div>
 	</div>
 </div>
@@ -62,7 +51,7 @@
 	private Fields Fields;
 	private string ModalTitle;
 	private WorkArea[]? ItemsList;
-
+	private string searchString1 = "";
 	public enum ModalType
 	{
 		New, Edit
@@ -90,6 +79,19 @@
 		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Cargo";
 		WorkArea = workArea ?? new WorkArea();
 		await Modal.OpenAsync();
+	}
+
+	private bool FilterFunc1(WorkArea work) => FilterFunc(work, searchString1);
+
+	private bool FilterFunc(WorkArea work, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (work.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+		
+
+		return false;
 	}
 
 	public async Task SaveAsync()

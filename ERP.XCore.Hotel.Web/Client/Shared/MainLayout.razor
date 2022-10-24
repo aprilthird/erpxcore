@@ -758,7 +758,7 @@
 
 			Modules = Permissions
 				.DistinctBy(x => x.SubModuleId)
-				.GroupBy(x => x.SubModule.Module)
+				.GroupBy(x => new { x.SubModule.ModuleId, x.SubModule.Module.Description })
 				.Select(x => new Module
 					{
 						Description = x.Key.Description,
