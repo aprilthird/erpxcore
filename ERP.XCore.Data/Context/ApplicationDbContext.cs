@@ -18,6 +18,9 @@ namespace ERP.XCore.Data.Context
     public class ApplicationDbContext 
         : ApplicationApiAuthorizationDbContext<ApplicationUser, ApplicationRole, Guid, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationRoleClaim, ApplicationUserToken>
     {
+
+        public DbSet<BookingFee> BookingFees { get; set; }
+
         public DbSet<Company> Companies { get; set; }
 
         public DbSet<CompanyHeadquarter> CompanyHeadquarters { get; set; }
@@ -32,6 +35,8 @@ namespace ERP.XCore.Data.Context
 
         public DbSet<Module> Modules { get; set; }
 
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+
         public DbSet<PersonType> PersonTypes { get; set; }
 
         public DbSet<Permission> Permissions { get; set; }
@@ -39,6 +44,14 @@ namespace ERP.XCore.Data.Context
         public DbSet<PermissionLevel> PermissionLevels { get; set; }
 
         public DbSet<PointOfSale> PointsOfSale { get; set; }
+
+        public DbSet<RoomBooking> RoomBookings { get; set; }
+
+        public DbSet<RoomCleaning> RoomCleanings { get; set; }
+
+        public DbSet<RoomBookingCompanion> RoomBookingCompanions { get; set; }
+
+        public DbSet<RoomMaintenance> RoomMaintenances { get; set; }
 
         public DbSet<Room> Rooms { get; set; }
 

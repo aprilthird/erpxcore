@@ -7,12 +7,21 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Entities.Models
 {
-    public class RoomType : BaseEntity
+    public class RoomMaintenance : BaseEntity
     {
+
         public Guid Id { get; set; }
+
+        public Guid RoomId { get; set; }
+
+        public Room Room { get; set; }
+
+        public Guid EmployeeId { get; set; }
+
+        public Guest Employee { get; set; }
 
         public string Description { get; set; }
 
-        //Icon?
+        public DateTime StartedAt { get; set; }
     }
 }

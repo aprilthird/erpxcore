@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Entities.Models
 {
-    public class RoomType : BaseEntity
+    public class PaymentMethod : BaseEntity
     {
         public Guid Id { get; set; }
 
         public string Description { get; set; }
-
-        //Icon?
     }
 }

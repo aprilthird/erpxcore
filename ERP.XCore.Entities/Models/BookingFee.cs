@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Entities.Models
 {
-    public class RoomType : BaseEntity
+    public class BookingFee : BaseEntity
     {
         public Guid Id { get; set; }
 
         public string Description { get; set; }
 
-        //Icon?
+        public double Amount { get; set; }
     }
 }
