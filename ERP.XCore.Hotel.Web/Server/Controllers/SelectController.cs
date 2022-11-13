@@ -164,6 +164,19 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("estados-de-habitacion")]
+        public async Task<IActionResult> RoomStatus()
+        {
+            var result = await _context.RoomStatus
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
         [HttpGet("roles")]
         public async Task<IActionResult> Roles()
         {

@@ -15,7 +15,7 @@ namespace ERP.XCore.Data.Seeder
     {
         public static async void Seed(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            if(!context.Status.Any())
+            if (!context.Status.Any())
             {
                 var status = new List<Status>
                 {
@@ -26,7 +26,7 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.DocumentTypes.Any())
+            if (!context.DocumentTypes.Any())
             {
                 var documentTypes = new List<DocumentType>
                 {
@@ -37,7 +37,7 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.Ubigeos.Any())
+            if (!context.Ubigeos.Any())
             {
                 var ubigeos = new List<Ubigeo>
                 {
@@ -58,7 +58,7 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.CompanyHeadquarters.Any())
+            if (!context.CompanyHeadquarters.Any())
             {
                 var status = await context.Status.ToListAsync();
                 var companies = await context.Companies.ToListAsync();
@@ -71,7 +71,7 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.PointsOfSale.Any())
+            if (!context.PointsOfSale.Any())
             {
                 var status = await context.Status.ToListAsync();
                 var companyHeadquarters = await context.CompanyHeadquarters.ToListAsync();
@@ -99,7 +99,7 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.WorkPositions.Any())
+            if (!context.WorkPositions.Any())
             {
                 var workPositions = new List<WorkPosition>
                 {
@@ -127,7 +127,7 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.RoomStatus.Any())
+            if (!context.RoomStatus.Any())
             {
                 var roomStatus = new List<RoomStatus>
                 {
@@ -141,14 +141,14 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.RoomTypes.Any())
+            if (!context.RoomTypes.Any())
             {
                 var roomTypes = new List<RoomType>
                 {
-                    new RoomType { Description = "Matrimonial" }, 
-                    new RoomType { Description = "Doble" }, 
-                    new RoomType { Description = "Triple" }, 
-                    new RoomType { Description = "Suite Queen" }, 
+                    new RoomType { Description = "Matrimonial" },
+                    new RoomType { Description = "Doble" },
+                    new RoomType { Description = "Triple" },
+                    new RoomType { Description = "Suite Queen" },
                     new RoomType { Description = "Ejecutivo" },
                     new RoomType { Description = "Suite King" },
                 };
@@ -156,7 +156,7 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.PersonTypes.Any())
+            if (!context.PersonTypes.Any())
             {
                 var personTypes = new List<PersonType>
                 {
@@ -200,13 +200,13 @@ namespace ERP.XCore.Data.Seeder
                 var result = userManager.CreateAsync(user, "XCore.2022").Result;
             }
 
-            if(roleManager.FindByNameAsync("Prueba").Result == null)
+            if (roleManager.FindByNameAsync("Prueba").Result == null)
             {
                 var role = new ApplicationRole("Prueba");
                 await roleManager.CreateAsync(role);
             }
 
-            if(!userManager.GetUsersInRoleAsync("Prueba").Result.Any())
+            if (!userManager.GetUsersInRoleAsync("Prueba").Result.Any())
             {
                 var user = await userManager.FindByEmailAsync("nuevousuario@erpxcore.com");
                 await userManager.AddToRoleAsync(user, "Prueba");
@@ -241,13 +241,11 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if(!context.SubModules.Any())
+            if (!context.SubModules.Any())
             {
                 var modules = await context.Modules.ToListAsync();
                 var subModules = new List<SubModule>
                 {
-
-                    
                     new SubModule { Description = "Tipo Documento", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/tipo-de-documento" },
                     new SubModule { Description = "Ubigeo", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/ubigeo" },
                     new SubModule { Description = "Estado", ModuleId = modules[0].Id, RouteUrl = "/maestros/generales/estado" },
@@ -360,6 +358,38 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
+            if (!context.Rooms.Any())
+            {
+                var types = await context.RoomTypes.ToListAsync();
+                var roomStatus = await context.RoomStatus.ToListAsync();
+                var status = await context.Status.ToListAsync();
+
+                var rooms = new List<Room>
+                {
+                    new Room { Description = "101", RoomTypeId = types[0].Id, RoomStatusId = roomStatus[0].Id, StatusId = status[0].Id },
+                    new Room { Description = "102", RoomTypeId = types[0].Id, RoomStatusId = roomStatus[0].Id, StatusId = status[0].Id },
+                    new Room { Description = "103", RoomTypeId = types[1].Id, RoomStatusId = roomStatus[1].Id, StatusId = status[0].Id },
+                    new Room { Description = "104", RoomTypeId = types[1].Id, RoomStatusId = roomStatus[2].Id, StatusId = status[0].Id },
+                    new Room { Description = "105", RoomTypeId = types[2].Id, RoomStatusId = roomStatus[3].Id, StatusId = status[0].Id },
+                    new Room { Description = "106", RoomTypeId = types[2].Id, RoomStatusId = roomStatus[0].Id, StatusId = status[0].Id },
+                    new Room { Description = "107", RoomTypeId = types[3].Id, RoomStatusId = roomStatus[4].Id, StatusId = status[0].Id },
+                    new Room { Description = "108", RoomTypeId = types[3].Id, RoomStatusId = roomStatus[4].Id, StatusId = status[0].Id },
+                    new Room { Description = "109", RoomTypeId = types[4].Id, RoomStatusId = roomStatus[4].Id, StatusId = status[0].Id },
+
+                    new Room { Description = "301", RoomTypeId = types[0].Id, RoomStatusId = roomStatus[2].Id, StatusId = status[0].Id },
+                    new Room { Description = "302", RoomTypeId = types[1].Id, RoomStatusId = roomStatus[0].Id, StatusId = status[0].Id },
+                    new Room { Description = "303", RoomTypeId = types[0].Id, RoomStatusId = roomStatus[0].Id, StatusId = status[0].Id },
+                    new Room { Description = "304", RoomTypeId = types[2].Id, RoomStatusId = roomStatus[4].Id, StatusId = status[0].Id },
+                    new Room { Description = "305", RoomTypeId = types[3].Id, RoomStatusId = roomStatus[2].Id, StatusId = status[0].Id },
+                    new Room { Description = "306", RoomTypeId = types[3].Id, RoomStatusId = roomStatus[4].Id, StatusId = status[0].Id },
+                    new Room { Description = "307", RoomTypeId = types[5].Id, RoomStatusId = roomStatus[2].Id, StatusId = status[0].Id },
+                    new Room { Description = "308", RoomTypeId = types[5].Id, RoomStatusId = roomStatus[4].Id, StatusId = status[0].Id },
+                    new Room { Description = "309", RoomTypeId = types[4].Id, RoomStatusId = roomStatus[4].Id, StatusId = status[0].Id },
+                };
+
+                await context.Rooms.AddRangeAsync(rooms);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

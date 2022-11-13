@@ -51,7 +51,7 @@ namespace ERP.XCore.Hotel.Shared.Helpers
             {
                 public const string ROOMS_ROUTE = MANAGEMENT_ROUTE + "/habitaciones";
 
-                public const string ROOMSTATUS_ROUTE = ROOMS_ROUTE + "/estado-habitacion";
+                public const string ROOMSTATUS_ROUTE = ROOMS_ROUTE + "/estados-de-habitacion";
                 public const string ROOM_ROUTE = ROOMS_ROUTE + "/habitaciones";
                 public const string ROOMTYPE_ROUTE = ROOMS_ROUTE + "/tipos-de-habitacion";
             }

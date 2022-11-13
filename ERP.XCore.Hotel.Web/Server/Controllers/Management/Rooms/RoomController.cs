@@ -16,7 +16,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(Guid? tipo = null)
+        public async Task<IActionResult> GetAll(Guid? tipo = null, Guid? estado = null)
         {
             var query = _context.Rooms
                 .Include(x => x.Status)
@@ -28,6 +28,9 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
 
             if (tipo.HasValue)
                 query = query.Where(x => x.RoomTypeId == tipo.Value);
+
+            if (estado.HasValue)
+                query = query.Where(x => x.RoomStatusId == estado.Value);
 
             var result = await query
                 .ToListAsync();

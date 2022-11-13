@@ -1,0 +1,183 @@
+﻿@page "/rack/habitaciones"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Rack de Habitaciones</h3>
+	</div>
+	<div class="col-md-12" style="height: 600px; overflow: scroll;">
+		<div class="row mb-2">
+			<div class="col-md-4">
+				<label for="type">Tipo de habitación</label>
+				<select @bind="@FilterType" id="type" class="form-control" placeholder="Tipo de Habitación">
+					<option value="">Todos</option>
+					@foreach(var item in RoomTypes)
+					{
+						<option value="@item.Value">@item.Text</option>
+					}
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label for="status">Estado</label>
+				<select @bind="@FilterStatus" id="status" class="form-control" placeholder="Estado">
+					<option value="">Todos</option>
+					@foreach(var item in RoomStatus)
+					{
+						<option value="@item.Value">@item.Text</option>
+					}
+				</select>
+			</div>
+			
+		</div>
+		<div class="row mb-2">
+			<div class="col-md-3">
+				<img src="media/avro.png"/>
+				<span>Disponible: @AvailableCount</span>
+			</div>
+			<div class="col-md-3">
+				<img src="media/ocro.png"/>
+				<span>Disponible: @BusyCount</span>
+			</div>
+			<div class="col-md-3">
+				<img src="media/diro.png"/>
+				<span>Disponible: @DirtyCount</span>
+			</div>
+			<div class="col-md-3">
+				<img src="media/clro.png">
+				<span>Disponible: @CleaningCount</span>
+			</div>
+			<div class="col-md-3">
+				<img src="media/mnto.png"/>
+				<span>Disponible: @MaintenanceCount</span>
+			</div>
+		</div>
+		<div class="row">
+			@foreach(var item in ItemsList)
+			{
+				<div class="col-md-2">
+					<div class="card d-flex align-items-center p-2 m-2" style="border: 2px solid; cursor: pointer;" @onclick="() => ShowModalAsync(item)">
+						<img height="50px" width="50px" class="mt-2" src="@(item.RoomStatus.Description == "Disponible" ? "media/avro.png" : item.RoomStatus.Description == "Ocupado" ? "media/ocro.png" : item.RoomStatus.Description == "Sucio" ? "media/diro.png" : item.RoomStatus.Description == "Mantenimiento" ? "media/mnto.png" : "media/clro.png" )"/>
+						<h6 class="text-center">@item.Description</h6>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+<Modal @ref="Modal" Title="@ModalTitle">
+	<p>Código: 00001</p>
+	<p>Huésped: Sr. Luis Jeffrey Rojas Montes</p>
+	<p>Acompañantes:</p>
+	<table class="table table-striped table-bordered">
+		<thead>
+			<tr>
+				<th>Acción</th>
+				<th>Fecha</th>
+				<th>Descripción</th>
+				<th>Habitación</th>
+				<th>Precio</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td></td>
+				<td>04/11/2022</td>
+				<td>Habitación Suite Romántica</td>
+				<td>101</td>
+				<td>S/ 105.00</td>
+			</tr>
+		</tbody>
+	</table>
+</Modal>
+
+@code {
+	private Modal Modal;
+	private string ModalTitle;
+	private Room[]? ItemsList;
+	private string searchString1 = "";
+	private SelectResource<Guid>[]? RoomTypes;
+	private SelectResource<Guid>[]? RoomStatus;
+	private Guid? filterType;
+	private Guid? filterStatus;
+
+	private Guid? FilterStatus
+	{
+		get { return filterStatus; }
+        set
+        {
+            filterStatus = value;
+            FilterData();
+        }
+	}
+	private Guid? FilterType
+	{
+		get { return filterType; }
+        set
+        {
+            filterType = value;
+            FilterData();
+        }
+	}
+
+	private int AvailableCount = 0;
+	private int BusyCount = 0;
+	private int DirtyCount = 0;
+	private int CleaningCount = 0;
+	private int MaintenanceCount = 0;
+
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			await LoadSelects();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<Room[]>(RouteConfig.Management.Rooms.ROOM_ROUTE);
+		AvailableCount = ItemsList.Count(x => x.RoomStatus.Description == "Disponible");
+		BusyCount = ItemsList.Count(x => x.RoomStatus.Description == "Ocupado");
+		DirtyCount = ItemsList.Count(x => x.RoomStatus.Description == "Sucio");
+		CleaningCount = ItemsList.Count(x => x.RoomStatus.Description == "En Limpieza");
+		MaintenanceCount = ItemsList.Count(x => x.RoomStatus.Description == "Mantenimiento");
+	}
+
+	public async Task LoadSelects()
+	{
+		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
+		RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
+	}
+
+	public async Task FilterData()
+	{
+		ItemsList = await Http.GetFromJsonAsync<Room[]>($"{RouteConfig.Management.Rooms.ROOM_ROUTE}?tipo={(FilterType.HasValue ? FilterType.ToString() : "")}&estado={(FilterStatus.HasValue ? FilterStatus.ToString() : "")}");
+		AvailableCount = ItemsList.Count(x => x.RoomStatus.Description == "Disponible");
+		BusyCount = ItemsList.Count(x => x.RoomStatus.Description == "Ocupado");
+		DirtyCount = ItemsList.Count(x => x.RoomStatus.Description == "Sucio");
+		CleaningCount = ItemsList.Count(x => x.RoomStatus.Description == "En Limpieza");
+		MaintenanceCount = ItemsList.Count(x => x.RoomStatus.Description == "Mantenimiento");
+	}
+
+	public async Task ShowModalAsync(Room room = null)
+	{
+		ModalTitle = $"Habitación #{room.Description}";
+		await Modal.OpenAsync();
+	}
+}
