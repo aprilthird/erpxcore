@@ -279,23 +279,24 @@
 									<Authorized>
 										@if(!context.User.Identity.Name.Contains("sysadmin"))
 									{
-										<style>
+@*										<style>
 											.aside-menu .menu-item .menu-link {
 												padding-top: 0.45rem;
 												padding-bottom: 0.45rem;
 											}	
-										</style>
+										</style>*@
 										@foreach (var menu in Modules)
 										{
-											<span class="menu-heading fw-bold text-uppercase">@menu.Description</span>
+											<MudNavGroup class="menu-heading fw-bold text-uppercase">@menu.Description
 											@foreach(var submenu in menu.SubModules)
 											{
-												<a class="menu-item" href="@submenu.RouteUrl">
-													<span class="menu-link">
-														<span class="menu-title">@submenu.Description</span>
-													</span>
-												</a>
+												<MudNavLink class="menu-item" href="@submenu.RouteUrl">
+													<MudNavGroup class="menu-link">
+														<MudNavGroup class="menu-title">@submenu.Description</MudNavGroup>
+													</MudNavGroup>
+												</MudNavLink>
 											}
+											</MudNavGroup>
 										}
 									}
 									else

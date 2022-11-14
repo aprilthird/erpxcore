@@ -173,6 +173,7 @@
 		DirtyCount = ItemsList.Count(x => x.RoomStatus.Description == "Sucio");
 		CleaningCount = ItemsList.Count(x => x.RoomStatus.Description == "En Limpieza");
 		MaintenanceCount = ItemsList.Count(x => x.RoomStatus.Description == "Mantenimiento");
+		StateHasChanged();
 	}
 
 	public async Task ShowModalAsync(Room room = null)
