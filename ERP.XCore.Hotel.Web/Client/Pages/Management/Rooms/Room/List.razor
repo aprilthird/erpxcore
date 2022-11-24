@@ -85,13 +85,13 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Room[]>(RouteConfig.Management.Rooms.ROOM_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Room[]>(ApiRouteConfig.Management.Rooms.ROOM_ROUTE);
 	}
 
 	public async Task LoadSelects()
 	{
-		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
-		RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
+		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
+		RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Room room = null)
@@ -123,11 +123,11 @@
 		{
 			if(Room.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Rooms.ROOM_ROUTE, Room);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Rooms.ROOM_ROUTE, Room);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Rooms.ROOM_ROUTE + "/" + Room.Id, Room);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Rooms.ROOM_ROUTE + "/" + Room.Id, Room);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -144,7 +144,7 @@
 
 	public async Task DeleteAsync(Room room)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Rooms.ROOM_ROUTE + "/" + room.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Rooms.ROOM_ROUTE + "/" + room.Id);
 		await Load();
     }
 }

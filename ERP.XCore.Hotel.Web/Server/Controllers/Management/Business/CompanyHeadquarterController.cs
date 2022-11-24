@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
 {
     [ApiController]
-    [Route(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE)]
+    [Route(ApiRouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE)]
     public class CompanyHeadquarterController : BaseController
     {
         public CompanyHeadquarterController(ApplicationDbContext context)

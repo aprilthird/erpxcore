@@ -1,10 +1,10 @@
-﻿@page "/rack/habitaciones"
+﻿@page "/rack"
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using ERP.XCore.Hotel.Shared.Resources.Base
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient Http
-
+@inject NavigationManager Navigation
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
@@ -41,19 +41,19 @@
 			</div>
 			<div class="col-md-3">
 				<img src="media/ocro.png"/>
-				<span>Disponible: @BusyCount</span>
+				<span>Ocupado: @BusyCount</span>
 			</div>
 			<div class="col-md-3">
 				<img src="media/diro.png"/>
-				<span>Disponible: @DirtyCount</span>
+				<span>Sucio: @DirtyCount</span>
 			</div>
 			<div class="col-md-3">
 				<img src="media/clro.png">
-				<span>Disponible: @CleaningCount</span>
+				<span>Limpiándose: @CleaningCount</span>
 			</div>
 			<div class="col-md-3">
 				<img src="media/mnto.png"/>
-				<span>Disponible: @MaintenanceCount</span>
+				<span>En Mantenimiento: @MaintenanceCount</span>
 			</div>
 		</div>
 		<div class="row">
@@ -70,10 +70,32 @@
 	</div>
 </div>
 
-<Modal @ref="Modal" Title="@ModalTitle">
-	<p>Código: 00001</p>
-	<p>Huésped: Sr. Luis Jeffrey Rojas Montes</p>
-	<p>Acompañantes:</p>
+<Modal @ref="ModalBusy" Title="@ModalTitle">
+	<div>
+		<h6>Código: </h6>
+		<span>@RoomBookingDetail.Code</span>
+	</div>
+	<div>
+		<h6>Habitación: </h6>
+		<span>@RoomBookingDetail.Room.Description (@RoomBookingDetail.Room.RoomType.Description)</span>
+	</div>
+	<div>
+		<h6>Huésped: </h6>
+		<span>Sr. @RoomBookingDetail.Guest.FullName</span>
+	</div>
+	<div>
+		<h6>Entrada: </h6>
+		<span>@RoomBookingDetail.EntryTime.ToString("dd/MM/yyyy hh:mm tt")</span>
+	</div>
+	<div>
+		<h6>Salida: </h6>
+		<span>@RoomBookingDetail.ExitTime.ToString("dd/MM/yyyy hh:mm tt")</span>
+	</div>
+	<div>
+		<h6>Método de Pago: </h6>
+		<span>@RoomBookingDetail.PaymentMethod.Description</span>
+	</div>
+	@*<p>Acompañantes:</p>*@
 	<table class="table table-striped table-bordered">
 		<thead>
 			<tr>
@@ -87,20 +109,44 @@
 		<tbody>
 			<tr>
 				<td></td>
-				<td>04/11/2022</td>
-				<td>Habitación Suite Romántica</td>
-				<td>101</td>
-				<td>S/ 105.00</td>
+				<td>@RoomBookingDetail.CreatedAt.ToString("dd/MM/yyyyy")</td>
+				<td>@RoomBookingDetail.Room.RoomType.Description</td>
+				<td>@RoomBookingDetail.Room.Description</td>
+				<td>S/ 00.00</td>
 			</tr>
 		</tbody>
 	</table>
 </Modal>
 
+<Modal @ref="ModalDirty" Title="@ModalTitle">
+	<div>
+		<h6>¿Quién se encuentra limpiando?</h6>
+		<input class="form-control" placeholder="DNI o Apellidos" />
+	</div>
+</Modal>
+
+<Modal @ref="ModalManagement" Title="@ModalTitle">
+	<div>
+		<h6>Técnico: </h6>
+		<span>Sr. Pablo Zósimo</span>
+	</div>
+	<div>
+		<h6>Observación: </h6>
+		<span>Baño Atorado</span>
+	</div>
+</Modal>
+
 @code {
-	private Modal Modal;
+	private Modal ModalBusy;
+	private Modal ModalDirty;
+	private Modal ModalCleaning;
+	private Modal ModalManagement;
+
 	private string ModalTitle;
 	private Room[]? ItemsList;
 	private string searchString1 = "";
+
+	private RoomBooking RoomBookingDetail;
 	private SelectResource<Guid>[]? RoomTypes;
 	private SelectResource<Guid>[]? RoomStatus;
 	private Guid? filterType;
@@ -109,20 +155,20 @@
 	private Guid? FilterStatus
 	{
 		get { return filterStatus; }
-        set
-        {
-            filterStatus = value;
-            FilterData();
-        }
+		set
+		{
+			filterStatus = value;
+			FilterData();
+		}
 	}
 	private Guid? FilterType
 	{
 		get { return filterType; }
-        set
-        {
-            filterType = value;
-            FilterData();
-        }
+		set
+		{
+			filterType = value;
+			FilterData();
+		}
 	}
 
 	private int AvailableCount = 0;
@@ -151,7 +197,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Room[]>(RouteConfig.Management.Rooms.ROOM_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Room[]>(ApiRouteConfig.Management.Rooms.ROOM_ROUTE);
 		AvailableCount = ItemsList.Count(x => x.RoomStatus.Description == "Disponible");
 		BusyCount = ItemsList.Count(x => x.RoomStatus.Description == "Ocupado");
 		DirtyCount = ItemsList.Count(x => x.RoomStatus.Description == "Sucio");
@@ -161,13 +207,13 @@
 
 	public async Task LoadSelects()
 	{
-		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
-		RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
+		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
+		RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
 	}
 
 	public async Task FilterData()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Room[]>($"{RouteConfig.Management.Rooms.ROOM_ROUTE}?tipo={(FilterType.HasValue ? FilterType.ToString() : "")}&estado={(FilterStatus.HasValue ? FilterStatus.ToString() : "")}");
+		ItemsList = await Http.GetFromJsonAsync<Room[]>($"{ApiRouteConfig.Management.Rooms.ROOM_ROUTE}?tipo={(FilterType.HasValue ? FilterType.ToString() : "")}&estado={(FilterStatus.HasValue ? FilterStatus.ToString() : "")}");
 		AvailableCount = ItemsList.Count(x => x.RoomStatus.Description == "Disponible");
 		BusyCount = ItemsList.Count(x => x.RoomStatus.Description == "Ocupado");
 		DirtyCount = ItemsList.Count(x => x.RoomStatus.Description == "Sucio");
@@ -178,7 +224,33 @@
 
 	public async Task ShowModalAsync(Room room = null)
 	{
-		ModalTitle = $"Habitación #{room.Description}";
-		await Modal.OpenAsync();
+		@if (room.RoomStatus.Description == "Disponible")
+		{
+			Navigation.NavigateTo($"/rack/checkin/{room.Id}");
+		}
+		else if (room.RoomStatus.Description == "Ocupado")
+		{
+			ModalTitle = $"Habitación #{room.Description}";
+			if (RoomBookingDetail == null || RoomBookingDetail.RoomId != room.Id)
+			{
+				RoomBookingDetail = await Http.GetFromJsonAsync<RoomBooking>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{room.Id}");
+			}
+			await ModalBusy.OpenAsync();
+		}
+		else if (room.RoomStatus.Description == "Sucio")
+		{
+			ModalTitle = $"Habitación #{room.Description}";
+			await ModalDirty.OpenAsync();
+		}
+		else if (room.RoomStatus.Description == "En Limpieza")
+		{
+			ModalTitle = $"Habitación #{room.Description}";
+
+		}
+		else if (room.RoomStatus.Description == "Mantenimiento")
+		{
+			ModalTitle = $"Habitación #{room.Description}";
+			await ModalManagement.OpenAsync();
+		}
 	}
 }

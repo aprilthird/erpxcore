@@ -96,16 +96,16 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Customer[]>(RouteConfig.Management.Business.CUSTOMER_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Customer[]>(ApiRouteConfig.Management.Business.CUSTOMER_ROUTE);
 	}
 
 	public async Task LoadSelects()
 	{
-		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
-		Ubigeos = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/ubigeos");
-		PersonTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-persona");
-		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
-		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/estados?entity=General");
+		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+		Ubigeos = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/ubigeos");
+		PersonTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-persona");
+		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/empresas");
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/estados?entity=General");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Customer c = null)
@@ -142,11 +142,11 @@
 		{
 			if(Customer.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.CUSTOMER_ROUTE, Customer);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.CUSTOMER_ROUTE, Customer);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.CUSTOMER_ROUTE + "/" + Customer.Id, Customer);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.CUSTOMER_ROUTE + "/" + Customer.Id, Customer);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -163,7 +163,7 @@
 
 	public async Task DeleteAsync(Customer c)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.CUSTOMER_ROUTE + "/" + c.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Business.CUSTOMER_ROUTE + "/" + c.Id);
 		await Load();
     }
 }

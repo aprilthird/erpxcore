@@ -89,14 +89,14 @@
 
 	public async Task LoadSelects()
 	{
-		SubModules = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/submodulos");
-		PermissionLevels = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/niveles-de-permiso");
-		Roles = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/roles");
+		SubModules = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/submodulos");
+		PermissionLevels = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/niveles-de-permiso");
+		Roles = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/roles");
 	}
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Permission[]>(RouteConfig.Management.Security.PERMISSION_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Permission[]>(ApiRouteConfig.Management.Security.PERMISSION_ROUTE);
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Permission permission = null)
@@ -127,11 +127,11 @@
 		{
 			if (Permission.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Security.PERMISSION_ROUTE, Permission);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Security.PERMISSION_ROUTE, Permission);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Security.PERMISSION_ROUTE + "/" + Permission.Id, Permission);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Security.PERMISSION_ROUTE + "/" + Permission.Id, Permission);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -148,7 +148,7 @@
 
 	public async Task DeleteAsync(Permission permission)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Security.PERMISSION_ROUTE + "/" + permission.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Security.PERMISSION_ROUTE + "/" + permission.Id);
 		await Load();
     }
 }

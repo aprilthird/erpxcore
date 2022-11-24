@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Hotel.Shared.Helpers
 {
-    public static class RouteConfig
+    public static class ApiRouteConfig
     {
         public const string BASE_API_ROUTE = "/api";
 
@@ -74,6 +74,21 @@ namespace ERP.XCore.Hotel.Shared.Helpers
                 public const string MODULE_ROUTE = SECURITY_ROUTE + "/modulos";
                 public const string SUBMODULE_ROUTE = SECURITY_ROUTE + "/submodulos";
             }
+        }
+
+        public static class Payment
+        {
+            public const string PAYMENT_ROUTE = BASE_API_ROUTE + "/pago";
+
+            public const string PAYMENT_METHOD_ROUTE = PAYMENT_ROUTE + "/metodos-de-pago";
+        }
+
+        public static class Rack
+        {
+            public const string RACK_ROUTE = BASE_API_ROUTE + "/rack";
+
+            public const string CHECKIN_ROUTE = RACK_ROUTE + "/checkin";
+            public const string DETAIL_ROUTE = RACK_ROUTE + "/detalle";
         }
     }
 }

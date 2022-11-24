@@ -70,7 +70,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<WorkPosition[]>(RouteConfig.Management.Business.WORK_POSITION_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<WorkPosition[]>(ApiRouteConfig.Management.Business.WORK_POSITION_ROUTE);
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, WorkPosition workPosition = null)
@@ -99,11 +99,11 @@
 		{
 			if(WorkPosition.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.WORK_POSITION_ROUTE, WorkPosition);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.WORK_POSITION_ROUTE, WorkPosition);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.WORK_POSITION_ROUTE + "/" + WorkPosition.Id, WorkPosition);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.WORK_POSITION_ROUTE + "/" + WorkPosition.Id, WorkPosition);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -120,7 +120,7 @@
 
 	public async Task DeleteAsync(WorkPosition workPosition)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.WORK_POSITION_ROUTE + "/" + workPosition.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Business.WORK_POSITION_ROUTE + "/" + workPosition.Id);
 		await Load();
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
 {
     [ApiController]
-    [Route(RouteConfig.Management.Security.MODULE_ROUTE)]
+    [Route(ApiRouteConfig.Management.Security.MODULE_ROUTE)]
     public class ModuleController : BaseController
     {
         public ModuleController(ApplicationDbContext context)

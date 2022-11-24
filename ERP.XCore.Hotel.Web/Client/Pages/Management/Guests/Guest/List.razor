@@ -88,13 +88,13 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Guest[]>(RouteConfig.Management.Guests.GUEST_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
 	}
 
 	public async Task LoadSelects()
 	{
-		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
-		Ubigeos = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/ubigeos");
+		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+		Ubigeos = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/ubigeos");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Guest guest = null)
@@ -126,11 +126,11 @@
 		{
 			if(Guest.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Guests.GUEST_ROUTE, Guest);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Guests.GUEST_ROUTE, Guest);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Guests.GUEST_ROUTE + "/" + Guest.Id, Guest);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "/" + Guest.Id, Guest);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -147,7 +147,7 @@
 
 	public async Task DeleteAsync(Guest guest)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Guests.GUEST_ROUTE + "/" + guest.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "/" + guest.Id);
 		await Load();
     }
 }

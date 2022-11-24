@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.General
 {
     [ApiController]
-    [Route(RouteConfig.Management.General.UBIGEO_ROUTE)]
+    [Route(ApiRouteConfig.Management.General.UBIGEO_ROUTE)]
     public class UbigeoController : BaseController
     {
         public UbigeoController(ApplicationDbContext context)

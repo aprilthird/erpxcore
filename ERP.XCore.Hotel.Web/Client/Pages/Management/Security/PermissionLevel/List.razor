@@ -74,7 +74,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<PermissionLevel[]>(RouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<PermissionLevel[]>(ApiRouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE);
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, PermissionLevel pl = null)
@@ -102,11 +102,11 @@
 		{
 			if(PermissionLevel.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE, PermissionLevel);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE, PermissionLevel);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE + "/" + PermissionLevel.Id, PermissionLevel);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE + "/" + PermissionLevel.Id, PermissionLevel);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -123,7 +123,7 @@
 
 	public async Task DeleteAsync(PermissionLevel pl)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE + "/" + pl.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE + "/" + pl.Id);
 		await Load();
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
 {
     [ApiController]
-    [Route(RouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE)]
+    [Route(ApiRouteConfig.Management.Security.PERMISSIONLEVEL_ROUTE)]
     public class PermissionLevelController : BaseController
     {
         public PermissionLevelController(ApplicationDbContext context)

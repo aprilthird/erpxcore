@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
 {
     [ApiController]
-    [Route(RouteConfig.Management.Business.POINT_OF_SALE_ROUTE)]
+    [Route(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE)]
     public class PointOfSaleController : BaseController
     {
         public PointOfSaleController(ApplicationDbContext context)

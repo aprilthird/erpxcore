@@ -279,13 +279,8 @@
 									<Authorized>
 										@if(!context.User.Identity.Name.Contains("sysadmin"))
 									{
-@*										<style>
-											.aside-menu .menu-item .menu-link {
-												padding-top: 0.45rem;
-												padding-bottom: 0.45rem;
-											}	
-										</style>*@
-										@foreach (var menu in Modules)
+<MudNavMenu Class="text-white">
+									@foreach (var menu in Modules)
 										{
 											<MudNavGroup class="menu-heading fw-bold text-uppercase">@menu.Description
 											@foreach(var submenu in menu.SubModules)
@@ -298,7 +293,9 @@
 											}
 											</MudNavGroup>
 										}
-									}
+	
+										</MudNavMenu>
+								}
 									else
 									{
 										<NavMenu />
@@ -655,7 +652,7 @@
 
 			var jso = new JsonSerializerOptions();
 			jso.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-			Permissions = await Http.GetFromJsonAsync<Permission[]>(RouteConfig.Security.SECURITY_ROUTE + "/permisos");
+			Permissions = await Http.GetFromJsonAsync<Permission[]>(ApiRouteConfig.Security.SECURITY_ROUTE + "/permisos");
 
 			Modules = Permissions
 				.DistinctBy(x => x.SubModuleId)

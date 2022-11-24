@@ -118,7 +118,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Ubigeo[]>(RouteConfig.Management.General.UBIGEO_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Ubigeo[]>(ApiRouteConfig.Management.General.UBIGEO_ROUTE);
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Ubigeo ubigeo = null)
@@ -134,11 +134,11 @@
 		{
 			if(Ubigeo.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.General.UBIGEO_ROUTE, Ubigeo);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.General.UBIGEO_ROUTE, Ubigeo);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.General.UBIGEO_ROUTE + "/" + Ubigeo.Id, Ubigeo);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.General.UBIGEO_ROUTE + "/" + Ubigeo.Id, Ubigeo);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -155,7 +155,7 @@
 
 	public async Task DeleteAsync(Ubigeo ubigeo)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.General.UBIGEO_ROUTE + "/" + ubigeo.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.General.UBIGEO_ROUTE + "/" + ubigeo.Id);
 		await Load();
     }
 }

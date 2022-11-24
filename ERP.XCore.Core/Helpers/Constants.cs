@@ -17,9 +17,9 @@ namespace ERP.XCore.Core.Helpers
         {
             public const string DEFAULT_ENTITY = "General";
 
-            public static Guid ENABLED_ID = Guid.Parse("CFA0C764-3852-4668-2AF0-08DAB2B8B565");
+            public static Guid ENABLED_ID = Guid.Parse("5118D440-BBCA-4ED2-CA43-08DABDDDAA3B");
 
-            public static Guid DISABLED_ID = Guid.Parse("F07A9D3E-2A34-4124-2AF1-08DAB2B8B565");
+            public static Guid DISABLED_ID = Guid.Parse("E63B8DFF-FA4C-40C8-CA44-08DABDDDAA3B");
         }
 
         public static class Permission

@@ -87,12 +87,12 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<CompanyHeadquarter[]>(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<CompanyHeadquarter[]>(ApiRouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE);
 	}
 	
 	public async Task LoadSelects()
 	{
-		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
+		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/empresas");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, CompanyHeadquarter companyHeadquarter = null)
@@ -123,11 +123,11 @@
 		{
 			if(CompanyHeadquarter.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE, CompanyHeadquarter);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE, CompanyHeadquarter);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + CompanyHeadquarter.Id, CompanyHeadquarter);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + CompanyHeadquarter.Id, CompanyHeadquarter);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -144,7 +144,7 @@
 
 	public async Task DeleteAsync(CompanyHeadquarter companyHeadquarter)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + companyHeadquarter.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Business.COMPANY_HEADQUARTER_ROUTE + "/" + companyHeadquarter.Id);
 		await Load();
     }
 }

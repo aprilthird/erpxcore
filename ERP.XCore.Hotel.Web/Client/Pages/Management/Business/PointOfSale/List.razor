@@ -85,12 +85,12 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<PointOfSale[]>(RouteConfig.Management.Business.POINT_OF_SALE_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<PointOfSale[]>(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE);
 	}
 	
 	public async Task LoadSelects()
 	{
-		CompanyHeadquarters = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/sedes");
+		CompanyHeadquarters = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/sedes");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, PointOfSale pointOfSale = null)
@@ -123,11 +123,11 @@
 		{
 			if(PointOfSale.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.POINT_OF_SALE_ROUTE, PointOfSale);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE, PointOfSale);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.POINT_OF_SALE_ROUTE + "/" + PointOfSale.Id, PointOfSale);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE + "/" + PointOfSale.Id, PointOfSale);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -144,7 +144,7 @@
 
 	public async Task DeleteAsync(PointOfSale pointOfSale)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.POINT_OF_SALE_ROUTE + "/" + pointOfSale.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE + "/" + pointOfSale.Id);
 		await Load();
     }
 }

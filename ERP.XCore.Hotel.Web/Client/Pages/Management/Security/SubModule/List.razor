@@ -81,12 +81,12 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<SubModule[]>(RouteConfig.Management.Security.SUBMODULE_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<SubModule[]>(ApiRouteConfig.Management.Security.SUBMODULE_ROUTE);
 	}
 
 	public async Task LoadSelects()
 	{
-		Modules = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/modulos");
+		Modules = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/modulos");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, SubModule sm = null)
@@ -117,11 +117,11 @@
 		{
 			if(SubModule.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Security.SUBMODULE_ROUTE, SubModule);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Security.SUBMODULE_ROUTE, SubModule);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Security.SUBMODULE_ROUTE + "/" + SubModule.Id, SubModule);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Security.SUBMODULE_ROUTE + "/" + SubModule.Id, SubModule);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -138,7 +138,7 @@
 
 	public async Task DeleteAsync(SubModule sm)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Security.SUBMODULE_ROUTE + "/" + sm.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Security.SUBMODULE_ROUTE + "/" + sm.Id);
 		await Load();
     }
 }

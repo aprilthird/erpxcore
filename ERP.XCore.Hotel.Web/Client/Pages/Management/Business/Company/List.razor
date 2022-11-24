@@ -83,7 +83,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Company[]>(RouteConfig.Management.Business.COMPANY_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Company[]>(ApiRouteConfig.Management.Business.COMPANY_ROUTE);
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Company company = null)
@@ -113,11 +113,11 @@
 		{
 			if(Company.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.COMPANY_ROUTE, Company);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.COMPANY_ROUTE, Company);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.COMPANY_ROUTE + "/" + Company.Id, Company);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.COMPANY_ROUTE + "/" + Company.Id, Company);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -134,7 +134,7 @@
 
 	public async Task DeleteAsync(Company company)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.COMPANY_ROUTE + "/" + company.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Business.COMPANY_ROUTE + "/" + company.Id);
 		await Load();
     }
 }

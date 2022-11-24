@@ -10,7 +10,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Security
 {
 
     [ApiController]
-    [Route(RouteConfig.Management.Security.ROLE_ROUTE)]
+    [Route(ApiRouteConfig.Management.Security.ROLE_ROUTE)]
     public class RoleController : BaseController
     {
         public RoleController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager) : base(context, userManager, roleManager)

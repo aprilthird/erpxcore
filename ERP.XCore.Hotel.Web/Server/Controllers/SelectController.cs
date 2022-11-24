@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers
 {
     [ApiController]
-    [Route(RouteConfig.Select.SELECT_ROUTE)]
+    [Route(ApiRouteConfig.Select.SELECT_ROUTE)]
     public class SelectController : BaseController
     {
         public SelectController(ApplicationDbContext context)
@@ -207,6 +207,32 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
         public async Task<IActionResult> PermissionLevels()
         {
             var result = await _context.PermissionLevels
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("huespedes")]
+        public async Task<IActionResult> Guests()
+        {
+            var result = await _context.Guests
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.FullName
+                }).ToListAsync();
+            
+            return Ok(result);
+        }
+
+        [HttpGet("metodos-de-pago")]
+        public async Task<IActionResult> PaymentMethods()
+        {
+            var result = await _context.PaymentMethods
                 .Select(x => new SelectResource<Guid>()
                 {
                     Value = x.Id,

@@ -78,7 +78,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Module[]>(RouteConfig.Management.Security.MODULE_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<Module[]>(ApiRouteConfig.Management.Security.MODULE_ROUTE);
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, Module m = null)
@@ -106,11 +106,11 @@
 		{
 			if(Module.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Security.MODULE_ROUTE, Module);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Security.MODULE_ROUTE, Module);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Security.MODULE_ROUTE + "/" + Module.Id, Module);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Security.MODULE_ROUTE + "/" + Module.Id, Module);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -127,7 +127,7 @@
 
 	public async Task DeleteAsync(Module m)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Security.MODULE_ROUTE + "/" + m.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Security.MODULE_ROUTE + "/" + m.Id);
 		await Load();
     }
 }

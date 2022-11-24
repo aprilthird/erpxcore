@@ -1,4 +1,5 @@
-﻿using ERP.XCore.Data.Context;
+﻿using ERP.XCore.Core.Helpers;
+using ERP.XCore.Data.Context;
 using ERP.XCore.Entities.Models;
 using ERP.XCore.Hotel.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
 {
     [ApiController]
-    [Route(RouteConfig.Management.Rooms.ROOM_ROUTE)]
+    [Route(ApiRouteConfig.Management.Rooms.ROOM_ROUTE)]
     public class RoomController : BaseController
     {
         public RoomController(ApplicationDbContext context)
@@ -34,6 +35,22 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
 
             var result = await query
                 .ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var query = _context.Rooms
+                .Include(x => x.Status)
+                .Include(x => x.RoomType)
+                .Include(x => x.RoomStatus)
+                .Where(x => x.Id == id)
+                .AsNoTracking()
+                .AsQueryable();
+
+            var result = await query.FirstOrDefaultAsync();
 
             return Ok(result);
         }
@@ -85,7 +102,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
             entity.Description = model.Description;
             entity.RoomTypeId = model.RoomTypeId;
             entity.RoomStatusId = model.RoomStatusId;
-            entity.StatusId = model.StatusId;
+            entity.StatusId = Constants.Status.ENABLED_ID;
         }
     }
 }

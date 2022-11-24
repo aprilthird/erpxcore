@@ -93,15 +93,15 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<Employee[]>(RouteConfig.Management.Business.EMPLOYEE_ROUTE + "?filtro=" + Filter + "&empresa=" + FilterCompany + "&area=" + FilterArea + "&cargo=" + FilterPosition);
+		ItemsList = await Http.GetFromJsonAsync<Employee[]>(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "?filtro=" + Filter + "&empresa=" + FilterCompany + "&area=" + FilterArea + "&cargo=" + FilterPosition);
 	}
 
 	public async Task LoadSelects()
 	{
-		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
-		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empresas");
-		WorkAreas = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/areas");
-		WorkPositions = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/cargos");
+		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/empresas");
+		WorkAreas = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/areas");
+		WorkPositions = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/cargos");
 	}
 
 
@@ -133,11 +133,11 @@
 		{
 			if(Employee.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Business.EMPLOYEE_ROUTE, Employee);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE, Employee);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + Employee.Id, Employee);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + Employee.Id, Employee);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -154,7 +154,7 @@
 
 	public async Task DeleteAsync(Employee employee)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + employee.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + employee.Id);
 		await Load();
     }
 }

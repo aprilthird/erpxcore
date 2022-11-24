@@ -79,7 +79,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<ApplicationRole[]>(RouteConfig.Management.Security.ROLE_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<ApplicationRole[]>(ApiRouteConfig.Management.Security.ROLE_ROUTE);
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, ApplicationRole applicationRole = null)
@@ -107,11 +107,11 @@
 		{
 			if(ApplicationRole.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Security.ROLE_ROUTE, ApplicationRole);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Security.ROLE_ROUTE, ApplicationRole);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Security.ROLE_ROUTE + "/" + ApplicationRole.Id, ApplicationRole);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Security.ROLE_ROUTE + "/" + ApplicationRole.Id, ApplicationRole);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -128,7 +128,7 @@
 
 	public async Task DeleteAsync(ApplicationRole applicationRole)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Security.ROLE_ROUTE + "/" + applicationRole.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Security.ROLE_ROUTE + "/" + applicationRole.Id);
 		await Load();
     }
 }

@@ -78,7 +78,7 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<RoomStatus[]>(RouteConfig.Management.Rooms.ROOMSTATUS_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<RoomStatus[]>(ApiRouteConfig.Management.Rooms.ROOMSTATUS_ROUTE);
 	}
 
 
@@ -107,11 +107,11 @@
 		{
 			if(RoomStatus.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Rooms.ROOMSTATUS_ROUTE, RoomStatus);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Rooms.ROOMSTATUS_ROUTE, RoomStatus);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Rooms.ROOMSTATUS_ROUTE + "/" + RoomStatus.Id, RoomStatus);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Rooms.ROOMSTATUS_ROUTE + "/" + RoomStatus.Id, RoomStatus);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -128,7 +128,7 @@
 
 	public async Task DeleteAsync(RoomStatus rt)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Rooms.ROOMSTATUS_ROUTE+ "/" + rt.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Rooms.ROOMSTATUS_ROUTE+ "/" + rt.Id);
 		await Load();
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
 {
     [ApiController]
-    [Route(RouteConfig.Management.Business.WORK_POSITION_ROUTE)]
+    [Route(ApiRouteConfig.Management.Business.WORK_POSITION_ROUTE)]
     public class WorkPositionController : BaseController
     {
         public WorkPositionController(ApplicationDbContext context)

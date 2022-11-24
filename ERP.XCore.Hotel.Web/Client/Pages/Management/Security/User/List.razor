@@ -85,13 +85,13 @@
 
 	public async Task Load()
 	{
-		ItemsList = await Http.GetFromJsonAsync<ApplicationUser[]>(RouteConfig.Management.Security.USER_ROUTE);
+		ItemsList = await Http.GetFromJsonAsync<ApplicationUser[]>(ApiRouteConfig.Management.Security.USER_ROUTE);
 	}
 
 	public async Task LoadSelects()
 	{
-		Employees = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/empleados");
-		Roles = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(RouteConfig.Select.SELECT_ROUTE + "/roles");
+		Employees = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/empleados");
+		Roles = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/roles");
 	}
 
 	public async Task ShowModalAsync(ModalType modalType, ApplicationUser applicationUser = null)
@@ -123,11 +123,11 @@
 		{
 			if(ApplicationUser.Id == Guid.Empty)
 			{
-				await Http.PostAsJsonAsync(RouteConfig.Management.Security.USER_ROUTE, ApplicationUser);
+				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Security.USER_ROUTE, ApplicationUser);
 			}
 			else
 			{
-				await Http.PutAsJsonAsync(RouteConfig.Management.Security.USER_ROUTE + "/" + ApplicationUser.Id, ApplicationUser);
+				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Security.USER_ROUTE + "/" + ApplicationUser.Id, ApplicationUser);
 			}
 			await Load();
 			await Modal.CloseAsync();
@@ -144,7 +144,7 @@
 
 	public async Task DeleteAsync(ApplicationUser applicationUser)
 	{
-		await Http.DeleteAsync(RouteConfig.Management.Security.USER_ROUTE + "/" + applicationUser.Id);
+		await Http.DeleteAsync(ApiRouteConfig.Management.Security.USER_ROUTE + "/" + applicationUser.Id);
 		await Load();
     }
 }

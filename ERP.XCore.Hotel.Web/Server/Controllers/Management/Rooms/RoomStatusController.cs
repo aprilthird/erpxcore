@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Rooms
 {
     [ApiController]
-    [Route(RouteConfig.Management.Rooms.ROOMSTATUS_ROUTE)]
+    [Route(ApiRouteConfig.Management.Rooms.ROOMSTATUS_ROUTE)]
     public class RoomStatusController : BaseController
     {
         public RoomStatusController(ApplicationDbContext context)

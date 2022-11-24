@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.General
 {
     [ApiController]
-    [Route(RouteConfig.Management.General.DOCUMENT_TYPE_ROUTE)]
+    [Route(ApiRouteConfig.Management.General.DOCUMENT_TYPE_ROUTE)]
     public class DocumentTypeController : BaseController
     {
         public DocumentTypeController(ApplicationDbContext context)

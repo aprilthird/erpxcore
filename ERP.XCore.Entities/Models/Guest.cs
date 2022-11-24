@@ -34,5 +34,7 @@ namespace ERP.XCore.Entities.Models
         public Guid StatusId { get; set; }
 
         public Status? Status { get; set; }
+
+        public string FullName => $"{LastName}, {FirstName}";
     }
 }

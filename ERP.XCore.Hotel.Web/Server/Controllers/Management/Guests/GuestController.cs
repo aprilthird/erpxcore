@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Guests
 {
     [ApiController]
-    [Route(RouteConfig.Management.Guests.GUEST_ROUTE)]
+    [Route(ApiRouteConfig.Management.Guests.GUEST_ROUTE)]
     public class GuestController : BaseController
     {
         public GuestController(ApplicationDbContext context) : base(context)
@@ -17,7 +17,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Guests
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(Guid? type = null)
+        public async Task<IActionResult> GetAll(string? search = null)
         {
             var query = _context.Guests
                 .Include(x => x.Status)
@@ -26,6 +26,8 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Guests
                 .AsNoTracking()
                 .AsQueryable();
 
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(x => x.LastName.Contains(search) || x.FirstName.Contains(search) || x.Document.Contains(search));
 
             var result = await query
                 .ToListAsync();

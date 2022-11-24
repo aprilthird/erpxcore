@@ -390,6 +390,35 @@ namespace ERP.XCore.Data.Seeder
                 await context.Rooms.AddRangeAsync(rooms);
                 await context.SaveChangesAsync();
             }
+
+            if (!context.Guests.Any())
+            {
+                var status = await context.Status.ToListAsync();
+                var documentTypes = await context.DocumentTypes.ToListAsync();
+                var ubigeos = await context.Ubigeos.ToListAsync();
+                var guests = new List<Guest>
+                {
+                    new Guest { FirstName = "Luis Jeffrey", LastName = "Rojas Montes", Email = "jeffreyrm96@gmail.com", PhoneNumber = "994762307", UbigeoId = ubigeos[0].Id, DocumentTypeId = documentTypes[0].Id, Document = "74804725", StatusId = status[0].Id },
+                };
+
+                await context.Guests.AddRangeAsync(guests);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.PaymentMethods.Any())
+            {
+                var paymentMethods = new List<PaymentMethod>
+                {
+                    new PaymentMethod { Description = "Pagar al Salir", RequiresAmount = false, RequiresVoucherNumber = false },
+                    new PaymentMethod { Description = "Efectivo", RequiresAmount = true, RequiresVoucherNumber = false },
+                    new PaymentMethod { Description = "Tarjeta de Crédito/Débito", RequiresAmount = true, RequiresVoucherNumber = true },
+                    new PaymentMethod { Description = "Transferencia", RequiresAmount = true, RequiresVoucherNumber = true },
+                    new PaymentMethod { Description = "Yape", RequiresAmount = true, RequiresVoucherNumber = false },
+                };
+
+                await context.PaymentMethods.AddRangeAsync(paymentMethods);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }
