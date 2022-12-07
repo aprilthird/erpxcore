@@ -2,6 +2,7 @@
 @using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Helpers
 @using ERP.XCore.Hotel.Shared.Resources.Base
+@using ERP.XCore.Hotel.Shared.Resources.Rack
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient Http
 @inject NavigationManager Navigation
@@ -70,7 +71,7 @@
 	</div>
 </div>
 
-<Modal @ref="ModalBusy" Title="@ModalTitle">
+<Modal @ref="ModalBusy" Title="@ModalTitle" Size="ModalTemplate.ModalSize.ExtraLarge">
 	<div>
 		<h6>Código: </h6>
 		<span>@RoomBookingDetail.Code</span>
@@ -85,11 +86,11 @@
 	</div>
 	<div>
 		<h6>Entrada: </h6>
-		<span>@RoomBookingDetail.EntryTime.ToString("dd/MM/yyyy hh:mm tt")</span>
+		<span>@RoomBookingDetail.EntryTime.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
 	</div>
 	<div>
 		<h6>Salida: </h6>
-		<span>@RoomBookingDetail.ExitTime.ToString("dd/MM/yyyy hh:mm tt")</span>
+		<span>@RoomBookingDetail.ExitTime.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
 	</div>
 	<div>
 		<h6>Método de Pago: </h6>
@@ -109,44 +110,118 @@
 		<tbody>
 			<tr>
 				<td></td>
-				<td>@RoomBookingDetail.CreatedAt.ToString("dd/MM/yyyyy")</td>
+				<td>@RoomBookingDetail.CreatedAt.ToLocalTime().ToString("dd/MM/yyyyy")</td>
 				<td>@RoomBookingDetail.Room.RoomType.Description</td>
 				<td>@RoomBookingDetail.Room.Description</td>
 				<td>S/ 00.00</td>
 			</tr>
 		</tbody>
 	</table>
+	<Button Text="Extender Estadía" Type="Shared.Button.ButtonType.Button" OnClickCallback="ShowFormExtensionAsync" />
+	<div class="@FormClass" style="display: @FormCss">
+		<Microsoft.AspNetCore.Components.Forms.EditForm Model="RoomBookingExtension" OnValidSubmit="SaveBookingExtensionAsync">
+			<div class="row pb-2">
+				<div class="col-sm-6">
+					<div class="form-group">
+						<MudDatePicker Date="RoomBookingExtension.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" />
+						<ValidationMessage For="() => RoomBookingExtension.ExitTime" />
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label>&emsp;</label>
+						<InputSelect @bind-Value="RoomBookingExtension.Hour" id="hour" class="form-control" placeholder="Hora">
+							@for(var i=1; i<=12; ++i)
+							{
+								<option value="@i">@i.ToString("00")</option>
+							}
+						</InputSelect>
+						<ValidationMessage For="() => RoomBookingExtension.Hour" />
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label>&emsp;</label>
+						<InputSelect @bind-Value="RoomBookingExtension.Meridian" id="meridian" class="form-control" placeholder="Meridiano">
+							<option value="0">AM</option>
+							<option value="1">PM</option>
+						</InputSelect>
+						<ValidationMessage For="() => RoomBookingExtension.Meridian" />
+					</div>
+				</div>
+			</div>
+			<button type="button" class="btn btn-icon btn-secondary" @onclick="HideFormExtensionAsync">
+                <i class="c-icon cil-x"></i>
+                <span>Cancelar</span>
+            </button>
+            <Button Text="Guardar" Icon="c-icon cil-save" Type="Shared.Button.ButtonType.Submit" />
+		</Microsoft.AspNetCore.Components.Forms.EditForm>
+	</div>
 </Modal>
 
-<Modal @ref="ModalDirty" Title="@ModalTitle">
+<ModalForm @ref="ModalDirty" Title="@ModalTitle" Model="RoomCleaning" ValidSubmitCallback="SaveCleaningAsync" InvalidSubmitCallback="ShowCleaningError">
 	<div>
 		<h6>¿Quién se encuentra limpiando?</h6>
-		<input class="form-control" placeholder="DNI o Apellidos" />
+		<input class="form-control pb-2" placeholder="Búsqueda de Empleado (DNI o Apellidos)" @onchange="OnSearchChanged" />
+		<InputSelect @bind-Value="RoomCleaning.EmployeeId" id="guest" class="form-control" placeholder="Huésped">
+			@foreach(var item in Employees)
+			{
+				<option value="@item.Id">@item.FullName</option>
+			}
+        </InputSelect>
+	</div>
+</ModalForm>
+
+<Modal @ref="ModalCleaning" Title="@ModalTitle">
+	<div>
+		<h6>Encargado: </h6>
+		<span>Sr. @RoomCleaningDetail.Employee.FullName</span>
+	</div>
+	<div>
+		<h6>Inicio: </h6>
+		<span>@RoomCleaningDetail.StartedAt?.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
 	</div>
 </Modal>
 
 <Modal @ref="ModalManagement" Title="@ModalTitle">
 	<div>
 		<h6>Técnico: </h6>
-		<span>Sr. Pablo Zósimo</span>
+		<span>Sr. @RoomMaintenanceDetail.Employee.FullName</span>
 	</div>
 	<div>
 		<h6>Observación: </h6>
-		<span>Baño Atorado</span>
+		<span>@RoomMaintenanceDetail.Description</span>
 	</div>
+	<div>
+		<h6>Inicio: </h6>
+		<span>@RoomMaintenanceDetail.StartedAt.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
+	</div>
+</Modal>
+
+<Modal @ref="ModalExtension" Title="@ModalTitle">
+	<MudDatePicker Date="RoomBooking.ExitTime" Label="Nueva Salida" Editable="true" Placeholder="Escoge una fecha"  />
 </Modal>
 
 @code {
 	private Modal ModalBusy;
-	private Modal ModalDirty;
+	private ModalForm ModalDirty;
 	private Modal ModalCleaning;
 	private Modal ModalManagement;
+	private Modal ModalExtension;
 
 	private string ModalTitle;
 	private Room[]? ItemsList;
 	private string searchString1 = "";
+	private string FormClass = "hide";
+	private string FormCss = "none;";
 
+	private RoomBookingExtensionResource RoomBookingExtension;
+	private RoomBooking RoomBooking = new RoomBooking();
+	private RoomCleaning RoomCleaning;
 	private RoomBooking RoomBookingDetail;
+	private RoomCleaning RoomCleaningDetail;
+	private RoomMaintenance RoomMaintenanceDetail;
+	private ICollection<Employee> Employees;
 	private SelectResource<Guid>[]? RoomTypes;
 	private SelectResource<Guid>[]? RoomStatus;
 	private Guid? filterType;
@@ -207,6 +282,7 @@
 
 	public async Task LoadSelects()
 	{
+		Employees = await Http.GetFromJsonAsync<Employee[]>(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE);
 		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
 		RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
 	}
@@ -222,6 +298,14 @@
 		StateHasChanged();
 	}
 
+	private async Task OnSearchChanged(ChangeEventArgs e)
+    {
+        if(!string.IsNullOrEmpty(e.Value.ToString()))
+        {
+            Employees = await Http.GetFromJsonAsync<Employee[]>(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE+ "?filtro=" + e.Value.ToString());
+        }
+    }
+
 	public async Task ShowModalAsync(Room room = null)
 	{
 		@if (room.RoomStatus.Description == "Disponible")
@@ -231,26 +315,109 @@
 		else if (room.RoomStatus.Description == "Ocupado")
 		{
 			ModalTitle = $"Habitación #{room.Description}";
+			RoomBookingDetail = await Http.GetFromJsonAsync<RoomBooking>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{room.Id}");
+
 			if (RoomBookingDetail == null || RoomBookingDetail.RoomId != room.Id)
 			{
-				RoomBookingDetail = await Http.GetFromJsonAsync<RoomBooking>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{room.Id}");
 			}
 			await ModalBusy.OpenAsync();
 		}
 		else if (room.RoomStatus.Description == "Sucio")
 		{
 			ModalTitle = $"Habitación #{room.Description}";
+			RoomCleaning = new RoomCleaning
+			{
+				RoomId = room.Id,
+			};
 			await ModalDirty.OpenAsync();
 		}
 		else if (room.RoomStatus.Description == "En Limpieza")
 		{
 			ModalTitle = $"Habitación #{room.Description}";
-
+			if (RoomCleaningDetail == null || RoomCleaningDetail.RoomId != room.Id)
+			{
+				RoomCleaningDetail = await Http.GetFromJsonAsync<RoomCleaning>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{room.Id}");
+			}
+			await ModalCleaning.OpenAsync();
 		}
 		else if (room.RoomStatus.Description == "Mantenimiento")
 		{
 			ModalTitle = $"Habitación #{room.Description}";
+			if (RoomMaintenanceDetail == null || RoomMaintenanceDetail.RoomId != room.Id)
+			{
+				RoomMaintenanceDetail = await Http.GetFromJsonAsync<RoomMaintenance>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{room.Id}");
+			}
 			await ModalManagement.OpenAsync();
 		}
+	}
+
+	public async Task SaveCleaningAsync()
+	{
+		try
+		{
+			await Http.PostAsJsonAsync(ApiRouteConfig.Rack.CLEANING_ROUTE, RoomCleaning);
+			await Load();
+			await ModalDirty.CloseAsync();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	private async Task OnDateChanged(DateTime? dateTime)
+	{
+		if (dateTime.HasValue) 
+		{
+			RoomBookingExtension.ExitTime = dateTime.Value;
+			StateHasChanged();
+		}
+	}
+
+	public async Task SaveBookingExtensionAsync()
+	{
+		try
+		{
+			await Http.PostAsJsonAsync(ApiRouteConfig.Rack.EXTENSION_ROUTE, RoomBookingExtension);
+			await HideFormExtensionAsync();
+			RoomBookingDetail = await Http.GetFromJsonAsync<RoomBooking>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{RoomBookingDetail.RoomId}");
+			StateHasChanged();
+		}
+		catch(Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowCleaningError()
+	{
+
+	}
+
+	public async Task ShowFormExtensionAsync()
+	{
+		if (RoomBookingDetail != null)
+		{
+			var nextDay = RoomBookingDetail.ExitTime.AddDays(1);
+			RoomBookingExtension = new RoomBookingExtensionResource() 
+			{ 
+				RoomBookingId = RoomBookingDetail.Id, 
+				ExitTime = nextDay,
+				Hour = nextDay.Hour > 12 ? nextDay.Hour - 12 : nextDay.Hour == 0 ? 12 : nextDay.Hour, 
+				Meridian = nextDay.Hour > 12 ? 1 : 0 
+			};
+		}
+
+		FormCss = "block;";
+		await Task.Delay(500);
+		FormClass = "show";
+	}
+
+	private async Task HideFormExtensionAsync()
+	{
+		FormClass = "hide";
+		await Task.Delay(1000);
+		FormCss = "none;";
+		StateHasChanged();
 	}
 }

@@ -18,7 +18,7 @@ namespace ERP.XCore.Entities.Models
 
         public Guid EmployeeId { get; set; }
 
-        public Guest Employee { get; set; }
+        public Employee Employee { get; set; }
 
         public string Description { get; set; }
 

@@ -4,6 +4,7 @@ using ERP.XCore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERP.XCore.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221129200233_RoomCleaningsV2")]
+    partial class RoomCleaningsV2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -649,6 +651,7 @@ namespace ERP.XCore.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -660,12 +663,13 @@ namespace ERP.XCore.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UbigeoId")
+                    b.Property<Guid>("UbigeoId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -898,7 +902,7 @@ namespace ERP.XCore.Data.Migrations
                     b.Property<DateTime>("ExitTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("GuestId")
+                    b.Property<Guid>("GuestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Hours")
@@ -1439,7 +1443,8 @@ namespace ERP.XCore.Data.Migrations
                     b.HasOne("ERP.XCore.Entities.Models.Ubigeo", "Ubigeo")
                         .WithMany()
                         .HasForeignKey("UbigeoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("DocumentType");
 
@@ -1526,7 +1531,8 @@ namespace ERP.XCore.Data.Migrations
                     b.HasOne("ERP.XCore.Entities.Models.Guest", "Guest")
                         .WithMany()
                         .HasForeignKey("GuestId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("ERP.XCore.Entities.Models.PaymentMethod", "PaymentMethod")
                         .WithMany()
@@ -1575,7 +1581,7 @@ namespace ERP.XCore.Data.Migrations
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCleaning", b =>
                 {
-                    b.HasOne("ERP.XCore.Entities.Models.Employee", "Employee")
+                    b.HasOne("ERP.XCore.Entities.Models.Guest", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1594,7 +1600,7 @@ namespace ERP.XCore.Data.Migrations
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.RoomMaintenance", b =>
                 {
-                    b.HasOne("ERP.XCore.Entities.Models.Employee", "Employee")
+                    b.HasOne("ERP.XCore.Entities.Models.Guest", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Restrict)

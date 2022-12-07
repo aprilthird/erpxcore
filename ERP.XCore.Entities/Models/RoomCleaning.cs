@@ -13,12 +13,12 @@ namespace ERP.XCore.Entities.Models
 
         public Guid RoomId { get; set; }
 
-        public Room Room { get; set; }
+        public Room? Room { get; set; }
 
         public Guid EmployeeId { get; set; }
 
-        public Guest Employee { get; set; }
+        public Employee? Employee { get; set; }
 
-        public DateTime StartedAt { get; set; }
+        public DateTime? StartedAt { get; set; }
     }
 }

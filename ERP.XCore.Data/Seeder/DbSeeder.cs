@@ -419,6 +419,46 @@ namespace ERP.XCore.Data.Seeder
                 await context.PaymentMethods.AddRangeAsync(paymentMethods);
                 await context.SaveChangesAsync();
             }
+
+            if (!context.RoomBookings.Any())
+            {
+                var rooms = await context.Rooms.ToListAsync();
+                var paymentMethods = await context.PaymentMethods.ToListAsync();
+                var guests = await context.Guests.ToListAsync();
+                var roomBookings = new List<RoomBooking>
+                { 
+                    new RoomBooking { RoomId = rooms[6].Id, Code = "1", EntryTime = DateTime.UtcNow, ExitTime = DateTime.UtcNow.AddDays(1), GuestId = guests[0].Id, PaymentMethodId = paymentMethods[0].Id, Nights = 1, ChargedAmount = 100, Amount = 100 },
+                };
+
+                await context.RoomBookings.AddRangeAsync(roomBookings);
+                await context.SaveChangesAsync();
+            }
+
+            if(!context.RoomCleanings.Any())
+            {
+                var rooms = await context.Rooms.ToListAsync();
+                var employees = await context.Employees.ToListAsync();
+                var roomCleanings = new List<RoomCleaning>
+                {
+                    new RoomCleaning { RoomId = rooms[3].Id, EmployeeId = employees[1].Id, StartedAt = DateTime.UtcNow },
+                };
+
+                await context.RoomCleanings.AddRangeAsync(roomCleanings);
+                await context.SaveChangesAsync();
+            }
+
+            if(!context.RoomMaintenances.Any())
+            {
+                var rooms = await context.Rooms.ToListAsync();
+                var employees = await context.Employees.ToListAsync();
+                var roomMaintenances = new List<RoomMaintenance>
+                {
+                    new RoomMaintenance { RoomId = rooms[4].Id, EmployeeId = employees[1].Id, StartedAt = DateTime.UtcNow, Description = "Baño Atorado" },
+                };
+
+                await context.RoomMaintenances.AddRangeAsync(roomMaintenances);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

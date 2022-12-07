@@ -43,6 +43,8 @@ namespace ERP.XCore.Entities.Models
 
         public Company? Company { get; set; }
 
+        public string FullName => $"{LastName}, {FirstName}";
+
         public ICollection<ApplicationUser>? Users { get; set; }
     }
 }

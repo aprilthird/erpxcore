@@ -22,7 +22,7 @@ namespace ERP.XCore.Entities.Models
 
         public Room? Room { get; set; }
 
-        public Guid GuestId { get; set; }
+        public Guid? GuestId { get; set; }
 
         public Guest? Guest { get; set; }
 
@@ -35,6 +35,9 @@ namespace ERP.XCore.Entities.Models
 
         [NotMapped]
         public int Meridian { get; set; }
+
+		[NotMapped]
+        public string? NewGuest { get; set; }
 
         [NotMapped]
         public string? RelatedBookingCode { get; set; }

@@ -23,11 +23,11 @@ namespace ERP.XCore.Entities.Models
 
         public DateTime? BirthDate { get; set; }
 
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        public Guid UbigeoId { get; set; }
+        public Guid? UbigeoId { get; set; }
 
         public Ubigeo? Ubigeo { get; set; }
 
