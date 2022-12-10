@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ERP.XCore.Core\ERP.XCore.Core.csproj" />
+    <ProjectReference Include="..\ERP.XCore.Entities\ERP.XCore.Entities.csproj" />
   </ItemGroup>
 
 </Project>
