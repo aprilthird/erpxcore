@@ -21,8 +21,8 @@ builder.Services
 
 builder.Services
     .AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddDefaultUI()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI();
 
 builder.Services
     .AddIdentityServer()

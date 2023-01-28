@@ -1,16 +1,79 @@
 ﻿@page "/"
+@attribute [Authorize]
 
 <PageTitle>Index</PageTitle>
 
-@*
-<h1>Hello, world!</h1>
+<AuthorizeView>
+	<Authorized>
+		<MudAlert Elevation="1" Severity="Severity.Success">
+			Bienvenido, <b>@context.User.Identity?.Name</b>
+		</MudAlert>
+	</Authorized>
+</AuthorizeView>
 
-Welcome to your new app.
+<MudPaper Elevation="1" Class="mt-4 pa-4">
+	<MudChart ChartType="ChartType.Bar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="350px">
+		<CustomGraphics>
+			<style>
+				.heavy {
+					font: bold 30px Helvetica;
+				}
 
-<SurveyPrompt Title="How is Blazor working for you?" />*@
+				.Rrrrr {
+					font: italic 40px Helvetica;
+					fill: rgb(62,44,221);
+				}
+			</style>
+			<text x="80" y="35" class="heavy">ERP</text>
+			<text x="105" y="70" class="Rrrrr">XCore!</text>
+		</CustomGraphics>
+	</MudChart>
+</MudPaper>
 
-<!--begin::Container-->
-					<div id="kt_content_container" class="container-xxl">
-						Bienvenido
-					</div>
-					<!--end::Container-->
+<MudGrid Spacing="4" Class="mt-4">
+	<MudItem xs="6">
+		<MudPaper Class="pa-4">
+			<MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" InputData="@data" InputLabels="@labels">
+				<CustomGraphics>
+					<text class="donut-inner-text" x="47%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="2">Total</text>
+					<text class="donut-inner-text" x="47%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="5">@data.Sum().ToString()</text>
+				</CustomGraphics>
+			</MudChart>
+		</MudPaper>
+	</MudItem>
+	<MudItem xs="6">
+		<MudPaper Class="pa-4">
+			<MudChart ChartType="ChartType.Pie" InputData="@data1" InputLabels="@labels1" Width="300px" Height="300px" />
+		</MudPaper>
+	</MudItem>
+</MudGrid>
+
+<MudPaper Spacing="4" Class="mt-4 pa-4">
+	<MudChart ChartType="ChartType.Line" ChartSeries="@Series1" XAxisLabels="@XAxisLabels1" Width="100%" Height="350px"></MudChart>
+</MudPaper>
+
+@code {
+	private List<ChartSeries> Series = new List<ChartSeries>()
+	{
+		new ChartSeries() { Name = "EEUU", Data = new double[] { 40, 20, 25, 27, 46, 60, 48, 80, 15 } },
+		new ChartSeries() { Name = "Alemania", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 31 } },
+		new ChartSeries() { Name = "Suecia", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 18 } },
+	};
+	private string[] XAxisLabels = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep" };
+
+	private double[] data = { 25, 77, 28, 5 };
+	private string[] labels = { "Aceite", "Carbón", "Gas", "Biomasa" };
+
+	private int dataSize = 4;
+	private double[] data1 = { 77, 25, 20, 5 };
+	private string[] labels1 = { "Uranio", "Plutonio", "Torio", "Cesio" };
+
+	public List<ChartSeries> Series1 = new List<ChartSeries>()
+	{
+		new ChartSeries() { Name = "Serie 1", Data = new double[] { 90, 79, 72, 69, 62, 62, 55, 65, 70 } },
+		new ChartSeries() { Name = "Serie 2", Data = new double[] { 10, 41, 35, 51, 49, 62, 69, 91, 148 } },
+	};
+	public string[] XAxisLabels1 = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep" };
+	
+}
+

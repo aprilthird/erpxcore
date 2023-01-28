@@ -876,7 +876,7 @@ namespace ERP.XCore.Data.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBooking", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckIn", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -912,7 +912,7 @@ namespace ERP.XCore.Data.Migrations
                     b.Property<Guid>("PaymentMethodId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RelatedBookingId")
+                    b.Property<Guid?>("RelatedCheckInId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("RoomId")
@@ -930,14 +930,14 @@ namespace ERP.XCore.Data.Migrations
 
                     b.HasIndex("PaymentMethodId");
 
-                    b.HasIndex("RelatedBookingId");
+                    b.HasIndex("RelatedCheckInId");
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomBookings");
+                    b.ToTable("RoomCheckIns");
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBookingCompanion", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckInCompanion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -949,7 +949,7 @@ namespace ERP.XCore.Data.Migrations
                     b.Property<Guid>("GuestId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoomBookingId")
+                    b.Property<Guid>("RoomCheckInId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -959,9 +959,9 @@ namespace ERP.XCore.Data.Migrations
 
                     b.HasIndex("GuestId");
 
-                    b.HasIndex("RoomBookingId");
+                    b.HasIndex("RoomCheckInId");
 
-                    b.ToTable("RoomBookingCompanions");
+                    b.ToTable("RoomCheckInCompanions");
                 });
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCleaning", b =>
@@ -1523,7 +1523,7 @@ namespace ERP.XCore.Data.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBooking", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckIn", b =>
                 {
                     b.HasOne("ERP.XCore.Entities.Models.Guest", "Guest")
                         .WithMany()
@@ -1536,9 +1536,9 @@ namespace ERP.XCore.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ERP.XCore.Entities.Models.RoomBooking", "RelatedBooking")
+                    b.HasOne("ERP.XCore.Entities.Models.RoomCheckIn", "RelatedCheckIn")
                         .WithMany()
-                        .HasForeignKey("RelatedBookingId")
+                        .HasForeignKey("RelatedCheckInId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ERP.XCore.Entities.Models.Room", "Room")
@@ -1551,12 +1551,12 @@ namespace ERP.XCore.Data.Migrations
 
                     b.Navigation("PaymentMethod");
 
-                    b.Navigation("RelatedBooking");
+                    b.Navigation("RelatedCheckIn");
 
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBookingCompanion", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckInCompanion", b =>
                 {
                     b.HasOne("ERP.XCore.Entities.Models.Guest", "Guest")
                         .WithMany()
@@ -1564,15 +1564,15 @@ namespace ERP.XCore.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ERP.XCore.Entities.Models.RoomBooking", "RoomBooking")
+                    b.HasOne("ERP.XCore.Entities.Models.RoomCheckIn", "RoomCheckIn")
                         .WithMany()
-                        .HasForeignKey("RoomBookingId")
+                        .HasForeignKey("RoomCheckInId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Guest");
 
-                    b.Navigation("RoomBooking");
+                    b.Navigation("RoomCheckIn");
                 });
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCleaning", b =>

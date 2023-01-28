@@ -1,6 +1,17 @@
 ﻿@page "/authentication/{action}"
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-<RemoteAuthenticatorView Action="@Action" />
+<RemoteAuthenticatorView Action="@Action">
+    <LoggingIn>
+        <MudContainer Class="mud-height-full d-flex justify-center align-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudContainer>
+    </LoggingIn>
+    <CompletingLoggingIn>
+        <MudContainer Class="mud-height-full d-flex justify-center align-center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudContainer>
+    </CompletingLoggingIn>
+</RemoteAuthenticatorView>
 
 @code{
     [Parameter] public string? Action { get; set; }

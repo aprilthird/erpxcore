@@ -1,0 +1,52 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudForm @ref="Form" Model="Model">
+            @ChildContent
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Confirmar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Inject] 
+    ISnackbar Snackbar { get; set; }
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public object Model { get; set; }
+
+    [Parameter]
+    public EventCallback ValidSubmitCallback { get; set; }
+
+    [Parameter]
+    public EventCallback InvalidSubmitCallback { get; set; }
+
+    private MudForm Form { get; set; }
+
+    private async Task Submit()
+    {
+        await Form.Validate();
+
+        if (Form.IsValid)
+        {
+            Snackbar.Add("Submited!");
+            await ValidSubmitCallback.InvokeAsync(this);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            Snackbar.Add("Error!");
+            await InvalidSubmitCallback.InvokeAsync(this);
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

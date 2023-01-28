@@ -11,7 +11,7 @@ namespace ERP.XCore.Data.Migrations
         {
             migrationBuilder.AlterColumn<Guid>(
                 name: "GuestId",
-                table: "RoomBookings",
+                table: "RoomCheckIns",
                 type: "uniqueidentifier",
                 nullable: true,
                 oldClrType: typeof(Guid),
@@ -46,7 +46,7 @@ namespace ERP.XCore.Data.Migrations
         {
             migrationBuilder.AlterColumn<Guid>(
                 name: "GuestId",
-                table: "RoomBookings",
+                table: "RoomCheckIns",
                 type: "uniqueidentifier",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),

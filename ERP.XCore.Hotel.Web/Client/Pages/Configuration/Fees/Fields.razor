@@ -1,0 +1,51 @@
+﻿@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Resources.Base
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="roomtype">Tipo Habitación</label>
+            <InputSelect @bind-Value="Fee.RoomTypeId" id="roomtype" class="form-control" placeholder="Tipo Habitación">
+                @foreach (var item in RoomTypes)
+                {
+                        <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Fee.RoomTypeId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="feetype">Tipo Tarifa</label>
+            <InputSelect @bind-Value="Fee.FeeTypeId" id="feetype" class="form-control" placeholder="Tipo Tarifa">
+                @foreach (var item in FeeTypes)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => Fee.FeeTypeId" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label for="description">Monto</label>
+            <InputNumber @bind-Value="Fee.Amount" id="amount" class="form-control" placeholder="Monto" />
+            <ValidationMessage For="() => Fee.Amount" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Fee Fee { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> RoomTypes { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> FeeTypes { get; set; }
+}

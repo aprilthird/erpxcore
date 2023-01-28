@@ -241,5 +241,38 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("tipos-de-tarifa")]
+        public async Task<IActionResult> FeeTypes()
+        {
+            var result = await _context.FeeTypes
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = x.Description
+                }).ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpGet("tarifas")]
+        public async Task<IActionResult> Fees(Guid? roomTypeId = null)
+        {
+            var query = _context.Fees
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (roomTypeId.HasValue)
+                query = query.Where(x => x.RoomTypeId == roomTypeId.Value);
+
+            var result = await query
+                .Select(x => new SelectResource<Guid>()
+                {
+                    Value = x.Id,
+                    Text = $"{x.FeeType.Description} ({x.RoomType.Description}) - {x.FeeType.Currency.Sign} {x.Amount}"
+                }).ToListAsync();
+            
+            return Ok(result);
+        }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Entities.Models
 {
-    public class RoomType : BaseEntity
+    public class RoomType : BaseEntity  
     {
         public Guid Id { get; set; }
 

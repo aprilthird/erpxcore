@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Services.Validators
 {
-    public class RoomBookingCompanionValidator : AbstractValidator<RoomBookingCompanionDto>
+    public class RoomCheckInCompanionValidator : AbstractValidator<RoomCheckInCompanionDto>
     {
-        public RoomBookingCompanionValidator() 
+        public RoomCheckInCompanionValidator() 
         {
            
         }

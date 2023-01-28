@@ -1,13 +1,23 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.JSInterop
-@using ERP.XCore.Hotel.Web.Client
-@using ERP.XCore.Hotel.Web.Client.Shared
 
 @using MudBlazor;
+
+@using ERP.XCore.Components;
+@using ERP.XCore.Components.Extensions;
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using ERP.XCore.Hotel.Web.Client
+@using ERP.XCore.Hotel.Web.Client.Shared
+@using ERP.XCore.Entities.Models;
+

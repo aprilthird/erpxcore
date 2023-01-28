@@ -104,7 +104,7 @@ namespace ERP.XCore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoomBookings",
+                name: "RoomCheckIns",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -125,27 +125,27 @@ namespace ERP.XCore.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoomBookings", x => x.Id);
+                    table.PrimaryKey("PK_RoomCheckIns", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoomBookings_Guests_GuestId",
+                        name: "FK_RoomCheckIns_Guests_GuestId",
                         column: x => x.GuestId,
                         principalTable: "Guests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RoomBookings_PaymentMethods_PaymentMethodId",
+                        name: "FK_RoomCheckIns_PaymentMethods_PaymentMethodId",
                         column: x => x.PaymentMethodId,
                         principalTable: "PaymentMethods",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RoomBookings_RoomBookings_RelatedBookingId",
+                        name: "FK_RoomCheckIns_RoomCheckIns_RelatedBookingId",
                         column: x => x.RelatedBookingId,
-                        principalTable: "RoomBookings",
+                        principalTable: "RoomCheckIns",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RoomBookings_Rooms_RoomId",
+                        name: "FK_RoomCheckIns_Rooms_RoomId",
                         column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
@@ -153,60 +153,60 @@ namespace ERP.XCore.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoomBookingCompanions",
+                name: "RoomCheckInCompanions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoomBookingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomCheckInId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GuestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoomBookingCompanions", x => x.Id);
+                    table.PrimaryKey("PK_RoomCheckInCompanions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoomBookingCompanions_Guests_GuestId",
+                        name: "FK_RoomCheckInCompanions_Guests_GuestId",
                         column: x => x.GuestId,
                         principalTable: "Guests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RoomBookingCompanions_RoomBookings_RoomBookingId",
-                        column: x => x.RoomBookingId,
-                        principalTable: "RoomBookings",
+                        name: "FK_RoomCheckInCompanions_RoomCheckIns_RoomCheckInId",
+                        column: x => x.RoomCheckInId,
+                        principalTable: "RoomCheckIns",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomBookingCompanions_GuestId",
-                table: "RoomBookingCompanions",
+                name: "IX_RoomCheckInCompanions_GuestId",
+                table: "RoomCheckInCompanions",
                 column: "GuestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomBookingCompanions_RoomBookingId",
-                table: "RoomBookingCompanions",
-                column: "RoomBookingId");
+                name: "IX_RoomCheckInCompanions_RoomCheckInId",
+                table: "RoomCheckInCompanions",
+                column: "RoomCheckInId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomBookings_GuestId",
-                table: "RoomBookings",
+                name: "IX_RoomCheckIns_GuestId",
+                table: "RoomCheckIns",
                 column: "GuestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomBookings_PaymentMethodId",
-                table: "RoomBookings",
+                name: "IX_RoomCheckIns_PaymentMethodId",
+                table: "RoomCheckIns",
                 column: "PaymentMethodId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomBookings_RelatedBookingId",
-                table: "RoomBookings",
-                column: "RelatedBookingId");
+                name: "IX_RoomCheckIns_RelatedBookingId",
+                table: "RoomCheckIns",
+                column: "RelatedCheckInId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomBookings_RoomId",
-                table: "RoomBookings",
+                name: "IX_RoomCheckIns_RoomId",
+                table: "RoomCheckIns",
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
@@ -236,7 +236,7 @@ namespace ERP.XCore.Data.Migrations
                 name: "BookingFees");
 
             migrationBuilder.DropTable(
-                name: "RoomBookingCompanions");
+                name: "RoomCheckInCompanions");
 
             migrationBuilder.DropTable(
                 name: "RoomCleanings");
@@ -245,7 +245,7 @@ namespace ERP.XCore.Data.Migrations
                 name: "RoomMaintenances");
 
             migrationBuilder.DropTable(
-                name: "RoomBookings");
+                name: "RoomCheckIns");
 
             migrationBuilder.DropTable(
                 name: "PaymentMethods");

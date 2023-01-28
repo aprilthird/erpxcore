@@ -11,15 +11,15 @@ namespace ERP.XCore.Data.Migrations
         {
             migrationBuilder.AlterColumn<string>(
                 name: "VoucherNumber",
-                table: "RoomBookings",
+                table: "RoomCheckIns",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
             migrationBuilder.AlterColumn<Guid>(
-                name: "RelatedBookingId",
-                table: "RoomBookings",
+                name: "RelatedCheckInId",
+                table: "RoomCheckIns",
                 type: "uniqueidentifier",
                 nullable: true,
                 oldClrType: typeof(Guid),
@@ -52,7 +52,7 @@ namespace ERP.XCore.Data.Migrations
 
             migrationBuilder.AlterColumn<string>(
                 name: "VoucherNumber",
-                table: "RoomBookings",
+                table: "RoomCheckIns",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -61,8 +61,8 @@ namespace ERP.XCore.Data.Migrations
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<Guid>(
-                name: "RelatedBookingId",
-                table: "RoomBookings",
+                name: "RelatedCheckInId",
+                table: "RoomCheckIns",
                 type: "uniqueidentifier",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),

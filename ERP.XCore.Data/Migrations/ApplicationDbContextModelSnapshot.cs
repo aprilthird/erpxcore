@@ -17,7 +17,7 @@ namespace ERP.XCore.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("ProductVersion", "6.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -394,6 +394,31 @@ namespace ERP.XCore.Data.Migrations
                     b.ToTable("BookingFees");
                 });
 
+            modelBuilder.Entity("ERP.XCore.Entities.Models.CashRegister", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CashRegisters");
+                });
+
             modelBuilder.Entity("ERP.XCore.Entities.Models.Company", b =>
                 {
                     b.Property<Guid>("Id")
@@ -461,6 +486,35 @@ namespace ERP.XCore.Data.Migrations
                     b.HasIndex("StatusId");
 
                     b.ToTable("CompanyHeadquarters");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.Currency", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sign")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.Customer", b =>
@@ -629,6 +683,67 @@ namespace ERP.XCore.Data.Migrations
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("ERP.XCore.Entities.Models.Fee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("FeeTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoomTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeeTypeId");
+
+                    b.HasIndex("RoomTypeId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("Fees");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.FeeType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("FeeTypes");
+                });
+
             modelBuilder.Entity("ERP.XCore.Entities.Models.Guest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -701,6 +816,81 @@ namespace ERP.XCore.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Modules");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.PaymentDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CashRegisterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("ChargedAmount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CurrencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PaymentMethodId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("RegisterUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("SubTotal")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VoucherNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CashRegisterId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("RegisterUserId");
+
+                    b.ToTable("PaymentDetails");
                 });
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.PaymentMethod", b =>
@@ -874,16 +1064,16 @@ namespace ERP.XCore.Data.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBooking", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckIn", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Amount")
+                    b.Property<double?>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<double>("ChargedAmount")
+                    b.Property<double?>("ChargedAmount")
                         .HasColumnType("float");
 
                     b.Property<string>("Code")
@@ -898,6 +1088,9 @@ namespace ERP.XCore.Data.Migrations
                     b.Property<DateTime>("ExitTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("FeeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("GuestId")
                         .HasColumnType("uniqueidentifier");
 
@@ -910,10 +1103,14 @@ namespace ERP.XCore.Data.Migrations
                     b.Property<Guid>("PaymentMethodId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RelatedBookingId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("RelatedCheckInId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("RelatedBookingId");
 
                     b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("StatusId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -924,18 +1121,22 @@ namespace ERP.XCore.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FeeId");
+
                     b.HasIndex("GuestId");
 
                     b.HasIndex("PaymentMethodId");
 
-                    b.HasIndex("RelatedBookingId");
+                    b.HasIndex("RelatedCheckInId");
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomBookings");
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("RoomBookings", (string)null);
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBookingCompanion", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckInCompanion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -947,8 +1148,9 @@ namespace ERP.XCore.Data.Migrations
                     b.Property<Guid>("GuestId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoomBookingId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("RoomCheckInId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("RoomBookingId");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -957,9 +1159,46 @@ namespace ERP.XCore.Data.Migrations
 
                     b.HasIndex("GuestId");
 
-                    b.HasIndex("RoomBookingId");
+                    b.HasIndex("RoomCheckInId");
 
-                    b.ToTable("RoomBookingCompanions");
+                    b.ToTable("RoomBookingCompanions", (string)null);
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckInDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsExtension")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsExtraAdded")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PaymentDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoomCheckInId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("RoomBookingId");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentDetailId");
+
+                    b.HasIndex("RoomCheckInId");
+
+                    b.ToTable("RoomBookingDetails", (string)null);
                 });
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCleaning", b =>
@@ -1422,6 +1661,44 @@ namespace ERP.XCore.Data.Migrations
                     b.Navigation("WorkPosition");
                 });
 
+            modelBuilder.Entity("ERP.XCore.Entities.Models.Fee", b =>
+                {
+                    b.HasOne("ERP.XCore.Entities.Models.FeeType", "FeeType")
+                        .WithMany()
+                        .HasForeignKey("FeeTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.XCore.Entities.Models.RoomType", "RoomType")
+                        .WithMany()
+                        .HasForeignKey("RoomTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.XCore.Entities.Models.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FeeType");
+
+                    b.Navigation("RoomType");
+
+                    b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.FeeType", b =>
+                {
+                    b.HasOne("ERP.XCore.Entities.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+                });
+
             modelBuilder.Entity("ERP.XCore.Entities.Models.Guest", b =>
                 {
                     b.HasOne("ERP.XCore.Entities.Models.DocumentType", "DocumentType")
@@ -1446,6 +1723,49 @@ namespace ERP.XCore.Data.Migrations
                     b.Navigation("Status");
 
                     b.Navigation("Ubigeo");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.PaymentDetail", b =>
+                {
+                    b.HasOne("ERP.XCore.Entities.Models.CashRegister", "CashRegister")
+                        .WithMany()
+                        .HasForeignKey("CashRegisterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.XCore.Entities.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.XCore.Entities.Models.Payment", "Payment")
+                        .WithMany("Details")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.XCore.Entities.Models.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.XCore.Entities.Models.ApplicationUser", "RegisterUser")
+                        .WithMany()
+                        .HasForeignKey("RegisterUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CashRegister");
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("Payment");
+
+                    b.Navigation("PaymentMethod");
+
+                    b.Navigation("RegisterUser");
                 });
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.Permission", b =>
@@ -1521,8 +1841,13 @@ namespace ERP.XCore.Data.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBooking", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckIn", b =>
                 {
+                    b.HasOne("ERP.XCore.Entities.Models.Fee", "Fee")
+                        .WithMany()
+                        .HasForeignKey("FeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ERP.XCore.Entities.Models.Guest", "Guest")
                         .WithMany()
                         .HasForeignKey("GuestId")
@@ -1534,9 +1859,9 @@ namespace ERP.XCore.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ERP.XCore.Entities.Models.RoomBooking", "RelatedBooking")
+                    b.HasOne("ERP.XCore.Entities.Models.RoomCheckIn", "RelatedCheckIn")
                         .WithMany()
-                        .HasForeignKey("RelatedBookingId")
+                        .HasForeignKey("RelatedCheckInId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ERP.XCore.Entities.Models.Room", "Room")
@@ -1545,16 +1870,25 @@ namespace ERP.XCore.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("ERP.XCore.Entities.Models.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Fee");
+
                     b.Navigation("Guest");
 
                     b.Navigation("PaymentMethod");
 
-                    b.Navigation("RelatedBooking");
+                    b.Navigation("RelatedCheckIn");
 
                     b.Navigation("Room");
+
+                    b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomBookingCompanion", b =>
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckInCompanion", b =>
                 {
                     b.HasOne("ERP.XCore.Entities.Models.Guest", "Guest")
                         .WithMany()
@@ -1562,15 +1896,34 @@ namespace ERP.XCore.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ERP.XCore.Entities.Models.RoomBooking", "RoomBooking")
-                        .WithMany()
-                        .HasForeignKey("RoomBookingId")
+                    b.HasOne("ERP.XCore.Entities.Models.RoomCheckIn", "RoomCheckIn")
+                        .WithMany("Companions")
+                        .HasForeignKey("RoomCheckInId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Guest");
 
-                    b.Navigation("RoomBooking");
+                    b.Navigation("RoomCheckIn");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckInDetail", b =>
+                {
+                    b.HasOne("ERP.XCore.Entities.Models.PaymentDetail", "PaymentDetail")
+                        .WithMany()
+                        .HasForeignKey("PaymentDetailId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ERP.XCore.Entities.Models.RoomCheckIn", "RoomCheckIn")
+                        .WithMany("Details")
+                        .HasForeignKey("RoomCheckInId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PaymentDetail");
+
+                    b.Navigation("RoomCheckIn");
                 });
 
             modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCleaning", b =>
@@ -1660,6 +2013,18 @@ namespace ERP.XCore.Data.Migrations
             modelBuilder.Entity("ERP.XCore.Entities.Models.Module", b =>
                 {
                     b.Navigation("SubModules");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.Payment", b =>
+                {
+                    b.Navigation("Details");
+                });
+
+            modelBuilder.Entity("ERP.XCore.Entities.Models.RoomCheckIn", b =>
+                {
+                    b.Navigation("Companions");
+
+                    b.Navigation("Details");
                 });
 #pragma warning restore 612, 618
         }

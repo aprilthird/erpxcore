@@ -1,0 +1,141 @@
+﻿@page "/configuracion/tarifas"
+@using ERP.XCore.Entities.Models
+@using ERP.XCore.Hotel.Shared.Helpers
+@using ERP.XCore.Hotel.Shared.Resources.Base
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject HttpClient Http
+
+<div class="row px-5">
+	<div class="d-flex justify-content-between">
+		<h3>Tarifas</h3>
+		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
+			<i class="fa fa-add"></i>
+			<span>Agregar</span>
+		</button>
+	</div>
+	<div class="col-md-12 row">
+	</div>
+	<hr />
+	<div class="col-md-12">
+		<div class="table-responsive">
+			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Fee, bool>(FilterFunc1)">
+				<ToolBarContent>
+					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+				</ToolBarContent>
+				<HeaderContent>
+					<MudTh>Tipo Habitación</MudTh>
+					<MudTh>Tipo Tarifa</MudTh>
+					<MudTh>Precio</MudTh>
+					<MudTh>Acciones</MudTh>
+				</HeaderContent>
+				<RowTemplate>
+					<MudTd>@context.RoomType.Description</MudTd>
+					<MudTd>@context.FeeType.Description</MudTd>
+					<MudTd>@context.Amount</MudTd>
+					<MudTd>
+						<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+							<i class="fa fa-edit"></i>
+							<span>Editar</span>
+						</button>
+						<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+							<i class="fa fa-trash"></i>
+							<span>Eliminar</span>
+						</button>
+					</MudTd>
+				</RowTemplate>
+			</MudTable>
+		</div>
+	</div>
+</div>
+
+<ModalForm @ref="Modal" Title="@ModalTitle" Model="Fee" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<Fields @ref="Fields" Fee="Fee" RoomTypes="RoomTypes" FeeTypes="FeeTypes" />
+</ModalForm>
+
+@code {
+	private Fee Fee = new Fee();
+	private FeeType FeeType = new FeeType();
+	private ModalForm Modal;
+	private Fields Fields;
+	private string ModalTitle;
+	private Fee[]? ItemsList;
+	private SelectResource<Guid>[]? FeeTypes;
+	private SelectResource<Guid>[]? RoomTypes;
+	private string searchString1 = "";
+	public enum ModalType
+	{
+		New, Edit
+	};
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			await Load();
+			await LoadSelects();
+		}
+		catch (AccessTokenNotAvailableException exception)
+		{
+			exception.Redirect();
+		}
+	}
+
+	public async Task Load()
+	{
+		ItemsList = await Http.GetFromJsonAsync<Fee[]>(ApiRouteConfig.Configuration.FEE_ROUTE);
+	}
+
+	public async Task LoadSelects()
+	{
+		RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
+		FeeTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-tarifa");
+	}
+
+	public async Task ShowModalAsync(ModalType modalType, Fee fee = null)
+	{
+		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Tarifa";
+		Fee = fee ?? new Fee();
+		await Modal.OpenAsync();
+	}
+
+	private bool FilterFunc1(Fee fee) => FilterFunc(fee, searchString1);
+
+	private bool FilterFunc(Fee fee, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		
+		return false;
+	}
+
+	public async Task SaveAsync()
+	{
+		try
+		{
+			if (Fee.Id == Guid.Empty)
+			{
+				await Http.PostAsJsonAsync(ApiRouteConfig.Configuration.FEE_ROUTE, Fee);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync(ApiRouteConfig.Configuration.FEE_ROUTE + "/" + Fee.Id, Fee);
+			}
+			await Load();
+			await Modal.CloseAsync();
+		}
+		catch (Exception ex)
+		{
+
+		}
+	}
+
+	public void ShowError()
+	{
+	}
+
+	public async Task DeleteAsync(Fee fee)
+	{
+		await Http.DeleteAsync(ApiRouteConfig.Configuration.FEE_ROUTE + "/" + fee.Id);
+		await Load();
+	}
+}

@@ -21,9 +21,13 @@ namespace ERP.XCore.Data.Context
 
         public DbSet<BookingFee> BookingFees { get; set; }
 
+        public DbSet<CashRegister> CashRegisters { get; set; }
+
         public DbSet<Company> Companies { get; set; }
 
         public DbSet<CompanyHeadquarter> CompanyHeadquarters { get; set; }
+
+        public DbSet<Currency> Currencies { get; set; }
 
         public DbSet<Customer> Customers { get; set; }
 
@@ -31,9 +35,17 @@ namespace ERP.XCore.Data.Context
 
         public DbSet<Employee> Employees { get; set; }
 
+        public DbSet<Fee> Fees { get; set; }
+
+        public DbSet<FeeType> FeeTypes { get; set; }
+
         public DbSet<Guest> Guests { get; set; }
 
         public DbSet<Module> Modules { get; set; }
+
+        public DbSet<Payment> Payments { get; set; }
+
+        public DbSet<PaymentDetail> PaymentDetails { get; set; }
 
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
 
@@ -45,11 +57,13 @@ namespace ERP.XCore.Data.Context
 
         public DbSet<PointOfSale> PointsOfSale { get; set; }
 
-        public DbSet<RoomBooking> RoomBookings { get; set; }
+        public DbSet<RoomCheckIn> RoomCheckIns { get; set; }
+
+        public DbSet<RoomCheckInDetail> RoomCheckInDetails { get; set; }
 
         public DbSet<RoomCleaning> RoomCleanings { get; set; }
 
-        public DbSet<RoomBookingCompanion> RoomBookingCompanions { get; set; }
+        public DbSet<RoomCheckInCompanion> RoomCheckInCompanions { get; set; }
 
         public DbSet<RoomMaintenance> RoomMaintenances { get; set; }
 
@@ -79,6 +93,10 @@ namespace ERP.XCore.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<RoomCheckIn>(b => b.ToTable("RoomBookings"));
+            modelBuilder.Entity<RoomCheckInCompanion>(b => b.ToTable("RoomBookingCompanions"));
+            modelBuilder.Entity<RoomCheckInDetail>(b => b.ToTable("RoomBookingDetails"));
 
             modelBuilder.Entity<ApplicationUser>(b =>
             {

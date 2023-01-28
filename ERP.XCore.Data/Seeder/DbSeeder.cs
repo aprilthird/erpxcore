@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,6 +69,16 @@ namespace ERP.XCore.Data.Seeder
                     new CompanyHeadquarter { Description = "Prueba 2", Address = "Prueba", CompanyId = companies[0].Id, StatusId = status[0].Id },
                 };
                 await context.CompanyHeadquarters.AddRangeAsync(companyHeadquarters);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Currencies.Any())
+            {
+                var currencies = new List<Currency>
+                {
+                    new Currency { Code = "PEN", Description = "Nuevos Soles Peruanos", Sign = "S/" },
+                };
+                await context.Currencies.AddRangeAsync(currencies);
                 await context.SaveChangesAsync();
             }
 
@@ -420,18 +431,23 @@ namespace ERP.XCore.Data.Seeder
                 await context.SaveChangesAsync();
             }
 
-            if (!context.RoomBookings.Any())
+            if (!context.RoomCheckIns.Any())
             {
                 var rooms = await context.Rooms.ToListAsync();
                 var paymentMethods = await context.PaymentMethods.ToListAsync();
                 var guests = await context.Guests.ToListAsync();
-                var roomBookings = new List<RoomBooking>
+                var roomCheckIns = new List<RoomCheckIn>
                 { 
-                    new RoomBooking { RoomId = rooms[6].Id, Code = "1", EntryTime = DateTime.UtcNow, ExitTime = DateTime.UtcNow.AddDays(1), GuestId = guests[0].Id, PaymentMethodId = paymentMethods[0].Id, Nights = 1, ChargedAmount = 100, Amount = 100 },
+                    new RoomCheckIn { RoomId = rooms[6].Id, Code = "1", EntryTime = DateTime.UtcNow, ExitTime = DateTime.UtcNow.AddDays(1), GuestId = guests[0].Id, PaymentMethodId = paymentMethods[0].Id, Nights = 1, ChargedAmount = 100, Amount = 100 },
                 };
 
-                await context.RoomBookings.AddRangeAsync(roomBookings);
+                await context.RoomCheckIns.AddRangeAsync(roomCheckIns);
                 await context.SaveChangesAsync();
+            }
+
+            if(!context.RoomCheckInDetails.Any())
+            {
+
             }
 
             if(!context.RoomCleanings.Any())
@@ -457,6 +473,36 @@ namespace ERP.XCore.Data.Seeder
                 };
 
                 await context.RoomMaintenances.AddRangeAsync(roomMaintenances);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.FeeTypes.Any())
+            {
+                var currencies = await context.Currencies.ToListAsync();
+                var feeTypes = new List<FeeType>
+                {
+                    new FeeType { Description = "Regular", CurrencyId = currencies[0].Id },
+                    new FeeType { Description = "Premium", CurrencyId = currencies[0].Id },
+				};
+                await context.FeeTypes.AddRangeAsync(feeTypes);
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Fees.Any())
+            {
+                var status = await context.Status.ToListAsync();
+				var roomTypes = await context.RoomTypes.ToListAsync();
+                var feeTypes = await context.FeeTypes.ToListAsync();
+                var fees = new List<Fee>
+                {
+                    new Fee { RoomTypeId = roomTypes[0].Id, FeeTypeId = feeTypes[0].Id, StatusId = status[0].Id, Amount = 80 },
+                    new Fee { RoomTypeId = roomTypes[1].Id, FeeTypeId = feeTypes[0].Id, StatusId = status[0].Id, Amount = 120 },
+                    new Fee { RoomTypeId = roomTypes[2].Id, FeeTypeId = feeTypes[0].Id, StatusId = status[0].Id, Amount = 140 },
+                    new Fee { RoomTypeId = roomTypes[3].Id, FeeTypeId = feeTypes[0].Id, StatusId = status[0].Id, Amount = 130 },
+                    new Fee { RoomTypeId = roomTypes[4].Id, FeeTypeId = feeTypes[0].Id, StatusId = status[0].Id, Amount = 85 },
+                    new Fee { RoomTypeId = roomTypes[5].Id, FeeTypeId = feeTypes[0].Id, StatusId = status[0].Id, Amount = 150 },
+                };
+                await context.Fees.AddRangeAsync(fees);
                 await context.SaveChangesAsync();
             }
         }

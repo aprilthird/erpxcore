@@ -9,14 +9,14 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.8" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.12" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.12" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="MudBlazor" Version="6.0.16" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ERP.XCore.Components\ERP.XCore.Components.csproj" />
     <ProjectReference Include="..\..\ERP.XCore.Core\ERP.XCore.Core.csproj" />
     <ProjectReference Include="..\..\ERP.XCore.Entities\ERP.XCore.Entities.csproj" />
     <ProjectReference Include="..\..\ERP.XCore.Hotel.Shared\ERP.XCore.Hotel.Shared.csproj" />

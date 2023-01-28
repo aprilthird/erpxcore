@@ -76,11 +76,19 @@ namespace ERP.XCore.Hotel.Shared.Helpers
             }
         }
 
+        public static class Configuration
+        {
+            public const string CONFIGURATION_ROUTE = BASE_API_ROUTE + "/configuracion";
+
+            public const string FEE_ROUTE = CONFIGURATION_ROUTE + "/tarifas";
+        }
+
         public static class Payment
         {
             public const string PAYMENT_ROUTE = BASE_API_ROUTE + "/pago";
 
             public const string PAYMENT_METHOD_ROUTE = PAYMENT_ROUTE + "/metodos-de-pago";
+            public const string PENDING_PAYMENTS = PAYMENT_ROUTE + "/facturacion";
         }
 
         public static class Rack
@@ -91,7 +99,8 @@ namespace ERP.XCore.Hotel.Shared.Helpers
             public const string CLEANING_ROUTE = RACK_ROUTE + "/limpieza";
             public const string DETAIL_ROUTE = RACK_ROUTE + "/detalle";
             public const string EXTENSION_ROUTE = RACK_ROUTE + "/extension";
-        }
+            public const string CANCEL_ROUTE = RACK_ROUTE + "/cancelar";
+		}
     }
 }
 

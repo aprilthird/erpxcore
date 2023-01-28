@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ERP.XCore.Services.Dtos
 {
-    public class RoomBookingDto : BaseEntityDto
+    public class RoomCheckInDto : BaseEntityDto
     {
         public Guid Id { get; set; }
 
@@ -16,7 +16,7 @@ namespace ERP.XCore.Services.Dtos
 
         public Guid? RelatedBookingId { get; set; }
 
-        public RoomBookingDto? RelatedBooking { get; set; }
+        public RoomCheckInDto? RelatedBooking { get; set; }
 
         public Guid RoomId { get; set; }
 

@@ -10,7 +10,7 @@ namespace ERP.XCore.Core.Helpers
     {
         public static class Seed
         {
-            public static bool ENABLED = true;
+            public static bool ENABLED = false;
         }
 
         public static class Status
@@ -20,6 +20,8 @@ namespace ERP.XCore.Core.Helpers
             public static Guid ENABLED_ID = Guid.Parse("5118D440-BBCA-4ED2-CA43-08DABDDDAA3B");
 
             public static Guid DISABLED_ID = Guid.Parse("E63B8DFF-FA4C-40C8-CA44-08DABDDDAA3B");
+
+            public static Guid PENDING_ID = Guid.Parse("27DC73E1-44ED-403E-B1DD-F0EF6D2A93B8");
         }
 
         public static class Permission

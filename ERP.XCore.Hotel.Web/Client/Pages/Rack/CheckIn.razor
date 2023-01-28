@@ -8,141 +8,197 @@
 
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
-		<h3>Checkin de Habitación</h3>
+		<h3>CheckIn de Habitación</h3>
 	</div>
-	<Microsoft.AspNetCore.Components.Forms.EditForm Model="RoomBooking" OnValidSubmit="OnValidSubmitAsync">
+	<Microsoft.AspNetCore.Components.Forms.EditForm Model="RoomCheckIn" OnValidSubmit="OnValidSubmitAsync">
+        <div class="card border border-2">
+            <div class="card-body">
+                <div class="row d-flex justify-content-between">
+                    <div class="col-md-3">
+                        <label class="fw-bold">Habitación: </label>
+                        <span>@Room.Description</span>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="fw-bold">Tipo: </label>
+                        <span>@Room.RoomType.Description</span>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="fw-bold">Entrada: </label>
+                        <span>@RoomCheckIn.EntryTime.ToString("dd/MM/yyyy hh:mm tt")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         @*<FluentValidationValidator />*@
         <div class="alert alert-danger alert-dismissible fade @AlertDisplayClass" role="alert" style="display:@AlertDisplayCss">
             <h5 class="alert-heading">Error</h5>
             <p>@ErrorMessage</p>
             <button class="close" type="button" @onclick="CloseAlertAsync"><span>×</span></button>
         </div>
-        <div class="row pb-2">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label for="room">Habitación</label>
-                    <input id="room" value="@Room.Description" class="form-control" readonly />
+        <div class="hstack justify-content-between align-items-start mt-3">
+            <div class="col-md-5">
+                @*<div class="row pb-2">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="related">Reserva Vinculada</label>
+                            <InputText @bind-Value="RoomCheckIn.RelatedBookingCode" id="related" class="form-control" placeholder="Reserva Vinculada" />
+                            <ValidationMessage For="() => RoomCheckIn.RelatedBookingCode" />
+                        </div>
+                    </div>
+                </div>*@
+                <div class="row pb-2">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            @*<label for="nights">Num. Noches</label>*@
+                            <MudNumericField Value="RoomCheckIn.Nights" Label="Num. Noches" Variant="Variant.Text" Min="1" Placeholder="Num. Noches" ValueChanged="(int value) => OnNightsChanged(value)" />
+                            <ValidationMessage For="() => RoomCheckIn.Nights" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label for="roomtype">Tipo Habitación</label>
-                    <input id="roomtype" value="@Room.RoomType.Description" class="form-control" readonly />
+                <div class="row pb-2">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <MudDatePicker Date="RoomCheckIn.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" />
+                            <ValidationMessage For="() => RoomCheckIn.ExitTime" />
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>&emsp;</label>
+                            <InputSelect @bind-Value="RoomCheckIn.Hour" id="hour" class="form-control" placeholder="Hora">
+                                @for (var i = 1; i <= 12; ++i)
+                                {
+                                    <option value="@i">@i.ToString("00")</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => RoomCheckIn.Hour" />
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>&emsp;</label>
+                            <InputSelect @bind-Value="RoomCheckIn.Meridian" id="meridian" class="form-control" placeholder="Meridiano">
+                                <option value="0">AM</option>
+                                <option value="1">PM</option>
+                            </InputSelect>
+                            <ValidationMessage For="() => RoomCheckIn.Meridian" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label for="related">Reserva Vinculada</label>
-                    <InputText @bind-Value="RoomBooking.RelatedBookingCode" id="related" class="form-control" placeholder="Reserva Vinculada" />
-                    <ValidationMessage For="() => RoomBooking.RelatedBookingCode" />
+                <div class="row pb-2">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="guest">Huésped</label>
+                            <div class="input-group mt-3">
+                                <input class="form-control pb-2" placeholder="Búsqueda de Huésped" @onchange="OnSearchChanged" />
+                                <Button Icon="fas fa-plus" OnClickCallback="OnNewCustomerAsync" />
+                            </div>
+                            <InputSelect @bind-Value="RoomCheckIn.GuestId" id="guest" class="form-control mt-3" placeholder="Huésped">
+                                @foreach (var item in Guests)
+                                {
+                                    <option value="@item.Id">@item.FullName</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => RoomCheckIn.GuestId" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label for="entrytime">Entrada</label>
-                    <input id="entrytime" value="@RoomBooking.EntryTime.ToString("dd/MM/yyyy hh:mm tt")" class="form-control" readonly />
-                </div>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <MudDatePicker Date="RoomBooking.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" />
-                    <ValidationMessage For="() => RoomBooking.ExitTime" />
-                </div>
-            </div>
-            <div class="col-sm-3">
-                <div class="form-group">
-                    <label>&emsp;</label>
-                    <InputSelect @bind-Value="RoomBooking.Hour" id="hour" class="form-control" placeholder="Hora">
-                        @for(var i=1; i<=12; ++i)
-                        {
-                            <option value="@i">@i.ToString("00")</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="() => RoomBooking.Hour" />
-                </div>
-            </div>
-            <div class="col-sm-3">
-                <div class="form-group">
-                    <label>&emsp;</label>
-                    <InputSelect @bind-Value="RoomBooking.Meridian" id="meridian" class="form-control" placeholder="Meridiano">
-                        <option value="0">AM</option>
-                        <option value="1">PM</option>
-                    </InputSelect>
-                    <ValidationMessage For="() => RoomBooking.Meridian" />
-                </div>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label for="nights">Num. Noches</label>
-                    <InputNumber @bind-Value="RoomBooking.Nights" id="nights" class="form-control" placeholder="Num. Noches" />
-                    <ValidationMessage For="() => RoomBooking.Nights" />
-                </div>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label for="guest">Huésped</label>
-                    <input class="form-control pb-2" placeholder="Búsqueda de Huésped" @onchange="OnSearchChanged" />
-                    <InputSelect @bind-Value="RoomBooking.GuestId" id="guest" class="form-control" placeholder="Huésped">
-                        @foreach(var item in Guests)
-                        {
-                            <option value="@item.Id">@item.FullName</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="() => RoomBooking.GuestId" />
-                    <Button Text="Nuevo" OnClickCallback="OnNewCustomerAsync" />
-                </div>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label for="paymentmethod">Método de Pago</label>
-                    <select id="paymentmethod" class="form-control" placeholder="Método de Pago" @onchange="OnPaymentMethodChanged">
-                        @foreach(var item in PaymentMethods)
-                        {
-                            <option value="@item.Id">@item.Description</option>
-                        }
-                    </select>
-                    <ValidationMessage For="() => RoomBooking.PaymentMethodId" />
-                </div>
-            </div>
-        </div>
-        @if(SelectedPaymentMethod.RequiresAmount)
-        {
-            <div class="row pb-2">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <label for="amount">Monto</label>
-                        <InputNumber @bind-Value="RoomBooking.Amount" id="amount" class="form-control" placeholder="Monto" />
-                        <ValidationMessage For="() => RoomBooking.Amount" />
+                <div class="row pb-2">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="guest">Invitados</label>
+                            <div class="input-group mt-3">
+                                <input class="form-control pb-2" placeholder="Búsqueda de Invitados" @onchange="OnSearch2Changed" />
+                                <Button Icon="fas fa-plus" OnClickCallback="OnNewCustomerAsync" />
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-5">
+                                    <InputSelect @bind-Value="RoomCheckIn.CompanionIds" class="form-control col-md-4" placeholder="Invitados">
+                                        @foreach (var item in Companions)
+                                        {
+                                            <option value="@item.Id">@item.FullName</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div class="col-md-2 d-flex flex-column">
+                                    <Button Icon="fas fa-arrow-right" OnClickCallback="OnSelectCompanionAsync" />
+                                    <Button Icon="fas fa-times" Theme="Shared.Button.ButtonTheme.Danger" OnClickCallback="OnClearCompanionsAsync" />
+                                </div>
+                                <div class="col-md-5">
+                                    <InputSelect @bind-Value="RoomCheckIn.SelectedCompanionIds" class="form-control col-md-4" placeholder="Invitados">
+                                        @foreach (var item in SelectedCompanions)
+                                        {
+                                            <option value="@item.Id">@item.FullName</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <ValidationMessage For="() => RoomCheckIn.GuestId" />
+                        </div>
                     </div>
                 </div>
             </div>
-        }
-        @if(SelectedPaymentMethod.RequiresVoucherNumber)
-        {
-            <div class="row pb-2">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <label for="amount">Voucher</label>
-                        <InputText @bind-Value="RoomBooking.VoucherNumber" id="amount" class="form-control" placeholder="# Voucher/Operación" />
-                        <ValidationMessage For="() => RoomBooking.VoucherNumber" />
+            <div class="vr"></div>
+            <div class="col-md-5">
+                <div class="row pb-2">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="fee">Tarifa</label>
+                            <select id="fee" class="form-control" placeholder="Tarifa" @onchange="OnFeeChanged">
+                                @foreach (var item in Fees)
+                                {
+                                    <option value="@item.Id">@item.FeeType.Description (@item.RoomType.Description) - @item.FeeType.Currency.Sign @item.Amount</option>
+                                }
+                            </select>
+                            <ValidationMessage For="() => RoomCheckIn.FeeId" />
+                        </div>
                     </div>
                 </div>
+                <div class="row pb-2">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="paymentmethod">Método de Pago</label>
+                            <select id="paymentmethod" class="form-control" placeholder="Método de Pago" @onchange="OnPaymentMethodChanged">
+                                @foreach (var item in PaymentMethods)
+                                {
+                                    <option value="@item.Id">@item.Description</option>
+                                }
+                            </select>
+                            <ValidationMessage For="() => RoomCheckIn.PaymentMethodId" />
+                        </div>
+                    </div>
+                </div>
+                @if (SelectedPaymentMethod.RequiresAmount)
+                {
+                    <div class="row pb-2">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="amount">Monto</label>
+                                <InputNumber @bind-Value="RoomCheckIn.Amount" id="amount" class="form-control" placeholder="Monto" />
+                                <ValidationMessage For="() => RoomCheckIn.Amount" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (SelectedPaymentMethod.RequiresVoucherNumber)
+                {
+                    <div class="row pb-2">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="amount">Voucher</label>
+                                <InputText @bind-Value="RoomCheckIn.VoucherNumber" id="amount" class="form-control" placeholder="# Voucher/Operación" />
+                                <ValidationMessage For="() => RoomCheckIn.VoucherNumber" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                    <div class="row pb-2">
+                        <div class="col-sm-12 text-end">
+                            <h1>@SelectedFee.FeeType.Currency.Sign @(SelectedFee.Amount * RoomCheckIn.Nights)</h1>
+                        </div>
+                    </div>                
             </div>
-        }
+        </div>
         <Button @ref="BackButton" Text="Regresar" Icon="c-icen cil-arrow-left" Type="Shared.Button.ButtonType.Button" OnClickCallback="BackAsync" />
         <Button @ref="SubmitButton" Text="Guardar" Icon="c-icon cil-save" Type="Shared.Button.ButtonType.Submit" />
     </Microsoft.AspNetCore.Components.Forms.EditForm>
@@ -198,11 +254,15 @@
 
     public ModalForm ModalNewCustomer { get; set;  }
     public Room Room { get; set; }
-    public RoomBooking RoomBooking { get; set; }
+    public RoomCheckIn RoomCheckIn { get; set; }
     public PaymentMethod SelectedPaymentMethod { get; set; }
+    public Fee SelectedFee { get; set; }
     public Guest Guest { get; set; }
     public ICollection<PaymentMethod> PaymentMethods { get; set; }
     public ICollection<Guest> Guests { get; set; }
+    public ICollection<Guest> Companions { get; set; }
+    public ICollection<Guest> SelectedCompanions { get; set; } = new List<Guest>() { };
+    public ICollection<Fee> Fees { get; set; }
     public ICollection<SelectResource<Guid>> DocumentTypes { get; set; }
     public Shared.Button SubmitButton { get; set; }
     public Shared.Button BackButton { get; set; }
@@ -210,7 +270,6 @@
     private string ErrorMessage = null;
     private string AlertDisplayClass = "hide";
     private string AlertDisplayCss = "none;";
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -225,9 +284,9 @@
             {
                 current = current.AddMinutes(-current.Minute).AddHours(1);
             }
-            var tomorrow = current.Date.AddDays(1);
-            RoomBooking = new RoomBooking() { EntryTime = current, RoomId = RoomId, ExitTime = tomorrow, Hour = tomorrow.Hour > 12 ? tomorrow.Hour - 12 : tomorrow.Hour == 0 ? 12 : tomorrow.Hour, Meridian = tomorrow.Hour > 12 ? 1 : 0, Nights = 1 };
-            await Load();
+            var tomorrow = current.AddDays(1);
+            RoomCheckIn = new RoomCheckIn() { EntryTime = current, RoomId = RoomId, ExitTime = tomorrow, Hour = tomorrow.Hour > 12 ? tomorrow.Hour - 12 : tomorrow.Hour == 0 ? 12 : tomorrow.Hour, Meridian = tomorrow.Hour > 11 ? 1 : 0, Nights = 1 };
+            await Load();   
         }
         catch (AccessTokenNotAvailableException exception)
         {
@@ -238,13 +297,20 @@
     public async Task Load()
     {
         Room = await Http.GetFromJsonAsync<Room>(ApiRouteConfig.Management.Rooms.ROOM_ROUTE + "/" + RoomId);
-        Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
+        Companions = Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
         PaymentMethods = await Http.GetFromJsonAsync<PaymentMethod[]>(ApiRouteConfig.Payment.PAYMENT_METHOD_ROUTE);
+        Fees = await Http.GetFromJsonAsync<Fee[]>($"{ApiRouteConfig.Configuration.FEE_ROUTE}?roomTypeId={Room.RoomTypeId}");
         DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+
         if(PaymentMethods.Any())
         {
             SelectedPaymentMethod = PaymentMethods.FirstOrDefault();
-            RoomBooking.PaymentMethodId = PaymentMethods.Select(x => x.Id).FirstOrDefault();
+            RoomCheckIn.PaymentMethodId = PaymentMethods.Select(x => x.Id).FirstOrDefault();
+        }
+        if (Fees.Any())
+        {
+            SelectedFee = Fees.FirstOrDefault();
+            RoomCheckIn.FeeId = Fees.Select(x => x.Id).FirstOrDefault();
         }
     }
 
@@ -252,24 +318,69 @@
     {
         if (dateTime.HasValue) 
         {
-            RoomBooking.ExitTime = dateTime.Value;
-            RoomBooking.Nights = (RoomBooking.ExitTime.Date - RoomBooking.EntryTime.Date).Days;
+            RoomCheckIn.ExitTime = dateTime.Value;
+            RoomCheckIn.Nights = (RoomCheckIn.ExitTime.Date - RoomCheckIn.EntryTime.Date).Days;
             StateHasChanged();
         }
     }
 
+    private async Task OnNightsChanged(int nights)
+    {
+        RoomCheckIn.ExitTime = RoomCheckIn.EntryTime.AddDays(nights);
+        StateHasChanged();
+    }
+
     private async Task OnSearchChanged(ChangeEventArgs e)
     {
-        if(!string.IsNullOrEmpty(e.Value.ToString()))
+        Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "?search=" + e.Value.ToString());
+
+        if (!string.IsNullOrEmpty(e.Value.ToString()))
         {
-            Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "?search=" + e.Value.ToString());
+        }
+    }
+
+    private async Task OnSelectCompanionAsync()
+    {
+        var selectedCompanions = Companions
+            .Where(x => RoomCheckIn.CompanionIds.Any(c => c == x.Id))
+            .Concat(SelectedCompanions)
+            .ToArray();
+        SelectedCompanions = selectedCompanions;
+        RoomCheckIn.SelectedCompanionIds = selectedCompanions
+            .Select(x => x.Id)
+            .ToArray();
+        StateHasChanged();
+    }
+
+    private async Task OnClearCompanionsAsync()
+    {
+        var selectedCompanions = RoomCheckIn.SelectedCompanions.ToList();
+        selectedCompanions.Clear();
+        SelectedCompanions = selectedCompanions.ToArray();
+        var selectedCompanionIds = RoomCheckIn.SelectedCompanionIds.ToList();
+        selectedCompanionIds.Clear();
+        RoomCheckIn.SelectedCompanionIds = selectedCompanionIds.ToArray();
+    }
+
+    private async Task OnSearch2Changed(ChangeEventArgs e)
+    {
+        Companions = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "?search=" + e.Value.ToString());
+
+        if (!string.IsNullOrEmpty(e.Value.ToString()))
+        {
         }
     }
 
     private void OnPaymentMethodChanged(ChangeEventArgs e)
     {
-        RoomBooking.PaymentMethodId = Guid.Parse(e.Value.ToString());
+        RoomCheckIn.PaymentMethodId = Guid.Parse(e.Value.ToString());
         SelectedPaymentMethod = PaymentMethods.First(x => x.Id == Guid.Parse(e.Value.ToString()));
+    }
+
+    private void OnFeeChanged(ChangeEventArgs e)
+    {
+        RoomCheckIn.FeeId = Guid.Parse(e.Value.ToString());
+        SelectedFee = Fees.First(x => x.Id == Guid.Parse(e.Value.ToString()));
     }
 
     private async Task OnValidSubmitAsync()
@@ -277,7 +388,7 @@
         try
         {
             await CloseAlertAsync();
-            await Http.PostAsJsonAsync(ApiRouteConfig.Rack.CHECKIN_ROUTE, RoomBooking);
+            await Http.PostAsJsonAsync(ApiRouteConfig.Rack.CHECKIN_ROUTE, RoomCheckIn);
             Navigation.NavigateTo("/rack");
         }
         catch(Exception ex)
@@ -301,9 +412,9 @@
     {
         try
         {
-            RoomBooking.NewGuest = Guest.Document;
+            RoomCheckIn.NewGuest = Guest.Document;
             await Http.PostAsJsonAsync(ApiRouteConfig.Management.Guests.GUEST_ROUTE, Guest);
-            Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
+            Companions = Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
             await ModalNewCustomer.CloseAsync();
             StateHasChanged();
         }

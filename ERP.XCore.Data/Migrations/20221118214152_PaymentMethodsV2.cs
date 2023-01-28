@@ -10,7 +10,7 @@ namespace ERP.XCore.Data.Migrations
         {
             migrationBuilder.AlterColumn<string>(
                 name: "Code",
-                table: "RoomBookings",
+                table: "RoomCheckIns",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -21,7 +21,7 @@ namespace ERP.XCore.Data.Migrations
         {
             migrationBuilder.AlterColumn<string>(
                 name: "Code",
-                table: "RoomBookings",
+                table: "RoomCheckIns",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

@@ -1,0 +1,49 @@
+﻿<MudDialog @bind-IsVisible="IsShowing">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        @ChildContent
+    </DialogContent>
+    <DialogActions>
+        @if (string.IsNullOrEmpty(SecondaryButtonText))
+        {
+            <MudButton Color="Color.Primary" OnClick="Close">@PrimaryButtonText</MudButton>
+        }
+        else
+        {
+            <MudButton OnClick="Close">@SecondaryButtonText</MudButton>
+            <MudButton Color="Color.Primary" OnClick="Submit">@PrimaryButtonText</MudButton>
+
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public virtual string? PrimaryButtonText { get; set; }
+
+    [Parameter]
+    public virtual string? SecondaryButtonText { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmitCallback { get; set; }
+
+    private bool IsShowing = false;
+
+    private async Task Submit()
+    {
+        await OnSubmitCallback.InvokeAsync(this);
+        IsShowing = false;
+    }
+
+    public virtual void Open() => IsShowing = true;
+
+    public virtual void Close() => IsShowing = false;
+}
