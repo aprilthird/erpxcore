@@ -1,6 +1,4 @@
-﻿@inherits DialogTemplate
-
-<DialogTemplate @ref="DialogTemplate" Title="Title" PrimaryButtonText="@Constants.Dialog.SAVE_BUTTON_TEXT" SecondaryButtonText="@Constants.Dialog.CANCEL_BUTTON_TEXT" OnSubmitCallback="Submit">
+﻿<DialogTemplate @ref="DialogTemplate" Title="@Title" PrimaryButtonText="@PrimaryButtonText" SecondaryButtonText="@SecondaryButtonText" OnSubmitCallback="Submit">
     <MudForm @ref="Form" Model="Model">
         @ChildContent
     </MudForm>
@@ -11,7 +9,19 @@
     ISnackbar Snackbar { get; set; }
 
     [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
     public object Model { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string? PrimaryButtonText { get; set; } = Constants.Dialog.SAVE_BUTTON_TEXT;
+
+    [Parameter]
+    public string? SecondaryButtonText { get; set; } = Constants.Dialog.CANCEL_BUTTON_TEXT;
 
     [Parameter]
     public EventCallback ValidSubmitCallback { get; set; }
@@ -39,7 +49,7 @@
         }
     }
 
-    public override void Open() => DialogTemplate.Open();
+    public void Open() => DialogTemplate.Open();
 
-    public override void Close() => DialogTemplate.Close();
+    public void Close() => DialogTemplate.Close();
 }
