@@ -1,4 +1,4 @@
-﻿<DialogTemplate @ref="DialogTemplate" Title="@Title" PrimaryButtonText="@PrimaryButtonText" SecondaryButtonText="@SecondaryButtonText" OnSubmitCallback="Submit">
+﻿<DialogTemplate @ref="DialogTemplate" Title="@Title" PrimaryButtonText="@PrimaryButtonText" PrimaryButtonLoadingText="@PrimaryButtonLoadingText" SecondaryButtonText="@SecondaryButtonText" OnSubmitCallback="SubmitAsync">
     <MudForm @ref="Form" Model="Model">
         @ChildContent
     </MudForm>
@@ -21,6 +21,9 @@
     public string? PrimaryButtonText { get; set; } = Constants.Dialog.SAVE_BUTTON_TEXT;
 
     [Parameter]
+    public string? PrimaryButtonLoadingText { get; set; } = Constants.Dialog.SAVING_BUTTON_TEXT;
+
+    [Parameter]
     public string? SecondaryButtonText { get; set; } = Constants.Dialog.CANCEL_BUTTON_TEXT;
 
     [Parameter]
@@ -32,19 +35,18 @@
     private DialogTemplate DialogTemplate;
     private MudForm Form;
 
-    private async Task Submit()
+    private async Task SubmitAsync()
     {
         await Form.Validate();
-
         if (Form.IsValid)
         {
-            Snackbar.Add("Submited!");
+            Snackbar.Add("Cambios Realizados", Severity.Success);
             await ValidSubmitCallback.InvokeAsync(this);
             DialogTemplate.Close();
         }
         else
         {
-            Snackbar.Add("Error!");
+            Snackbar.Add("!Ocurrió un error!", Severity.Error);
             await InvalidSubmitCallback.InvokeAsync(this);
         }
     }

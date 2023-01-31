@@ -6,6 +6,7 @@ using ERP.XCore.Hotel.Web.Client.Extensions;
 using ERP.XCore.Hotel.Web.Client.Factories;
 using MudBlazor.Services;
 using Blazored.LocalStorage;
+using MudBlazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -15,7 +16,17 @@ builder.Services.AddHttpClient("ERP.XCore.Hotel.Web.ServerAPI", client => client
     .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
 // Components Library
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+    config.SnackbarConfiguration.PreventDuplicates = false;
+    config.SnackbarConfiguration.NewestOnTop = false;
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+    config.SnackbarConfiguration.VisibleStateDuration = 3000;
+    config.SnackbarConfiguration.HideTransitionDuration = 250;
+    config.SnackbarConfiguration.ShowTransitionDuration = 250;
+    config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
 builder.Services.AddBlazoredLocalStorage();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project

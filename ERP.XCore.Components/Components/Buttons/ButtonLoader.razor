@@ -1,0 +1,38 @@
+﻿<MudButton Disabled="@_loading" OnClick="DoClickAsync" Variant="Variant.Filled" Color="Color.Primary" Class="@Class">
+    @if (_loading)
+    {
+        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+        <MudText Class="ms-2">@(string.IsNullOrEmpty(LoadingText) ? Text : LoadingText)</MudText>
+    }
+    else
+    {
+        <MudText>@Text</MudText>
+    }
+</MudButton>
+
+@code {
+    [Parameter]
+    public EventCallback OnClickCallback { get; set;}
+
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public string? LoadingText { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    private bool _loading = false;
+ 
+    public void StartLoading() => _loading = true;
+
+    public void FinishLoading() => _loading = false;
+
+    private async Task DoClickAsync()
+    {
+        _loading = true;
+        await OnClickCallback.InvokeAsync(this);
+        _loading = false;
+    }
+}

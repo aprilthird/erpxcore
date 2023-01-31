@@ -15,6 +15,7 @@ namespace ERP.XCore.Components.Helpers
             public const string CANCEL_BUTTON_TEXT = "Cancelar";
             public const string CONFIRM_BUTTON_TEXT = "Confirmar";
             public const string SAVE_BUTTON_TEXT = "Guardar";
+            public const string SAVING_BUTTON_TEXT = "Guardando";
 
             public const string DELETE_TITLE_TEXT = "¿Desea eliminar el registro?";
             public const string DELETE_MESSAGE_TEXT = "Esta acción es irreversible.";

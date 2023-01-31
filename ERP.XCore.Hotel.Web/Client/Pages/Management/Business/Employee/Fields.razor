@@ -1,90 +1,40 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Nombres</label>
-            <InputText @bind-Value="Employee.FirstName" id="description" class="form-control" placeholder="Nombres" />
-            <ValidationMessage For="() => Employee.FirstName" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Apellidos</label>
-            <InputText @bind-Value="Employee.LastName" id="entity" class="form-control" placeholder="Apellidos" />
-            <ValidationMessage For="() => Employee.LastName" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Tipo Documento</label>
-            <InputSelect @bind-Value="Employee.DocumentTypeId" id="entity" class="form-control" placeholder="Tipo Documento">
-                @foreach(var item in DocumentTypes)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Employee.DocumentTypeId" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Documento</label>
-            <InputText @bind-Value="Employee.Document" id="entity" class="form-control" placeholder="Documento" />
-            <ValidationMessage For="() => Employee.Document" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Empresa</label>
-            <InputSelect @bind-Value="Employee.CompanyId" id="entity" class="form-control" placeholder="Empresa">
-                @foreach(var item in Companies)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Employee.CompanyId" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Area</label>
-            <InputSelect @bind-Value="Employee.WorkAreaId" id="entity" class="form-control" placeholder="Area">
-                @foreach(var item in WorkAreas)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Employee.WorkAreaId" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Cargo</label>
-            <InputSelect @bind-Value="Employee.WorkPositionId" id="entity" class="form-control" placeholder="Cargo">
-                @foreach(var item in WorkPositions)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Employee.WorkPositionId" />
-        </div>
-    </div>
-</div>
-      
+<MudTextField @bind-Value="Employee.FirstName" Label="Nombres" Variant="Variant.Outlined" />
+
+<MudTextField @bind-Value="Employee.LastName" Label="Apellidos" Variant="Variant.Outlined" />
+
+<MudSelect T="Guid?" @bind-Value="Employee.DocumentTypeId" Label="Tipo Documento" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in DocumentTypes)
+    {
+        <MudSelectItem T="Guid?" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+
+<MudTextField @bind-Value="Employee.Document" Label="Documento" Variant="Variant.Outlined" />
+
+<MudSelect T="Guid" @bind-Value="Employee.CompanyId" Label="Empresa" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in Companies)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+
+<MudSelect T="Guid?" @bind-Value="Employee.WorkAreaId" Label="Area" Class="mb-3" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in WorkAreas)
+    {
+        <MudSelectItem T="Guid?" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+
+<MudSelect T="Guid?" @bind-Value="Employee.WorkPositionId" Label="Cargo" Class="mb-3" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in WorkPositions)
+    {
+        <MudSelectItem T="Guid?" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+
 @code {
     [Parameter]
     public Employee Employee { get; set; }

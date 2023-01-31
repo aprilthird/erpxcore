@@ -2,180 +2,144 @@
 @inject HttpClient Http
 @inject IDialogService DialogService
 
-<PageTitle Typo="Typo.h3">Colaborador</PageTitle>
+<PageTitle>Colaborador</PageTitle>
 
 <MudPaper Elevation="1" Class="pa-4">
-	<MudText Typo="Typo.h3">Colaborador</MudText>
+    <MudText Typo="Typo.h3">Colaborador</MudText>
 
     <MudDivider />
 
-	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
-		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
-			Nuevo
-		</MudButton>
-	</MudStack>
+    <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync()">
+            Nuevo
+        </MudButton>
+    </MudStack>
 
-	<MudTable Class="mt-2" Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Employee, bool>(FilterFunc1)">
-		<ToolBarContent>
-			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-		</ToolBarContent>
-		<HeaderContent>
-			<MudTh>Nombres</MudTh>
-			<MudTh>Apellidos</MudTh>
-			<MudTh>Documento</MudTh>
-			<MudTh>Empresa</MudTh>
-			<MudTh>Area</MudTh>
-			<MudTh>Cargo</MudTh>
-			<MudTh>Estado</MudTh>
-			<MudTh>Acciones</MudTh>
-		</HeaderContent>
-		<RowTemplate>
-			<MudTd>@context.FirstName</MudTd>
-			<MudTd>@context.LastName</MudTd>
-			<MudTd>@context.Document (@(context.DocumentType?.Abbreviation ?? "DNI"))</MudTd>
-			<MudTd>@context.Company.Description</MudTd>
-			<MudTd>@(context.WorkArea?.Description ?? "Gerencia")</MudTd>
-				<MudTd>@(context.WorkPosition?.Description ?? "Administrador")</MudTd>
-				<MudTd>@context.Status.Description</MudTd>
-				<MudTd>
-					<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
-					<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
-				</MudTd>
-			</RowTemplate>
-		</MudTable>
-</MudPaper>
+    <MudTable Class="mt-2" Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="Filter">
+        <ToolBarContent>
+            <MudTextField @bind-Value="Search" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Nombres</MudTh>
+            <MudTh>Apellidos</MudTh>
+            <MudTh>Documento</MudTh>
+            <MudTh>Empresa</MudTh>
+            <MudTh>Area</MudTh>
+            <MudTh>Cargo</MudTh>
+            <MudTh>Estado</MudTh>
+            <MudTh>Acciones</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.FirstName</MudTd>
+            <MudTd>@context.LastName</MudTd>
+            <MudTd>@context.Document (@(context.DocumentType?.Abbreviation ?? "DNI"))</MudTd>
+            <MudTd>@context.Company.Description</MudTd>
+            <MudTd>@(context.WorkArea?.Description ?? "Gerencia")</MudTd>
+                <MudTd>@(context.WorkPosition?.Description ?? "Administrador")</MudTd>
+                <MudTd>@context.Status.Description</MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(context)" aria-label="edit"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
 
-<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="Employee" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-	<Fields @ref="Fields" Employee="Employee" DocumentTypes="DocumentTypes" Companies="Companies" WorkAreas="WorkAreas" WorkPositions="WorkPositions" />
-</ERP.XCore.Components.Components.Dialogs.DialogForm>
+<DialogForm @ref="DialogForm" Title="@ModalTitle" Model="Employee" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields Employee="Employee" DocumentTypes="DocumentTypes" Companies="Companies" WorkAreas="WorkAreas" WorkPositions="WorkPositions" />
+</DialogForm>
 
-<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
-		<TitleContent>
-			<MudText Typo="Typo.h6">
-				<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
-			</MudText>
-		</TitleContent>
-		<DialogContent>
-			<MudForm>
-				<Fields @ref="Fields" Employee="Employee" DocumentTypes="DocumentTypes" Companies="Companies" WorkAreas="WorkAreas" WorkPositions="WorkPositions" />
-			</MudForm>
-		</DialogContent>
-		<DialogActions>
-			<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
-		</DialogActions>
-</MudDialog>
+@code {
+    private Employee Employee = new();
+    private DialogForm DialogForm;
+    private string ModalTitle;
+    private Employee[]? ItemsList;
+    private SelectResource<Guid>[]? DocumentTypes;
+    private SelectResource<Guid>[]? Companies;
+    private SelectResource<Guid>[]? WorkAreas;
+    private SelectResource<Guid>[]? WorkPositions;
+    private Guid? FilterArea;
+    private Guid? FilterPosition;
+    private Guid? FilterCompany;
+    private Func<Employee, bool> Filter => new(SearchFor);
+    private string Search = "";
 
-<ModalForm @ref="Modal" Title="@ModalTitle" Model="Employee" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" Employee="Employee" DocumentTypes="DocumentTypes" Companies="Companies" WorkAreas="WorkAreas" WorkPositions="WorkPositions" />
-</ModalForm>
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await Load();
+            await LoadSelects();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
 
-	@code {
-	private Employee Employee = new Employee();
-	private ModalForm Modal;
-	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
-	private Fields Fields;
-	private string ModalTitle;
-	private Employee[]? ItemsList;
-	private SelectResource<Guid>[]? DocumentTypes;
-	private SelectResource<Guid>[]? Companies;
-	private SelectResource<Guid>[]? WorkAreas;
-	private SelectResource<Guid>[]? WorkPositions;
-	private string? Filter;
-	private Guid? FilterArea;
-	private Guid? FilterPosition;
-	private Guid? FilterCompany;
-	private string searchString1 = "";
+    public async Task Load()
+    {
+        ItemsList = await Http.GetFromJsonAsync<Employee[]>(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "?filtro=" + Search + "&empresa=" + FilterCompany + "&area=" + FilterArea + "&cargo=" + FilterPosition);
+    }
 
-	private bool ShowModalTest = false;
-	private DialogOptions DialogOptions = new() { FullWidth = true };
+    public async Task LoadSelects()
+    {
+        DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
+        Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/empresas");
+        WorkAreas = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/areas");
+        WorkPositions = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/cargos");
+    }
 
-	public enum ModalType
-	{
-		New, Edit
-	};
+    private bool SearchFor(Employee employee)
+    {
+        if (string.IsNullOrWhiteSpace(Search))
+            return true;
+        if (employee.FirstName.Contains(Search, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (employee.LastName.Contains(Search, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (employee.Document.Contains(Search, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		try
-		{
-			await Load();
-			await LoadSelects();
-		}
-		catch (AccessTokenNotAvailableException exception)
-		{
-			exception.Redirect();
-		}
-	}
+    public async Task ShowModalAsync(Employee? employee = null)
+    {
+        DialogForm.Open();
+        ModalTitle = $"{(employee == null ? "Nuevo" : "Editor")} Colaborador";
+        Employee = employee ?? new();
+    }
 
-	public async Task Load()
-	{
-		ItemsList = await Http.GetFromJsonAsync<Employee[]>(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "?filtro=" + Filter + "&empresa=" + FilterCompany + "&area=" + FilterArea + "&cargo=" + FilterPosition);
-	}
+    public async Task SaveAsync()
+    {
+        try
+        {
+            if (Employee.Id == Guid.Empty)
+            {
+                await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE, Employee);
+            }
+            else
+            {
+                await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + Employee.Id, Employee);
+            }
+            await Load();
+        }
+        catch (Exception ex)
+        {
+        }
+    }
 
-	public async Task LoadSelects()
-	{
-		DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
-		Companies = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/empresas");
-		WorkAreas = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/areas");
-		WorkPositions = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/cargos");
-	}
+    public void ShowError()
+    {
+    }
 
-
-	private bool FilterFunc1(Employee employee) => FilterFunc(employee, searchString1);
-
-	private bool FilterFunc(Employee employee, string searchString)
-	{
-		if (string.IsNullOrWhiteSpace(searchString))
-			return true;
-		if (employee.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if (employee.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		if(employee.Document.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-			return true;
-		return false;
-	}
-
-	public async Task ShowModalAsync(ModalType modalType, Employee employee = null)
-	{
-		DialogForm.Open();
-		//ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Colaborador";
-		//Employee = employee ?? new Employee();
-		//await Modal.OpenAsync();
-	}
-
-	public async Task SaveAsync()
-	{
-		try
-		{
-			if(Employee.Id == Guid.Empty)
-			{
-				await Http.PostAsJsonAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE, Employee);
-			}
-			else
-			{
-				await Http.PutAsJsonAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + Employee.Id, Employee);
-			}
-			await Load();
-			await Modal.CloseAsync();
-		}
-		catch(Exception ex)
-		{
-
-		}
-	}
-
-	public void ShowError()
-	{
-	}
-
-	public async Task DeleteAsync(Employee employee)
-	{
-		var result = await DialogService.ShowDeleteConfirmAsync();
-		if (result)
-		{
-			await Http.DeleteAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + employee.Id);
-			await Load();
-		}
+    public async Task DeleteAsync(Employee employee)
+    {
+        var result = await DialogService.ShowDeleteConfirmAsync();
+        if (result)
+        {
+            await Http.DeleteAsync(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE + "/" + employee.Id);
+            await Load();
+        }
     }
 }

@@ -8,13 +8,12 @@
     <DialogActions>
         @if (string.IsNullOrEmpty(SecondaryButtonText))
         {
-            <MudButton Color="Color.Primary" OnClick="Close">@PrimaryButtonText</MudButton>
+            <ButtonLoader Text="@PrimaryButtonText" LoadingText="@PrimaryButtonLoadingText" OnClickCallback="SubmitAsync" Class="pb-4 pe-6" />
         }
         else
         {
-            <MudButton OnClick="Close">@SecondaryButtonText</MudButton>
-            <MudButton Color="Color.Primary" OnClick="Submit">@PrimaryButtonText</MudButton>
-
+            <MudButton Variant="Variant.Filled" OnClick="Close" Class="pb-4">@SecondaryButtonText</MudButton>
+            <ButtonLoader Text="@PrimaryButtonText" LoadingText="@PrimaryButtonLoadingText" OnClickCallback="SubmitAsync" Class="pe-6" />
         }
     </DialogActions>
 </MudDialog>
@@ -27,23 +26,26 @@
     public string Title { get; set; }
 
     [Parameter]
-    public virtual string? PrimaryButtonText { get; set; }
+    public string? PrimaryButtonText { get; set; }
 
     [Parameter]
-    public virtual string? SecondaryButtonText { get; set; }
+    public string? PrimaryButtonLoadingText { get; set; }
+
+    [Parameter]
+    public string? SecondaryButtonText { get; set; }
 
     [Parameter]
     public EventCallback OnSubmitCallback { get; set; }
 
     private bool IsShowing = false;
 
-    private async Task Submit()
+    private async Task SubmitAsync()
     {
         await OnSubmitCallback.InvokeAsync(this);
         IsShowing = false;
     }
 
-    public virtual void Open() => IsShowing = true;
+    public void Open() => IsShowing = true;
 
-    public virtual void Close() => IsShowing = false;
+    public void Close() => IsShowing = false;
 }
