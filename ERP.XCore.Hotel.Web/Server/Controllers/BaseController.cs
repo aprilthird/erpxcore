@@ -24,7 +24,6 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers
             _userManager = userManager;
         }
 
-
         public BaseController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _context = context;

@@ -6,6 +6,101 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
+<PageTitle>CheckIn</PageTitle>
+
+<MudPaper Elevation="1" Class="pa-4">
+    <MudText Typo="Typo.h3">CheckIn de Habitación</MudText>
+
+    <MudDivider />
+
+    <MudStack Row="true">
+        <MudStack Row="true">
+            <MudText><b>Habitación: </b></MudText>
+            <MudText>@Room.Description</MudText>
+        </MudStack>
+        <MudStack Row="true">
+            <MudText><b>Tipo: </b></MudText>
+            <MudText>@Room.RoomType.Description</MudText>
+        </MudStack>
+        <MudStack Row="true">
+            <MudText><b>Entrada: </b></MudText>
+            <MudText>@RoomCheckIn.EntryTime.ToString("dd/MM/yyyy hh:mm tt")</MudText>
+        </MudStack>
+    </MudStack>
+
+    <MudForm Model="RoomCheckIn">
+        <MudStack Row="true">
+            <MudStack>
+                <MudNumericField Value="RoomCheckIn.Nights" Label="Num. Noches" Variant="Variant.Text" Min="1" Placeholder="Num. Noches" ValueChanged="(int value) => OnNightsChanged(value)" />
+                <MudStack Row="true">
+                    <MudDatePicker Date="RoomCheckIn.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" />
+                    <MudSelect T="int" @bind-Value="RoomCheckIn.Hour" Label="Hora" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        @for (var i = 1; i <= 12; ++i)
+                        {
+                            <MudSelectItem Value="@i">@i.ToString("00")</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect T="int" @bind-Value="RoomCheckIn.Meridian" Label="Meridiano" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="0">AM</MudSelectItem>
+                        <MudSelectItem Value="1">PM</MudSelectItem>
+                    </MudSelect>
+                </MudStack>
+                <MudTextField T="string" Label="Búsqueda de Huésped" @onchange="OnSearchChanged" />
+                <Button Icon="fas fa-plus" OnClickCallback="OnNewCustomerAsync" />
+                <MudSelect @bind-Value="RoomCheckIn.GuestId" Label="Huésped">
+                    @foreach (var item in Guests)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudTextField T="string" Label="Búsqueda de Invitados" @onchange="OnSearch2Changed" />
+                <Button Icon="fas fa-plus" OnClickCallback="OnNewCustomerAsync" />
+                <MudSelect MultiSelection="true" @bind-Value="RoomCheckIn.CompanionIds" Label="Invitados">
+                    @foreach (var item in Companions)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+                <Button Icon="fas fa-arrow-right" OnClickCallback="OnSelectCompanionAsync" />
+                <Button Icon="fas fa-times" Theme="Shared.Button.ButtonTheme.Danger" OnClickCallback="OnClearCompanionsAsync" />
+                <MudSelect MultiSelection="true" @bind-Value="RoomCheckIn.SelectedCompanionIds" Label="Invitados">
+                    @foreach (var item in SelectedCompanions)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudStack>
+            <MudStack>
+                <MudSelect @bind-Value="RoomCheckIn.FeeId" Label="Tarifa" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @onchange="OnFeeChanged">
+                    @foreach (var item in Fees)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.FeeType.Description (@item.RoomType.Description) - @item.FeeType.Currency.Sign @item.Amount</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect @bind-Value="RoomCheckIn.PaymentMethodId" Label="Método de Pago" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @onchange="OnPaymentMethodChanged">
+                    @foreach (var item in PaymentMethods)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.Description</MudSelectItem>
+                    }
+                </MudSelect>
+                @if (SelectedPaymentMethod.RequiresAmount)
+                {
+                    <MudNumericField T="double?" @bind-Value="RoomCheckIn.Amount" Label="Monto" Variant="Variant.Outlined" />
+                }
+                @if (SelectedPaymentMethod.RequiresVoucherNumber)
+                {
+                    <MudTextField @bind-Value="RoomCheckIn.VoucherNumber" Label="# Voucher/Operación" Variant="Variant.Outlined" />
+                }
+            </MudStack>
+        </MudStack>
+    </MudForm>
+    
+    <MudStack Row="true">
+        <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="BackAsync">Regresar</MudButton>
+        <ButtonLoader Text="Guardar" LoadingText="Guardando" Icon="@Icons.Material.Filled.Save" OnClickCallback="SaveAsync" />
+    </MudStack>
+</MudPaper>
+@*
 <div class="row px-5">
 	<div class="d-flex justify-content-between">
 		<h3>CheckIn de Habitación</h3>
@@ -29,7 +124,7 @@
                 </div>
             </div>
         </div>
-        @*<FluentValidationValidator />*@
+        <FluentValidationValidator />
         <div class="alert alert-danger alert-dismissible fade @AlertDisplayClass" role="alert" style="display:@AlertDisplayCss">
             <h5 class="alert-heading">Error</h5>
             <p>@ErrorMessage</p>
@@ -37,7 +132,7 @@
         </div>
         <div class="hstack justify-content-between align-items-start mt-3">
             <div class="col-md-5">
-                @*<div class="row pb-2">
+                <div class="row pb-2">
                     <div class="col-sm-12">
                         <div class="form-group">
                             <label for="related">Reserva Vinculada</label>
@@ -45,11 +140,11 @@
                             <ValidationMessage For="() => RoomCheckIn.RelatedBookingCode" />
                         </div>
                     </div>
-                </div>*@
+                </div>
                 <div class="row pb-2">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            @*<label for="nights">Num. Noches</label>*@
+                            <label for="nights">Num. Noches</label>
                             <MudNumericField Value="RoomCheckIn.Nights" Label="Num. Noches" Variant="Variant.Text" Min="1" Placeholder="Num. Noches" ValueChanged="(int value) => OnNightsChanged(value)" />
                             <ValidationMessage For="() => RoomCheckIn.Nights" />
                         </div>
@@ -202,9 +297,20 @@
         <Button @ref="BackButton" Text="Regresar" Icon="c-icen cil-arrow-left" Type="Shared.Button.ButtonType.Button" OnClickCallback="BackAsync" />
         <Button @ref="SubmitButton" Text="Guardar" Icon="c-icon cil-save" Type="Shared.Button.ButtonType.Submit" />
     </Microsoft.AspNetCore.Components.Forms.EditForm>
-</div>
+</div>*@
+<DialogForm @ref="DialogNewCustomer" Model="Guest" Title="Nuevo Huésped" ValidSubmitCallback="OnValidSubmitCustomerAsync">
+    <MudSelect @bind-Value="Guest.DocumentTypeId" Label="Tipo Documento" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+        @foreach (var item in DocumentTypes)
+        {
+            <MudSelectItem Value="@item.Value">@item.Text</MudSelectItem>
+        }
+    </MudSelect>
+    <MudTextField @bind-Value="Guest.Document" Label="Documento" Variant="Variant.Outlined" />
+    <MudTextField @bind-Value="Guest.FirstName" Label="Nombres" Variant="Variant.Outlined" />
+    <MudTextField @bind-Value="Guest.LastName" Label="Apellidos" Variant="Variant.Outlined" />
+</DialogForm>
 
-<ModalForm @ref="ModalNewCustomer" Model="Guest" Title="Nuevo Huésped" ValidSubmitCallback="OnValidSubmitCustomerAsync">
+@*<ModalForm @ref="ModalNewCustomer" Model="Guest" Title="Nuevo Huésped" ValidSubmitCallback="OnValidSubmitCustomerAsync">
     <div class="row pb-2">
         <div class="col-sm-12">
             <div class="form-group">
@@ -246,13 +352,14 @@
             </div>
         </div>
     </div>
-</ModalForm>
+</ModalForm>*@
 
 @code {
     [Parameter]
     public Guid RoomId { get; set; }
 
     public ModalForm ModalNewCustomer { get; set;  }
+    private DialogForm DialogNewCustomer;
     public Room Room { get; set; }
     public RoomCheckIn RoomCheckIn { get; set; }
     public PaymentMethod SelectedPaymentMethod { get; set; }
@@ -298,7 +405,7 @@
     {
         Room = await Http.GetFromJsonAsync<Room>(ApiRouteConfig.Management.Rooms.ROOM_ROUTE + "/" + RoomId);
         Companions = Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
-        PaymentMethods = await Http.GetFromJsonAsync<PaymentMethod[]>(ApiRouteConfig.Payment.PAYMENT_METHOD_ROUTE);
+        PaymentMethods = await Http.GetFromJsonAsync<PaymentMethod[]>(ApiRouteConfig.Payment.PAYMENT_METHOD_ROUTE + "?inDebt=false");
         Fees = await Http.GetFromJsonAsync<Fee[]>($"{ApiRouteConfig.Configuration.FEE_ROUTE}?roomTypeId={Room.RoomTypeId}");
         DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
 
@@ -383,6 +490,19 @@
         SelectedFee = Fees.First(x => x.Id == Guid.Parse(e.Value.ToString()));
     }
 
+    private async Task SaveAsync()
+    {
+        try
+        {
+            await Http.PostAsJsonAsync(ApiRouteConfig.Rack.CHECKIN_ROUTE, RoomCheckIn);
+            Navigation.NavigateTo("/rack");
+        }
+        catch (Exception ex)
+        {
+            await ShowAlertAsync(ex.Message);
+        }
+    }
+
     private async Task OnValidSubmitAsync()
     {
         try
@@ -404,8 +524,8 @@
 
     private async Task OnNewCustomerAsync()
     {
-        Guest = new Guest(); 
-        await ModalNewCustomer.OpenAsync();
+        Guest = new Guest();
+        DialogNewCustomer.Open();
     }
 
     private async Task OnValidSubmitCustomerAsync()
@@ -415,7 +535,7 @@
             RoomCheckIn.NewGuest = Guest.Document;
             await Http.PostAsJsonAsync(ApiRouteConfig.Management.Guests.GUEST_ROUTE, Guest);
             Companions = Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
-            await ModalNewCustomer.CloseAsync();
+            DialogNewCustomer.Close();
             StateHasChanged();
         }
         catch(Exception ex)

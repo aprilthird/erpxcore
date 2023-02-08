@@ -99,7 +99,9 @@ namespace ERP.XCore.Hotel.Shared.Helpers
             public const string CLEANING_ROUTE = RACK_ROUTE + "/limpieza";
             public const string DETAIL_ROUTE = RACK_ROUTE + "/detalle";
             public const string EXTENSION_ROUTE = RACK_ROUTE + "/extension";
+            public const string PAYMENT_ROUTE = RACK_ROUTE + "/pago";
             public const string CANCEL_ROUTE = RACK_ROUTE + "/cancelar";
+            public const string CHECKOUT_ROUTE = RACK_ROUTE + "/checkout";
 		}
     }
 }

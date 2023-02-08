@@ -1,8 +1,8 @@
-﻿<DialogTemplate @ref="DialogTemplate" Title="@Title" PrimaryButtonText="@PrimaryButtonText" PrimaryButtonLoadingText="@PrimaryButtonLoadingText" SecondaryButtonText="@SecondaryButtonText" OnSubmitCallback="SubmitAsync">
+﻿<DialogFormTemplate @ref="DialogFormTemplate" Title="@Title" MaxWidth="MaxWidth" FullWidth="FullWidth" PrimaryButtonText="@PrimaryButtonText" PrimaryButtonLoadingText="@PrimaryButtonLoadingText" PrimaryButtonIcon="@PrimaryButtonIcon" SecondaryButtonText="@SecondaryButtonText" OnSubmitCallback="SubmitAsync">
     <MudForm @ref="Form" Model="Model">
         @ChildContent
     </MudForm>
-</DialogTemplate>
+</DialogFormTemplate>
 
 @code {
     [Inject]
@@ -18,10 +18,19 @@
     public string Title { get; set; }
 
     [Parameter]
+    public MaxWidth? MaxWidth { get; set; } = MudBlazor.MaxWidth.Small;
+
+    [Parameter]
+    public bool FullWidth { get; set; } = true;
+
+    [Parameter]
     public string? PrimaryButtonText { get; set; } = Constants.Dialog.SAVE_BUTTON_TEXT;
 
     [Parameter]
     public string? PrimaryButtonLoadingText { get; set; } = Constants.Dialog.SAVING_BUTTON_TEXT;
+
+    [Parameter]
+    public string? PrimaryButtonIcon { get; set; } = Icons.Material.Filled.Save;
 
     [Parameter]
     public string? SecondaryButtonText { get; set; } = Constants.Dialog.CANCEL_BUTTON_TEXT;
@@ -32,7 +41,7 @@
     [Parameter]
     public EventCallback InvalidSubmitCallback { get; set; }
 
-    private DialogTemplate DialogTemplate;
+    private DialogFormTemplate DialogFormTemplate;
     private MudForm Form;
 
     private async Task SubmitAsync()
@@ -42,7 +51,7 @@
         {
             Snackbar.Add("Cambios Realizados", Severity.Success);
             await ValidSubmitCallback.InvokeAsync(this);
-            DialogTemplate.Close();
+            DialogFormTemplate.Close();
         }
         else
         {
@@ -51,7 +60,7 @@
         }
     }
 
-    public void Open() => DialogTemplate.Open();
+    public void Open() => DialogFormTemplate.Open();
 
-    public void Close() => DialogTemplate.Close();
+    public void Close() => DialogFormTemplate.Close();
 }

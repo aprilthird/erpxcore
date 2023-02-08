@@ -21,14 +21,14 @@
     }
 </MudSelect>
 
-<MudSelect T="Guid?" @bind-Value="Employee.WorkAreaId" Label="Area" Class="mb-3" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+<MudSelect T="Guid?" @bind-Value="Employee.WorkAreaId" Label="Area" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
     @foreach (var item in WorkAreas)
     {
         <MudSelectItem T="Guid?" Value="@item.Value">@item.Text</MudSelectItem>
     }
 </MudSelect>
 
-<MudSelect T="Guid?" @bind-Value="Employee.WorkPositionId" Label="Cargo" Class="mb-3" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+<MudSelect T="Guid?" @bind-Value="Employee.WorkPositionId" Label="Cargo" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
     @foreach (var item in WorkPositions)
     {
         <MudSelectItem T="Guid?" Value="@item.Value">@item.Text</MudSelectItem>

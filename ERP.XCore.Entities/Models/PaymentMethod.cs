@@ -13,6 +13,8 @@ namespace ERP.XCore.Entities.Models
 
         public string Description { get; set; }
 
+        public bool InDebt { get; set; }
+
         public bool RequiresAmount { get; set; }
 
         public bool RequiresVoucherNumber { get; set; }

@@ -420,11 +420,11 @@ namespace ERP.XCore.Data.Seeder
             {
                 var paymentMethods = new List<PaymentMethod>
                 {
-                    new PaymentMethod { Description = "Pagar al Salir", RequiresAmount = false, RequiresVoucherNumber = false },
-                    new PaymentMethod { Description = "Efectivo", RequiresAmount = true, RequiresVoucherNumber = false },
-                    new PaymentMethod { Description = "Tarjeta de Crédito/Débito", RequiresAmount = true, RequiresVoucherNumber = true },
-                    new PaymentMethod { Description = "Transferencia", RequiresAmount = true, RequiresVoucherNumber = true },
-                    new PaymentMethod { Description = "Yape", RequiresAmount = true, RequiresVoucherNumber = false },
+                    new PaymentMethod { Description = "Pagar al Salir", RequiresAmount = false, RequiresVoucherNumber = false, InDebt = true, },
+                    new PaymentMethod { Description = "Efectivo", RequiresAmount = true, RequiresVoucherNumber = false, InDebt = false, },
+                    new PaymentMethod { Description = "Tarjeta de Crédito/Débito", RequiresAmount = true, RequiresVoucherNumber = true, InDebt = false, },
+                    new PaymentMethod { Description = "Transferencia", RequiresAmount = true, RequiresVoucherNumber = true, InDebt = false, },
+                    new PaymentMethod { Description = "Yape", RequiresAmount = true, RequiresVoucherNumber = false, InDebt = false, },
                 };
 
                 await context.PaymentMethods.AddRangeAsync(paymentMethods);

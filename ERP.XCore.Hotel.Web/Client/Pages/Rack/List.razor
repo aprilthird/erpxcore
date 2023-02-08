@@ -76,7 +76,7 @@
         @foreach (var item in ItemsList)
         {
             <MudItem xs="2">
-                <MudCard>
+                <MudCard @onclick="() => ShowModalAsync(item)" Class="cursor-pointer">
                     <MudCardContent>
                         <MudStack AlignItems="AlignItems.Center">
                             <MudImage Src="@(item.RoomStatus.Description == "Disponible" ? "media/avro.png" : item.RoomStatus.Description == "Ocupado" ? "media/ocro.png" : item.RoomStatus.Description == "Con Deuda" ? "media/debt.png" : item.RoomStatus.Description == "Sucio" ? "media/diro.png" : item.RoomStatus.Description == "Mantenimiento" ? "media/mnto.png" : "media/clro.png" )" Height="50" />
@@ -89,247 +89,188 @@
     </MudGrid>
 </MudPaper>
 
-@*<MudDialog>
-    <TitleContent>
-        <MudText Typo="Typo.h6">
-            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
-        </MudText>
-    </TitleContent>
-    <DialogContent>
-        <p>How awesome are inline dialogs?</p>
-        <MudRating @bind-SelectedValue="rating" Class="mt-3" />
-    </DialogContent>
-    <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">Close</MudButton>
-    </DialogActions>
-</MudDialog>*@
-
-<Modal @ref="ModalBusy" Title="@ModalTitle" Size="ModalTemplate.ModalSize.ExtraLarge">
-    <div>
-        <h6>Código: </h6>
-        <span>@RoomCheckInDetail.Code</span>
-    </div>
-    <div>
-        <h6>Habitación: </h6>
-        <span>@RoomCheckInDetail.Room.Description (@RoomCheckInDetail.Room.RoomType.Description)</span>
-    </div>
-    <div>
-        <h6>Huésped: </h6>
-        <span>Sr. @RoomCheckInDetail.Guest.FullName</span>
-    </div>
-    <div>
-        <h6>Acompañantes: </h6>
+<Dialog @ref="DialogBusy" Title="@ModalTitle" MaxWidth="MaxWidth.Medium" FullWidth="true">
+    <MudStack Row="true">
+        <MudText><b>Código: </b></MudText>
+        <MudText>@RoomCheckInDetail.Code</MudText>
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Habitación: </b></MudText>
+        <MudText>@RoomCheckInDetail.Room.Description (@RoomCheckInDetail.Room.RoomType.Description)</MudText>
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Huésped: </b></MudText>
+        <MudText>Sr. @RoomCheckInDetail.Guest.FullName</MudText>
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Acompañantes: </b></MudText>
         @if (RoomCheckInDetail.Companions == null || !RoomCheckInDetail.Companions.Any())
         {
-            <span>Ninguno</span>
+            <MudText>Ninguno</MudText>
         }
         else
         {
-            <span>
-                <ul>
-                    @foreach (var comp in RoomCheckInDetail.Companions)
-                    {
-                        <li>Sr. @comp.Guest.FullName</li>
-                    }
-                </ul>
-            </span>
+            <MudStack>
+                @foreach (var comp in RoomCheckInDetail.Companions)
+                {
+                    <MudText>Sr. @comp.Guest.FullName</MudText>
+                }
+            </MudStack>
         }
-    </div>
-    <div>
-        <h6>Entrada: </h6>
-        <span>@RoomCheckInDetail.EntryTime.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
-    </div>
-    <div>
-        <h6>Salida: </h6>
-        <span>@RoomCheckInDetail.ExitTime.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
-    </div>
-    <div>
-        <h6>Método de Pago: </h6>
-        <span>@RoomCheckInDetail.PaymentMethod.Description</span>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Acción</th>
-                        <th>Fecha</th>
-                        <th>Descripción</th>
-                        <th>Habitación</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (var i = 0; i < RoomCheckInDetail.Nights; ++i)
-                    {
-                        <tr>
-                            <td></td>
-                            <td>@RoomCheckInDetail.EntryTime.AddDays(i).ToLocalTime().ToString("dd/MM/yyyy") - @RoomCheckInDetail.EntryTime.AddDays(i+1).ToLocalTime().ToString("dd/MM/yyyy")</td>
-                            <td>@RoomCheckInDetail.Room.RoomType.Description</td>
-                            <td>@RoomCheckInDetail.Room.Description</td>
-                            <td>S/ @RoomCheckInDetail.Fee.Amount</td>
-                        </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    Total: S/ @(RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights)
-                </tfoot>
-            </table>
-        </div>
-        <div class="col-md-6">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Moneda</th>
-                        <th>Total</th>
-                        <th>Saldo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>@RoomCheckInDetail.Fee.FeeType.Currency.Code</td>
-                        <td class="text-success">@((RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights).ToString("#.##"))</td>
-                        <td class="text-danger">@(RoomCheckInDetail.StatusId == Constants.Status.ENABLED_ID ? "0.00" : (RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights).ToString("#.##"))</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <Button Text="Cancelar CheckIn" Type="Shared.Button.ButtonType.Button" Theme="Shared.Button.ButtonTheme.Danger" OnClickCallback="CancelCheckInAsync" />
-    <Button Text="Extender Estadía" Type="Shared.Button.ButtonType.Button" OnClickCallback="ShowFormExtensionAsync" />
-    <div class="@FormClass" style="display: @FormCss">
-        <Microsoft.AspNetCore.Components.Forms.EditForm Model="RoomCheckInExtension" OnValidSubmit="SaveBookingExtensionAsync">
-            <div class="row pb-2">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <MudDatePicker Date="RoomCheckInExtension.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" />
-                        <ValidationMessage For="() => RoomCheckInExtension.ExitTime" />
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label>&emsp;</label>
-                        <InputSelect @bind-Value="RoomCheckInExtension.Hour" id="hour" class="form-control" placeholder="Hora">
-                            @for (var i = 1; i <= 12; ++i)
-                            {
-                                <option value="@i">@i.ToString("00")</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="() => RoomCheckInExtension.Hour" />
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label>&emsp;</label>
-                        <InputSelect @bind-Value="RoomCheckInExtension.Meridian" id="meridian" class="form-control" placeholder="Meridiano">
-                            <option value="0">AM</option>
-                            <option value="1">PM</option>
-                        </InputSelect>
-                        <ValidationMessage For="() => RoomCheckInExtension.Meridian" />
-                    </div>
-                </div>
-            </div>
-            <div class="row pb-2">
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        <label for="paymentmethod">Método de Pago</label>
-                        <select id="paymentmethod" class="form-control" placeholder="Método de Pago" @onchange="OnPaymentMethodChanged">
-                            @foreach (var item in PaymentMethods)
-                            {
-                                <option value="@item.Id">@item.Description</option>
-                            }
-                        </select>
-                        <ValidationMessage For="() => RoomCheckIn.PaymentMethodId" />
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        @if (SelectedPaymentMethod.RequiresAmount)
-                        {
-                            <label for="amount">Monto</label>
-                            <InputNumber @bind-Value="RoomCheckInExtension.Amount" id="amount" class="form-control" placeholder="Monto" />
-                            <ValidationMessage For="() => RoomCheckInExtension.Amount" />
-                        }
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="form-group">
-                        @if (SelectedPaymentMethod.RequiresVoucherNumber)
-                        {
-                            <label for="amount">Voucher</label>
-                            <InputText @bind-Value="RoomCheckInExtension.VoucherNumber" id="amount" class="form-control" placeholder="# Voucher/Operación" />
-                            <ValidationMessage For="() => RoomCheckInExtension.VoucherNumber" />
-                        }
-                    </div>
-                </div>
-            </div>
-            <button type="button" class="btn btn-icon btn-secondary" @onclick="HideFormExtensionAsync">
-                <i class="c-icon cil-x"></i>
-                <span>Cancelar</span>
-            </button>
-            <Button Text="Guardar" Icon="c-icon cil-save" Type="Shared.Button.ButtonType.Submit" />
-        </Microsoft.AspNetCore.Components.Forms.EditForm>
-    </div>
-</Modal>
-
-<ModalForm @ref="ModalDirty" Title="@ModalTitle" Model="RoomCleaning" ValidSubmitCallback="SaveCleaningAsync" InvalidSubmitCallback="ShowCleaningError">
-    <div>
-        <h6>¿Quién se encuentra limpiando?</h6>
-        <input class="form-control pb-2" placeholder="Búsqueda de Empleado (DNI o Apellidos)" @onchange="OnSearchChanged" />
-        <InputSelect @bind-Value="RoomCleaning.EmployeeId" id="guest" class="form-control" placeholder="Huésped">
-            @foreach (var item in Employees)
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Entrada: </b></MudText>
+        <MudText>@RoomCheckInDetail.EntryTime.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</MudText>
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Salida: </b></MudText>
+        <MudText>@RoomCheckInDetail.ExitTime.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</MudText>
+    </MudStack>
+    <MudStack Row="true" Class="mt-2 justify-space-between">
+        <MudTable Items="@Enumerable.Range(0, RoomCheckInDetail.Nights)" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info">
+            <HeaderContent>
+                <MudTh>Acción</MudTh>
+                <MudTh>Fecha</MudTh>
+                <MudTh>Descripción</MudTh>
+                <MudTh>Habitación</MudTh>
+                <MudTh>Precio</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd></MudTd>
+                <MudTd>@RoomCheckInDetail.EntryTime.ToLocalTime().AddDays(context).ToString("dd/MM/yyyy") - @RoomCheckInDetail.EntryTime.ToLocalTime().AddDays(context + 1).ToString("dd/MM/yyyy")</MudTd>
+                <MudTd>@RoomCheckInDetail.Room.RoomType.Description</MudTd>
+                <MudTd>@RoomCheckInDetail.Room.Description</MudTd>
+                <MudTd>S/ @RoomCheckInDetail.Fee.Amount</MudTd>
+            </RowTemplate>
+        </MudTable>
+        <MudTable Items="@Enumerable.Range(0, 1)" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info">
+            <HeaderContent>
+                <MudTh>Moneda</MudTh>
+                <MudTh>Total</MudTh>
+                <MudTh>Saldo</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@RoomCheckInDetail.Fee.FeeType.Currency.Code</MudTd>
+                <MudTd Class="mud-success-text">@((RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights).ToString("#.##"))</MudTd>
+                <MudTd Class="mud-error-text">@(RoomCheckInDetail.StatusId == Constants.Status.ENABLED_ID ? "0.00" : (RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights).ToString("#.##"))</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudStack>
+    @if (!FormExtensionIsVisible && !FormPaymentIsVisible)
+    {
+        <MudStack Row="true" Class="mt-2">
+            @if(RoomCheckInDetail.Room.RoomStatus.Description == "Con Deuda")
             {
-                <option value="@item.Id">@item.FullName</option>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CancelCheckInAsync" StartIcon="@Icons.Material.Filled.Cancel">Cancelar CheckIn</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="ShowFormPayment" StartIcon="@Icons.Material.Filled.Payment">Pagar Deuda</MudButton>
             }
-        </InputSelect>
-    </div>
-</ModalForm>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="ShowFormExtension" StartIcon="@Icons.Material.Filled.Extension">Extender Estadía</MudButton>
+            @if (RoomCheckInDetail.Room.RoomStatus.Description == "Ocupado")
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CheckOutAsync" StartIcon="@Icons.Material.Filled.DoorBack">Salida</MudButton>
+            }
+        </MudStack>
+    }
+    @if (FormExtensionIsVisible)
+    {
+        <MudForm Model="RoomCheckInExtension" Class="mt-2">
+            <MudStack Row="true">
+                <MudDatePicker Date="RoomCheckInExtension.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" Variant="Variant.Outlined" />
+                <MudSelect T="int" @bind-Value="RoomCheckInExtension.Hour" Label="Hora" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                    @for (var i = 1; i <= 24; ++i)
+                    {
+                        <MudSelectItem Value="@i">@i.ToString("00")</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudSelect T="int" @bind-Value="RoomCheckInExtension.Meridian" Label="Meridiano" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem Value="0">AM</MudSelectItem>
+                    <MudSelectItem Value="1">PM</MudSelectItem>
+                </MudSelect>
+            </MudStack>
+        </MudForm>
+        <MudStack Row="true" Class="mt-2">
+            <MudButton Variant="Variant.Filled" OnClick="HideFormExtension" StartIcon="@Icons.Material.Filled.Close">Cancelar</MudButton>
+            <ButtonLoader Text="Guardar" LoadingText="Guardando" Icon="@Icons.Material.Filled.Save" OnClickCallback="SaveCheckInExtensionAsync" />
+        </MudStack>
+    }
+    @if (FormPaymentIsVisible)
+    {
+        <MudForm Model="RoomCheckInPayment" Class="mt-2">
+            <MudStack Row="true">
+                <MudSelect T="Guid" @bind-Value="RoomCheckInPayment.PaymentMethodId" Label="Método de Pago" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @onchange="OnPaymentMethodChanged">
+                    @foreach(var item in PaymentMethods)
+                    {
+                        <MudSelectItem Value="@item.Id">@item.Description</MudSelectItem>
+                    }
+                </MudSelect>
+                @if (SelectedPaymentMethod.RequiresAmount)
+                {
+                    <MudNumericField T="double?" @bind-Value="RoomCheckInPayment.Amount" Label="Monto" Variant="Variant.Outlined" />
+                }
+                @if (SelectedPaymentMethod.RequiresVoucherNumber)
+                {
+                    <MudTextField @bind-Value="RoomCheckInPayment.VoucherNumber" Label="# Voucher/Operación" Variant="Variant.Outlined" />
+                }
+            </MudStack>
+        </MudForm>
+        <MudStack Row="true" Class="mt-2">
+            <MudButton Variant="Variant.Filled" OnClick="HideFormPayment" StartIcon="@Icons.Material.Filled.Close">Cancelar</MudButton>
+            <ButtonLoader Text="Guardar" LoadingText="Guardando" Icon="@Icons.Material.Filled.Save" OnClickCallback="SaveCheckInPaymentAsync" />
+        </MudStack>
+    }
+</Dialog>
 
-<Modal @ref="ModalCleaning" Title="@ModalTitle">
-    <div>
-        <h6>Encargado: </h6>
-        <span>Sr. @RoomCleaningDetail.Employee.FullName</span>
-    </div>
-    <div>
-        <h6>Inicio: </h6>
-        <span>@RoomCleaningDetail.StartedAt?.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
-    </div>
-</Modal>
+<Dialog @ref="DialogDirty" Title="@ModalTitle" MaxWidth="MaxWidth.Small" FullWidth="true">
+    <MudText Typo="Typo.h6">¿Quién se encuentra limpiando?</MudText>
+    <MudTextField T="string" Label="Búsqueda de Empleado (DNI o Apellidos)" @onchange="OnSearchChanged" />
+    <MudSelect T="Guid" @bind-Value="RoomCleaning.EmployeeId" Label="Empleado" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+        @foreach (var item in Employees)
+        {
+            <MudSelectItem Value="@item.Id">@item.FullName</MudSelectItem>
+        }
+    </MudSelect>
+</Dialog>
 
-<Modal @ref="ModalManagement" Title="@ModalTitle">
-    <div>
-        <h6>Técnico: </h6>
-        <span>Sr. @RoomMaintenanceDetail.Employee.FullName</span>
-    </div>
-    <div>
-        <h6>Observación: </h6>
-        <span>@RoomMaintenanceDetail.Description</span>
-    </div>
-    <div>
-        <h6>Inicio: </h6>
-        <span>@RoomMaintenanceDetail.StartedAt.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</span>
-    </div>
-</Modal>
+<Dialog @ref="DialogCleaning" Title="@ModalTitle" MaxWidth="MaxWidth.Small" FullWidth="true">
+    <MudStack Row="true">
+        <MudText><b>Encargado: </b></MudText>
+        <MudText>Sr. @RoomCleaningDetail.Employee.FullName</MudText>
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Inicio: </b></MudText>
+        <MudText>@RoomCleaningDetail.StartedAt?.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</MudText>
+    </MudStack>
+</Dialog>
 
-<Modal @ref="ModalExtension" Title="@ModalTitle">
-    <MudDatePicker Date="RoomCheckIn.ExitTime" Label="Nueva Salida" Editable="true" Placeholder="Escoge una fecha" />
-</Modal>
+<Dialog @ref="DialogManagement" Title="@ModalTitle" MaxWidth="MaxWidth.Small" FullWidth="true">
+    <MudStack Row="true">
+        <MudText><b>Técnico: </b></MudText>
+        <MudText>Sr. @RoomMaintenanceDetail.Employee.FullName</MudText>
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Observación: </b></MudText>
+        <MudText>@RoomMaintenanceDetail.Description</MudText>
+    </MudStack>
+    <MudStack Row="true">
+        <MudText><b>Inicio: </b></MudText>
+        <MudText>@RoomMaintenanceDetail.StartedAt.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</MudText>
+    </MudStack>
+</Dialog>
 
 @code {
-    private Modal ModalBusy;
-    private ModalForm ModalDirty;
-    private Modal ModalCleaning;
-    private Modal ModalManagement;
-    private Modal ModalExtension;
+    private Dialog DialogBusy;
+    private Dialog DialogDirty;
+    private Dialog DialogCleaning;
+    private Dialog DialogManagement;
+    private Dialog DialogExtension;
 
     private string ModalTitle;
     private Room[]? ItemsList;
-    private string searchString1 = "";
-    private string FormClass = "hide";
-    private string FormCss = "none;";
+    private bool FormExtensionIsVisible = false;
+    private bool FormPaymentIsVisible = false;
 
     private RoomCheckInExtensionResource RoomCheckInExtension;
-    private RoomCheckIn RoomCheckIn = new();
+    private RoomCheckInPaymentResource RoomCheckInPayment;
     private RoomCleaning RoomCleaning;
     private RoomCheckIn RoomCheckInDetail;
     private RoomCleaning RoomCleaningDetail;
@@ -402,7 +343,7 @@
         Employees = await Http.GetFromJsonAsync<Employee[]>(ApiRouteConfig.Management.Business.EMPLOYEE_ROUTE);
         RoomTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-habitacion");
         RoomStatus = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/estados-de-habitacion");
-        PaymentMethods = await Http.GetFromJsonAsync<PaymentMethod[]>(ApiRouteConfig.Payment.PAYMENT_METHOD_ROUTE);
+        PaymentMethods = await Http.GetFromJsonAsync<PaymentMethod[]>(ApiRouteConfig.Payment.PAYMENT_METHOD_ROUTE + "?inDebt=false");
         if (PaymentMethods.Any())
         {
             SelectedPaymentMethod = PaymentMethods.FirstOrDefault();
@@ -442,7 +383,8 @@
             if (RoomCheckInDetail == null || RoomCheckInDetail.RoomId != room.Id)
             {
             }
-            await ModalBusy.OpenAsync();
+            StateHasChanged();
+            DialogBusy.Open();
         }
         else if (room.RoomStatus.Description == "Sucio")
         {
@@ -451,7 +393,7 @@
                 {
                     RoomId = room.Id,
                 };
-            await ModalDirty.OpenAsync();
+            DialogDirty.Open();
         }
         else if (room.RoomStatus.Description == "En Limpieza")
         {
@@ -460,7 +402,7 @@
             {
                 RoomCleaningDetail = await Http.GetFromJsonAsync<RoomCleaning>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{room.Id}");
             }
-            await ModalCleaning.OpenAsync();
+            DialogCleaning.Open();
         }
         else if (room.RoomStatus.Description == "Mantenimiento")
         {
@@ -469,7 +411,7 @@
             {
                 RoomMaintenanceDetail = await Http.GetFromJsonAsync<RoomMaintenance>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{room.Id}");
             }
-            await ModalManagement.OpenAsync();
+            DialogManagement.Open();
         }
     }
 
@@ -479,11 +421,60 @@
         {
             await Http.PostAsJsonAsync(ApiRouteConfig.Rack.CLEANING_ROUTE, RoomCleaning);
             await Load();
-            await ModalDirty.CloseAsync();
+            DialogDirty.Close();
         }
         catch (Exception ex)
         {
 
+        }
+    }
+
+    public async Task SaveCheckInExtensionAsync()
+    {
+        try
+        {
+            await Http.PostAsJsonAsync(ApiRouteConfig.Rack.EXTENSION_ROUTE, RoomCheckInExtension);
+            HideFormExtension();
+            RoomCheckInDetail = await Http.GetFromJsonAsync<RoomCheckIn>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{RoomCheckInDetail.RoomId}");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    public async Task SaveCheckInPaymentAsync()
+    {
+        try
+        {
+            await Http.PostAsJsonAsync(ApiRouteConfig.Rack.PAYMENT_ROUTE, RoomCheckInPayment);
+            HideFormExtension();
+            RoomCheckInDetail = await Http.GetFromJsonAsync<RoomCheckIn>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{RoomCheckInDetail.RoomId}");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    public void ShowCleaningError()
+    {
+    }
+
+    public async Task CancelCheckInAsync()
+    {
+        if (RoomCheckInDetail != null)
+        {
+            try
+            {
+                await Http.GetAsync(ApiRouteConfig.Rack.CANCEL_ROUTE + "/" + RoomCheckInDetail.RoomId);
+                DialogBusy.Close();
+                await Load();
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 
@@ -496,73 +487,70 @@
         }
     }
 
-    public async Task SaveBookingExtensionAsync()
+    private void OnPaymentMethodChanged(ChangeEventArgs e)
     {
-        try
-        {
-            await Http.PostAsJsonAsync(ApiRouteConfig.Rack.EXTENSION_ROUTE, RoomCheckInExtension);
-            await HideFormExtensionAsync();
-            RoomCheckInDetail = await Http.GetFromJsonAsync<RoomCheckIn>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{RoomCheckInDetail.RoomId}");
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-
-        }
+        RoomCheckInPayment.PaymentMethodId = Guid.Parse(e.Value.ToString());
+        SelectedPaymentMethod = PaymentMethods.First(x => x.Id == Guid.Parse(e.Value.ToString()));
     }
 
-    public void ShowCleaningError()
+    private void ShowFormExtension()
     {
+        if (RoomCheckInDetail != null)
+        {
+            var nextDay = RoomCheckInDetail.ExitTime.ToLocalTime().AddDays(1);
+            RoomCheckInExtension = new()
+            {
+                RoomCheckInId = RoomCheckInDetail.Id,
+                ExitTime = nextDay.Date,
+                Hour = nextDay.Hour > 12 ? nextDay.Hour - 12 : nextDay.Hour == 0 ? 12 : nextDay.Hour,
+                Meridian = nextDay.Hour > 12 ? 1 : 0
+            };
+        }
 
+        FormExtensionIsVisible = true;
+        StateHasChanged();
     }
 
-    public async Task CancelCheckInAsync()
+    private void HideFormExtension()
+    {
+        FormExtensionIsVisible = false;
+        StateHasChanged();
+    }
+
+    private void ShowFormPayment()
+    {
+        if (RoomCheckInDetail != null)
+        {
+            RoomCheckInPayment = new()
+                {
+                    RoomCheckInId = RoomCheckInDetail.Id,
+                    PaymentMethodId = PaymentMethods.Select(x => x.Id).FirstOrDefault(),
+                };
+        }
+
+        FormPaymentIsVisible = true;
+        StateHasChanged();
+    }
+
+    private void HideFormPayment()
+    {
+        FormPaymentIsVisible = false;
+        StateHasChanged();
+    }
+
+    public async Task CheckOutAsync()
     {
         if (RoomCheckInDetail != null)
         {
             try
             {
-                await Http.PostAsJsonAsync(ApiRouteConfig.Rack.CANCEL_ROUTE + "/" + RoomCheckInDetail.RoomId, RoomCheckInExtension);
-                await ModalBusy.CloseAsync();
+                await Http.GetAsync(ApiRouteConfig.Rack.CHECKOUT_ROUTE + "/" + RoomCheckInDetail.RoomId);
+                DialogBusy.Close();
                 await Load();
             }
             catch (Exception ex)
             {
             }
         }
-    }
-
-    private void OnPaymentMethodChanged(ChangeEventArgs e)
-    {
-        RoomCheckInExtension.PaymentMethodId = Guid.Parse(e.Value.ToString());
-        SelectedPaymentMethod = PaymentMethods.First(x => x.Id == Guid.Parse(e.Value.ToString()));
-    }
-
-    public async Task ShowFormExtensionAsync()
-    {
-        if (RoomCheckInDetail != null)
-        {
-            var nextDay = RoomCheckInDetail.ExitTime.AddDays(1);
-            RoomCheckInExtension = new RoomCheckInExtensionResource()
-                {
-                    RoomCheckInId = RoomCheckInDetail.Id,
-                    PaymentMethodId = PaymentMethods.Select(x => x.Id).FirstOrDefault(),
-                    ExitTime = nextDay,
-                    Hour = nextDay.Hour > 12 ? nextDay.Hour - 12 : nextDay.Hour == 0 ? 12 : nextDay.Hour,
-                    Meridian = nextDay.Hour > 12 ? 1 : 0
-                };
-        }
-
-        FormCss = "block;";
-        await Task.Delay(500);
-        FormClass = "show";
-    }
-
-    private async Task HideFormExtensionAsync()
-    {
-        FormClass = "hide";
-        await Task.Delay(1000);
-        FormCss = "none;";
-        StateHasChanged();
     }
 }

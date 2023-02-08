@@ -69,6 +69,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
                         {
                             Description = x.Room.Description,
                             RoomType = x.Room.RoomType,
+                            RoomStatus = x.Room.RoomStatus,
                         },
                         Companions = x.Companions.Select(c => new RoomCheckInCompanion
                         {
@@ -181,7 +182,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
             return Ok();
         }
 
-        [HttpPost("cancelar/{id}")]
+        [HttpGet("cancelar/{id}")]
         public async Task<IActionResult> Cancel(Guid id)
         {
             var room = await _context.Rooms
@@ -191,7 +192,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
             if (room == null)
                 return NotFound();
 
-            if (room.RoomStatus.Description != "Ocupado")
+            if (room.RoomStatus.Description != "Con Deuda")
                 return BadRequest();
 
             var roomCheckIn = await _context.RoomCheckIns
@@ -227,10 +228,27 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
 
             var roomCheckIn = await _context.RoomCheckIns
                     .FirstOrDefaultAsync(x => x.Id == model.RoomCheckInId);
-            roomCheckIn.ExitTime = model.ExitTime;
+            roomCheckIn.ExitTime = model.ExitTime.Date;
             roomCheckIn.ExitTime = roomCheckIn.ExitTime.AddHours(model.Meridian == 0 ? model.Hour : model.Hour + 12);
 			roomCheckIn.Nights = (roomCheckIn.ExitTime.Date - roomCheckIn.EntryTime.Date).Days;
 			await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("pago")]
+        public async Task<IActionResult> Payment([FromBody] RoomCheckInPaymentResource model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var roomCheckIn = await _context.RoomCheckIns
+                    .FirstOrDefaultAsync(x => x.Id == model.RoomCheckInId);
+            roomCheckIn.PaymentMethodId = model.PaymentMethodId;
+            roomCheckIn.VoucherNumber = model.VoucherNumber;
+            roomCheckIn.ChargedAmount = model.ChargedAmount;
+            roomCheckIn.Amount = model.Amount;
+            roomCheckIn.StatusId = Constants.Status.ENABLED_ID;
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
@@ -251,6 +269,26 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
             var room = await _context.Rooms.FindAsync(model.RoomId);
             var cleaningStatus = await _context.RoomStatus.Where(x => x.Description == "En Limpieza").FirstOrDefaultAsync();
             room.RoomStatusId = cleaningStatus.Id;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpGet("checkout/{id}")]
+        public async Task<IActionResult> CheckOut(Guid id)
+        {
+            var room = await _context.Rooms
+                .Include(x => x.RoomStatus)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (room == null)
+                return NotFound();
+
+            if (room.RoomStatus.Description != "Ocupado")
+                return BadRequest();
+
+            var availableStatus = await _context.RoomStatus.Where(x => x.Description == "Disponible").FirstOrDefaultAsync();
+            room.RoomStatusId = availableStatus.Id;
             await _context.SaveChangesAsync();
 
             return Ok();
