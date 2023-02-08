@@ -1,48 +1,25 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Rol</label>
-            <InputSelect @bind-Value="Permission.RoleId" id="entity" class="form-control" placeholder="Empleado">
-                @foreach (var item in Roles)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Permission.RoleId" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Sub Módulo</label>
-            <InputSelect @bind-Value="Permission.SubModuleId" id="entity" class="form-control" placeholder="Empleado">
-                @foreach (var item in SubModules)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Permission.SubModuleId" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Permiso</label>
-            <InputSelect @bind-Value="Permission.PermissionLevelId" id="entity" class="form-control" placeholder="Empleado">
-                @foreach (var item in PermissionLevels)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => Permission.PermissionLevelId" />
-        </div>
-    </div>
-</div>
+<MudSelect T="Guid" @bind-Value="Permission.RoleId" Label="Rol" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in Roles)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+<MudSelect T="Guid" @bind-Value="Permission.SubModuleId" Label="Sub Módulo" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in SubModules)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+<MudSelect T="Guid" @bind-Value="Permission.PermissionLevelId" Label="Permiso" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in PermissionLevels)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+
       
 @code {
     [Parameter]

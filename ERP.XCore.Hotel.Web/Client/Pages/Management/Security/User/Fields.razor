@@ -1,70 +1,21 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
-
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Correo</label>
-            <InputText @bind-Value="ApplicationUser.Email" id="description" class="form-control" placeholder="Correo" />
-            <ValidationMessage For="() => ApplicationUser.Email" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Teléfono</label>
-            <InputText @bind-Value="ApplicationUser.PhoneNumber" id="entity" class="form-control" placeholder="Teléfono" />
-            <ValidationMessage For="() => ApplicationUser.PhoneNumber" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Empleado</label>
-            <InputSelect @bind-Value="ApplicationUser.EmployeeId" id="entity" class="form-control" placeholder="Empleado">
-                @foreach(var item in Employees)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => ApplicationUser.EmployeeId" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Rol</label>
-            <InputSelect @bind-Value="ApplicationUser.RoleId" id="entity" class="form-control" placeholder="Rol">
-                @foreach(var item in Roles)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => ApplicationUser.RoleId" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="password">Contraseña</label>
-            <InputText @bind-Value="ApplicationUser.Password" id="password" class="form-control" placeholder="Contraseña" />
-            <ValidationMessage For="() => ApplicationUser.Password" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="confirm_password">Repetir Contraseña</label>
-            <InputText @bind-Value="ApplicationUser.PasswordConfirm" id="confirm_password" class="form-control" placeholder="Repetir Contraseña" />
-            <ValidationMessage For="() => ApplicationUser.PasswordConfirm" />
-        </div>
-    </div>
-</div>
+<MudTextField @bind-Value="ApplicationUser.Email" Label="Email" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="ApplicationUser.PhoneNumber" Label="Teléfono" Variant="Variant.Outlined" />
+<MudSelect T="Guid" @bind-Value="ApplicationUser.EmployeeId" Label="Empleado" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in Employees)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+<MudSelect T="Guid" @bind-Value="ApplicationUser.RoleId" Label="Rol" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in Roles)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+<MudTextField @bind-Value="ApplicationUser.Password" Label="Contraseña" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="ApplicationUser.PasswordConfirm" Label="Confirmar Contaseña" Variant="Variant.Outlined" />
 
 @code {
     [Parameter]

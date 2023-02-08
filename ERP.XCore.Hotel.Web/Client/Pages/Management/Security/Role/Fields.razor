@@ -1,15 +1,7 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <InputText @bind-Value="ApplicationRole.Name" id="description" class="form-control" placeholder="Descripción" />
-            <ValidationMessage For="() => ApplicationRole.Name" />
-        </div>
-    </div>
-</div>
+<MudTextField @bind-Value="ApplicationRole.Name" Label="Descripción" Variant="Variant.Outlined" />
 
 @code {
     [Parameter]

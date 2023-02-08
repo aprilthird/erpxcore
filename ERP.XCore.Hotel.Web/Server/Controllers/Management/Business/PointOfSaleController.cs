@@ -29,6 +29,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Management.Business
                     Description = x.Description,
                     CompanyHeadquarterId = x.CompanyHeadquarterId,
                     StatusId = x.StatusId,
+                    TicketPrinter = x.TicketPrinter,
                     CompanyHeadquarter = new CompanyHeadquarter
                     {
                         Description = x.CompanyHeadquarter.Description,

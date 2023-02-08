@@ -1,40 +1,14 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <InputText @bind-Value="SubModule.Description" id="description" class="form-control" placeholder="Descripción" />
-            <ValidationMessage For="() => SubModule.Description" />
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="route">Ruta</label>
-            <InputText @bind-Value="SubModule.RouteUrl" id="route" class="form-control" placeholder="Ruta" />
-            <ValidationMessage For="() => SubModule.RouteUrl" />
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Modulo</label>
-            <InputSelect @bind-Value="SubModule.ModuleId" id="entity" class="form-control" placeholder="Estado">
-                @foreach(var item in Modules)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => SubModule.ModuleId" />
-        </div>
-    </div>
-</div>
+<MudTextField @bind-Value="SubModule.Description" Label="Descripción" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="SubModule.RouteUrl" Label="Ruta" Variant="Variant.Outlined" />
+<MudSelect T="Guid" @bind-Value="SubModule.ModuleId" Label="Modulo" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in Modules)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
       
 @code {
     [Parameter]

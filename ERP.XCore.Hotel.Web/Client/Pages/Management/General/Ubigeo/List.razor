@@ -6,70 +6,66 @@
 
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
 
-<div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Tipo de Documento</h3>
-		@if(canAdd)
-		{
-			<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-				<i class="fa fa-add"></i>
-				<span>Agregar</span>
-			</button>
-		}
-	</div>
-	<div class="col-md-12">
-		<div class="table-responsive">
-        @if(ItemsList == null)
-		{
-			<p><em>Cargando...</em></p>
-		}
-		else
-		{
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr class="fw-bold">
-						<th>Nacionalidad</th>
-						<th>País</th>
-						<th>Departamento</th>
-						<th>Provincia</th>
-						<th>Distrito</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach(var item in ItemsList)
-					{
-						<tr>
-							<td>@item.Citizenship</td>
-							<td>@item.CountryName (@item.CountryCode)</td>
-							<td>@item.DepartmentName (@item.DepartmentCode)</td>
-							<td>@item.ProvinceName (@item.ProvinceCode)</td>
-							<td>@item.DistrictName (@item.DistrictCode)</td>
-							<td>
-								@if(canEdit)
-								{
-									<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
-										<i class="fa fa-edit"></i>
-										<span>Editar</span>
-									</button>
-								}
-								@if(canDelete)
-								{
-									<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
-										<i class="fa fa-trash"></i>
-										<span>Eliminar</span>
-									</button>
-								}
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		}
-		</div>
-	</div>
-</div>
+<PageTitle Typo="Typo.h3">Ubigeo</PageTitle>
+
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Area</MudText>
+
+	<MudDivider />
+
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Ubigeo, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+			<MudTh>Nacionalidad</MudTh>
+			<MudTh>País</MudTh>
+			<MudTh>Departamento</MudTh>
+			<MudTh>Provincia</MudTh>
+			<MudTh>Distrito</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd>@context.Citizenship</MudTd>
+			<MudTd>@context.CountryName</MudTd>
+			<MudTd>@context.DepartmentName</MudTd>
+			<MudTd>@context.ProvinceName</MudTd>
+			<MudTd>@context.DistrictName</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="Ubigeo" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<Fields @ref="Fields" Ubigeo="Ubigeo" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+			<Fields @ref="Fields" Ubigeo="Ubigeo" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Ubigeo" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" Ubigeo="Ubigeo" />
@@ -78,15 +74,17 @@
 @code {
 	private Ubigeo Ubigeo = new Ubigeo();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private Ubigeo[]? ItemsList;
-
+	private string searchString1 = "";
 	private string subModule = "Ubigeo";
 	private bool canEdit;
 	private bool canAdd;
 	private bool canDelete;
-
+	private bool ShowModalTest = false;
+	private DialogOptions DialogOptions = new() { FullWidth = true };
 	public enum ModalType
 	{
 		New, Edit
@@ -123,9 +121,22 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Ubigeo ubigeo = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
-		Ubigeo = ubigeo ?? new Ubigeo();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(ubigeo == null ? "Nuevo" : "Editor")} Cliente";
+		Ubigeo = ubigeo ?? new();
+	}
+
+	private bool FilterFunc1(Ubigeo u) => FilterFunc(u, searchString1);
+
+	private bool FilterFunc(Ubigeo u, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (u.CountryName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+
+
+		return false;
 	}
 
 	public async Task SaveAsync()
@@ -155,7 +166,11 @@
 
 	public async Task DeleteAsync(Ubigeo ubigeo)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.General.UBIGEO_ROUTE + "/" + ubigeo.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.General.UBIGEO_ROUTE + "/" + ubigeo.Id);
+			await Load();
+		}
+	}
 }

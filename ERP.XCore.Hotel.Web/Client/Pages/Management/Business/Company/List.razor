@@ -4,66 +4,78 @@
 @using ERP.XCore.Hotel.Shared.Resources.Base
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient Http
+@inject IDialogService DialogService
 
-<div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Empresa</h3>
-		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-			<i class="fa fa-add"></i>
-			<span>Agregar</span>
-		</button>
-	</div>
-	<div class="col-md-12 row">
-	</div>
-	<hr/>
-	<div class="col-md-12">
-		<div class="table-responsive">
+<PageTitle Typo="Typo.h3">Empresa</PageTitle>
 
-	
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Company, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-						<MudTh>Codigo</MudTh>
-						<MudTh>Dirección</MudTh>
-						<MudTh>Estado</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-							<MudTd>@context.Code</MudTd>
-							<MudTd>@context.Address</MudTd>
-							<MudTd>@context.Status.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Empresa</MudText>
 
-	
-		
-		</div>
-	</div>
-</div>
+	<MudDivider />
+
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Company, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+			<MudTh>Codigo</MudTh>
+			<MudTh>Dirección</MudTh>
+			<MudTh>Estado</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd>@context.Code</MudTd>
+			<MudTd>@context.Address</MudTd>
+			<MudTd>@context.Status.Description</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="Company" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+		<Fields @ref="Fields" Company="Company" Status="Status" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+			<Fields @ref="Fields" Company="Company" Status="Status" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Company" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
-    <Fields @ref="Fields" Company="Company" />
+	<Fields @ref="Fields" Company="Company" Status="Status" />
 </ModalForm>
 
 @code {
 	private Company Company = new Company();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private Company[]? ItemsList;
+	private SelectResource<Guid>[]? Status;
+	private bool ShowModalTest = false;
 	private string searchString1 = "";
+	private DialogOptions DialogOptions = new() { FullWidth = true };
 	public enum ModalType
 	{
 		New, Edit
@@ -74,6 +86,7 @@
 		try
 		{
 			await Load();
+			await LoadSelects();
 		}
 		catch (AccessTokenNotAvailableException exception)
 		{
@@ -86,11 +99,16 @@
 		ItemsList = await Http.GetFromJsonAsync<Company[]>(ApiRouteConfig.Management.Business.COMPANY_ROUTE);
 	}
 
+	public async Task LoadSelects()
+	{
+		Status = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/estados?entity=General");
+	}
+
 	public async Task ShowModalAsync(ModalType modalType, Company company = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Empresa";
-		Company = company ?? new Company();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(company == null ? "Nuevo" : "Editor")} Cliente";
+		Company = company ?? new();
 	}
 
 	private bool FilterFunc1(Company company) => FilterFunc(company, searchString1);
@@ -134,7 +152,11 @@
 
 	public async Task DeleteAsync(Company company)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.Business.COMPANY_ROUTE + "/" + company.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.Business.COMPANY_ROUTE + "/" + company.Id);
+			await Load();
+		}
+	}
 }

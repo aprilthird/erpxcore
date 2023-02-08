@@ -1,38 +1,16 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <InputText @bind-Value="PointOfSale.Description" id="description" class="form-control" placeholder="Descripción" />
-            <ValidationMessage For="() => PointOfSale.Description" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Impresora</label>
-            <InputText @bind-Value="PointOfSale.TicketPrinter" id="description" class="form-control" placeholder="Impresora" />
-            <ValidationMessage For="() => PointOfSale.TicketPrinter" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Sede</label>
-            <InputSelect @bind-Value="PointOfSale.CompanyHeadquarterId" id="entity" class="form-control" placeholder="Sede">
-                @foreach(var item in CompanyHeadquarters)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => PointOfSale.CompanyHeadquarterId" />
-        </div>
-    </div>
-</div>
+<MudTextField @bind-Value="PointOfSale.Description" Label="Nombres" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="PointOfSale.TicketPrinter" Label="Impresora" Variant="Variant.Outlined" />
+<MudSelect T="Guid" @bind-Value="PointOfSale.CompanyHeadquarterId" Label="Sede" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in CompanyHeadquarters)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
+
+
 
 @code {
     

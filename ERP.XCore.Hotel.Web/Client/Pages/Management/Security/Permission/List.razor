@@ -7,53 +7,65 @@
 
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
 
-<div class="row px-5">
-<div class="d-flex justify-content-between">
-	<h3>Permiso</h3>
-	<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-		<i class="fa fa-add"></i>
-		<span>Agregar</span>
-	</button>
-</div>
-<div class="col-md-12" style="
-      height: 600px;
-      overflow: scroll;
-    ">
-		<div class="table-responsive">
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Permission, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Rol</MudTh>
-						<MudTh>SubMódulo</MudTh>
-						<MudTh>Permiso</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Role.Name</MudTd>
-							<MudTd>@context.SubModule.Description</MudTd>
-							<MudTd>@context.PermissionLevel.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+<PageTitle Typo="Typo.h3">Permiso</PageTitle>
 
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Permiso</MudText>
 
-		</div>
-	</div>
-</div>
+	<MudDivider />
+
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Permission, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+
+			<MudTh>Rol</MudTh>
+			<MudTh>SubMódulo</MudTh>
+			<MudTh>Permiso</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+
+			<MudTd>@context.Role.Name</MudTd>
+			<MudTd>@context.SubModule.Description</MudTd>
+			<MudTd>@context.PermissionLevel.Description</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="Permission" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<Fields @ref="Fields" Permission="Permission" Roles="Roles" SubModules="SubModules" PermissionLevels="PermissionLevels" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+			<Fields @ref="Fields" Permission="Permission" Roles="Roles" SubModules="SubModules" PermissionLevels="PermissionLevels" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
+
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Permission" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" Permission="Permission" Roles="Roles" SubModules="SubModules" PermissionLevels="PermissionLevels" />
 </ModalForm>
@@ -61,6 +73,7 @@
 @code {
 	private Permission Permission = new Permission();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private Permission[]? ItemsList;
@@ -68,7 +81,8 @@
 	private SelectResource<Guid>[]? Roles;
 	private SelectResource<Guid>[]? SubModules;
 	private SelectResource<Guid>[]? PermissionLevels;
-
+	private bool ShowModalTest = false;
+	private DialogOptions DialogOptions = new() { FullWidth = true };
 	public enum ModalType
 	{
 		New, Edit
@@ -101,9 +115,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Permission permission = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Permiso";
-		Permission = permission ?? new Permission();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(permission == null ? "Nuevo" : "Editor")} Cliente";
+		Permission = permission ?? new();
 	}
 
 	private bool FilterFunc1(Permission permission) => FilterFunc(permission, searchString1);
@@ -148,7 +162,11 @@
 
 	public async Task DeleteAsync(Permission permission)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.Security.PERMISSION_ROUTE + "/" + permission.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.Security.PERMISSION_ROUTE + "/" + permission.Id);
+			await Load();
+		}
+	}
 }

@@ -6,64 +6,60 @@
 
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
 
-<div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Tipo de Documento</h3>
-		@if(canAdd)
-		{
-			<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-				<i class="fa fa-add"></i>
-				<span>Agregar</span>
-			</button>
-		}
-	</div>
-	<div class="col-md-12">
-		<div class="table-responsive">
-            @if(ItemsList == null)
-		{
-			<p><em>Cargando...</em></p>
-		}
-		else
-		{
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr class="fw-bold">
-						<th>Descripción</th>
-						<th>Abreviación</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach(var item in ItemsList)
-					{
-						<tr>
-							<td>@item.Description</td>
-							<td>@item.Abbreviation</td>
-							<td>
-								@if(canEdit)
-								{
-										<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, item)">
-											<i class="fa fa-edit"></i>
-											<span>Editar</span>
-										</button>
-								}
-								@if(canDelete)
-								{
-										<button class="btn btn-danger" @onclick="() => DeleteAsync(item)">
-											<i class="fa fa-trash"></i>
-											<span>Eliminar</span>
-										</button>
-								}
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		}
-		</div>
-	</div>
-</div>
+<PageTitle Typo="Typo.h3">Tipo de Documento</PageTitle>
+
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Tipo de Documento</MudText>
+
+	<MudDivider />
+
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<DocumentType, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+			<MudTh>Descrípción</MudTh>
+			<MudTh>Abreviación</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd>@context.Description</MudTd>
+			<MudTd>@context.Abbreviation</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="DocumentType" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<Fields @ref="Fields" DocumentType="DocumentType" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+				<Fields @ref="Fields" DocumentType="DocumentType" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="DocumentType" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" DocumentType="DocumentType" />
@@ -72,15 +68,17 @@
 @code {
 	private DocumentType DocumentType = new DocumentType();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private DocumentType[]? ItemsList;
-
+	private string searchString1 = "";
 	private string subModule = "Tipo Documento";
 	private bool canEdit;
 	private bool canAdd;
 	private bool canDelete;
-
+	private DialogOptions DialogOptions = new() { FullWidth = true };
+	private bool ShowModalTest = false;
 	public enum ModalType
 	{
 		New, Edit
@@ -117,9 +115,22 @@
 
 	public async Task ShowModalAsync(ModalType modalType, DocumentType documentType = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Estado";
-		DocumentType = documentType ?? new DocumentType();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(documentType == null ? "Nuevo" : "Editor")} Cliente";
+		DocumentType = documentType ?? new();
+	}
+
+	private bool FilterFunc1(DocumentType d) => FilterFunc(d, searchString1);
+
+	private bool FilterFunc(DocumentType d, string searchString)
+	{
+		if (string.IsNullOrWhiteSpace(searchString))
+			return true;
+		if (d.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+			return true;
+
+
+		return false;
 	}
 
 	public async Task SaveAsync()
@@ -149,7 +160,11 @@
 
 	public async Task DeleteAsync(DocumentType documentType)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.General.DOCUMENT_TYPE_ROUTE + "/" + documentType.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.General.DOCUMENT_TYPE_ROUTE + "/" + documentType.Id);
+			await Load();
+		}
+	}
 }
