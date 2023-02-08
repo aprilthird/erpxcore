@@ -4,52 +4,72 @@
 @using ERP.XCore.Hotel.Shared.Resources.Base
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient Http
+@inject IDialogService DialogService
 
-<div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Cuenta Usuario</h3>
-		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-			<i class="fa fa-add"></i>
-			<span>Agregar</span>
-		</button>
-	</div>
-	<div class="col-md-12">
-		<div class="table-responsive">
+<PageTitle Typo="Typo.h3">Cuenta Usuario</PageTitle>
 
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<ApplicationUser, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Correo</MudTh>
-						<MudTh>Teléfono</MudTh>
-						<MudTh>Émpleado</MudTh>
-						<MudTh>Estado</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Email</MudTd>
-							<MudTd>@context.PhoneNumber</MudTd>
-							<MudTd>@context.Employee.FirstName @context.Employee.LastName</MudTd>
-							<MudTd>@context.Status.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Cuenta Usuario</MudText>
 
-		</div>
-	</div>
-</div>
+	<MudDivider />
+
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<ApplicationUser, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+
+			<MudTh>Correo</MudTh>
+			<MudTh>Teléfono</MudTh>
+			<MudTh>Émpleado</MudTh>
+			<MudTh>Estado</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+
+			<MudTd>@context.Email</MudTd>
+			<MudTd>@context.PhoneNumber</MudTd>
+			<MudTd>@context.Employee.FirstName @context.Employee.LastName</MudTd>
+			<MudTd>@context.Status.Description</MudTd>
+			<MudTd>
+				<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
+					<i class="fa fa-edit"></i>
+					<span>Editar</span>
+				</button>
+				<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
+					<i class="fa fa-trash"></i>
+					<span>Eliminar</span>
+				</button>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="ApplicationUser" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<Fields @ref="Fields" ApplicationUser="ApplicationUser" Employees="Employees" Roles="Roles" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+			<Fields @ref="Fields" ApplicationUser="ApplicationUser" Employees="Employees" Roles="Roles" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="ApplicationUser" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" ApplicationUser="ApplicationUser" Employees="Employees" Roles="Roles" />
@@ -58,12 +78,15 @@
 @code {
 	private ApplicationUser ApplicationUser = new ApplicationUser();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private ApplicationUser[]? ItemsList;
 	private string searchString1 = "";
 	private SelectResource<Guid>[]? Employees;
 	private SelectResource<Guid>[]? Roles;
+	private bool ShowModalTest = false;
+	private DialogOptions DialogOptions = new() { FullWidth = true };
 
 	public enum ModalType
 	{
@@ -96,9 +119,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, ApplicationUser applicationUser = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Usuario";
-		ApplicationUser = applicationUser ?? new ApplicationUser();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(applicationUser == null ? "Nuevo" : "Editor")} Cliente";
+		ApplicationUser = applicationUser ?? new();
 	}
 
 	private bool FilterFunc1(ApplicationUser user) => FilterFunc(user, searchString1);
@@ -113,7 +136,7 @@
 			return true;
 		if (!string.IsNullOrWhiteSpace(user.Employee.FirstName)&&user.Employee.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
 			return true;
-		
+
 		return false;
 	}
 
@@ -144,7 +167,11 @@
 
 	public async Task DeleteAsync(ApplicationUser applicationUser)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.Security.USER_ROUTE + "/" + applicationUser.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.Security.USER_ROUTE + "/" + applicationUser.Id);
+			await Load();
+		}
+	}
 }

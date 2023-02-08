@@ -4,53 +4,64 @@
 @using ERP.XCore.Hotel.Shared.Resources.Base
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient Http
+@inject IDialogService DialogService
 
-<div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Punto de Venta</h3>
-		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-			<i class="fa fa-add"></i>
-			<span>Agregar</span>
-		</button>
-	</div>
-	<div class="col-md-12 row">
-	</div>
-	<hr/>
-	<div class="col-md-12">
-		<div class="table-responsive">
+<PageTitle Typo="Typo.h3">Punto de Venta</PageTitle>
 
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<PointOfSale, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-						<MudTh>Descrípción</MudTh>
-						<MudTh>Impresora</MudTh>
-						<MudTh>Sede</MudTh>
-						<MudTh>Estado</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-							<MudTd>@context.Description</MudTd>
-							<MudTd>@context.TicketPrinter</MudTd>
-							<MudTd>@context.CompanyHeadquarter.Description</MudTd>
-							<MudTd>@context.Status.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Punto de Venta</MudText>
 
-		</div>
-	</div>
-</div>
+	<MudDivider />
+
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<PointOfSale, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+			<MudTh>Descrípción</MudTh>
+			<MudTh>Impresora</MudTh>
+			<MudTh>Sede</MudTh>
+			<MudTh>Estado</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd>@context.Description</MudTd>
+			<MudTd>@context.TicketPrinter</MudTd>
+			<MudTd>@context.CompanyHeadquarter.Description</MudTd>
+			<MudTd>@context.Status.Description</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="PointOfSale" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<Fields @ref="Fields" PointOfSale="PointOfSale" CompanyHeadquarters="CompanyHeadquarters" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+			<Fields @ref="Fields" PointOfSale="PointOfSale" CompanyHeadquarters="CompanyHeadquarters" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="PointOfSale" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" PointOfSale="PointOfSale" CompanyHeadquarters="CompanyHeadquarters" />
@@ -59,11 +70,15 @@
 @code {
 	private PointOfSale PointOfSale = new PointOfSale();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private PointOfSale[]? ItemsList;
 	private SelectResource<Guid>[]? CompanyHeadquarters;
 	private string searchString1 = "";
+
+	private bool ShowModalTest = false;
+	private DialogOptions DialogOptions = new() { FullWidth = true };
 
 	public enum ModalType
 	{
@@ -87,7 +102,7 @@
 	{
 		ItemsList = await Http.GetFromJsonAsync<PointOfSale[]>(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE);
 	}
-	
+
 	public async Task LoadSelects()
 	{
 		CompanyHeadquarters = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/sedes");
@@ -95,9 +110,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, PointOfSale pointOfSale = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Punto de Venta";
-		PointOfSale = pointOfSale ?? new PointOfSale();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(pointOfSale == null ? "Nuevo" : "Editor")} Cliente";
+		PointOfSale = pointOfSale ?? new();
 	}
 
 	private bool FilterFunc1(PointOfSale pos) => FilterFunc(pos, searchString1);
@@ -144,7 +159,11 @@
 
 	public async Task DeleteAsync(PointOfSale pointOfSale)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE + "/" + pointOfSale.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.Business.POINT_OF_SALE_ROUTE + "/" + pointOfSale.Id);
+			await Load();
+		}
+	}
 }

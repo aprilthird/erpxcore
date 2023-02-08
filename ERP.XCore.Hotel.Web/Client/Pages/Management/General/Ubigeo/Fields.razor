@@ -1,86 +1,14 @@
 ﻿@using ERP.XCore.Entities.Models
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">Nacionalidad</label>
-            <InputText @bind-Value="Ubigeo.Citizenship" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.Citizenship" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">País</label>
-            <InputText @bind-Value="Ubigeo.CountryCode" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.CountryCode" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">País</label>
-            <InputText @bind-Value="Ubigeo.CountryName" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.CountryName" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">DepartmentCode</label>
-            <InputText @bind-Value="Ubigeo.DepartmentCode" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.DepartmentCode" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">DepartmentName</label>
-            <InputText @bind-Value="Ubigeo.DepartmentName" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.DepartmentName" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">Observación</label>
-            <InputText @bind-Value="Ubigeo.ProvinceCode" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.ProvinceCode" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">Observación</label>
-            <InputText @bind-Value="Ubigeo.ProvinceName" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.ProvinceName" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">Observación</label>
-            <InputText @bind-Value="Ubigeo.DistrictCode" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.DistrictCode" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">Observación</label>
-            <InputText @bind-Value="Ubigeo.DistrictName" id="observation" class="form-control" placeholder="Observación" />
-            <ValidationMessage For="() => Ubigeo.DistrictName" />
-        </div>
-    </div>
-</div>
+<MudTextField @bind-Value="Ubigeo.Citizenship" Label="Nacionality" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.CountryCode" Label="Código País" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.CountryName" Label="País" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.DepartmentCode" Label="Código Departamento" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.DepartmentName" Label="Departamento" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.ProvinceCode" Label="Código Provincia" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.ProvinceName" Label="Provincia" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.DistrictCode" Label="Código Distrito" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Ubigeo.DistrictName" Label="Distrito" Variant="Variant.Outlined" />
       
 @code {
     [Parameter]

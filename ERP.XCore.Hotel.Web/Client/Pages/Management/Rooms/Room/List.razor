@@ -4,51 +4,64 @@
 @using ERP.XCore.Hotel.Shared.Resources.Base
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient Http
+@inject IDialogService DialogService
 
-<div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Habitación</h3>
-		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-			<i class="fa fa-add"></i>
-			<span>Agregar</span>
-		</button>
-	</div>
-	<div class="col-md-12">
-		<div class="table-responsive">
+<PageTitle Typo="Typo.h3">Habitación</PageTitle>
 
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Room, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Nombre</MudTh>
-						<MudTh>Tipo de Habitación</MudTh>
-						<MudTh>Estado</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Description</MudTd>
-							<MudTd>@context.RoomType.Description</MudTd>
-							<MudTd>@context.RoomStatus.Description</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Habitación</MudText>
 
+	<MudDivider />
 
-		</div>
-	</div>
-</div>
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<Room, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+
+			<MudTh>Nombre</MudTh>
+			<MudTh>Tipo de Habitación</MudTh>
+			<MudTh>Estado</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+
+			<MudTd>@context.Description</MudTd>
+			<MudTd>@context.RoomType.Description</MudTd>
+			<MudTd>@context.RoomStatus.Description</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="Room" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+    <Fields @ref="Fields" Room="Room" RoomTypes="RoomTypes" RoomStatus="RoomStatus" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+			<Fields @ref="Fields" Room="Room" RoomTypes="RoomTypes" RoomStatus="RoomStatus" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="Room" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" Room="Room" RoomTypes="RoomTypes" RoomStatus="RoomStatus" />
@@ -57,6 +70,7 @@
 @code {
 	private Room Room = new Room();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private Room[]? ItemsList;
@@ -64,7 +78,8 @@
 	private SelectResource<Guid>[]? RoomTypes;
 	private SelectResource<Guid>[]? RoomStatus;
 	private Guid? FilterType;
-
+	private bool ShowModalTest = false;
+	private DialogOptions DialogOptions = new() { FullWidth = true };
 	public enum ModalType
 	{
 		New, Edit
@@ -96,9 +111,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, Room room = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nueva" : "Editar")} Habitación";
-		Room = room ?? new Room();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(room == null ? "Nuevo" : "Editor")} Cliente";
+		Room = room ?? new();
 	}
 
 	private bool FilterFunc1(Room room) => FilterFunc(room, searchString1);
@@ -113,7 +128,7 @@
 			return true;
 		if (!string.IsNullOrWhiteSpace(room.RoomStatus.Description) && room.RoomStatus.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
 			return true;
-		
+
 		return false;
 	}
 
@@ -144,7 +159,11 @@
 
 	public async Task DeleteAsync(Room room)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.Rooms.ROOM_ROUTE + "/" + room.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.Rooms.ROOM_ROUTE + "/" + room.Id);
+			await Load();
+		}
+	}
 }

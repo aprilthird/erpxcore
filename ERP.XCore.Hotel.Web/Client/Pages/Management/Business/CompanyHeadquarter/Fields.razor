@@ -1,38 +1,14 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <InputText @bind-Value="CompanyHeadquarter.Description" id="description" class="form-control" placeholder="Descripción" />
-            <ValidationMessage For="() => CompanyHeadquarter.Description" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">Dirección</label>
-            <InputText @bind-Value="CompanyHeadquarter.Address" id="description" class="form-control" placeholder="Dirección" />
-            <ValidationMessage For="() => CompanyHeadquarter.Address" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Empresa</label>
-            <InputSelect @bind-Value="CompanyHeadquarter.CompanyId" id="entity" class="form-control" placeholder="Estado">
-                @foreach(var item in Companies)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => CompanyHeadquarter.CompanyId" />
-        </div>
-    </div>
-</div>
+<MudTextField @bind-Value="CompanyHeadquarter.Description" Label="Descripción" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="CompanyHeadquarter.Address" Label="Dirección" Variant="Variant.Outlined" />
+<MudSelect T="Guid" @bind-Value="CompanyHeadquarter.CompanyId" Label="Empresa" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+    @foreach (var item in Companies)
+    {
+        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
+    }
+</MudSelect>
 
 @code {
     
@@ -41,4 +17,7 @@
 
     [Parameter]
     public ICollection<SelectResource<Guid>> Companies { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
 }

@@ -1,36 +1,15 @@
 ﻿@using ERP.XCore.Entities.Models
 @using ERP.XCore.Hotel.Shared.Resources.Base
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="description">RUC</label>
-            <InputText @bind-Value="Company.Code" id="description" class="form-control" placeholder="Código" />
-            <ValidationMessage For="() => Company.Code" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="entity">Descripción</label>
-            <InputTextArea @bind-Value="Company.Description" id="entity" class="form-control" placeholder="Descripción" />
-            <ValidationMessage For="() => Company.Description" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label for="observation">Dirección</label>
-            <InputTextArea @bind-Value="Company.Address" id="observation" class="form-control" placeholder="Dirección" />
-            <ValidationMessage For="() => Company.Address" />
-        </div>
-    </div>
-</div>
+<MudTextField @bind-Value="Company.Code" Label="Código" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Company.Description" Label="Descripción" Variant="Variant.Outlined" />
+<MudTextField @bind-Value="Company.Address" Label="Dirección" Variant="Variant.Outlined" />
 
 @code {
     
     [Parameter]
     public Company Company { get; set; }
+
+    [Parameter]
+    public ICollection<SelectResource<Guid>> Status { get; set; }
 }

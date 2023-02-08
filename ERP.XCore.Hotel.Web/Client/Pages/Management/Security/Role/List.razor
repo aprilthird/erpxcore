@@ -4,48 +4,60 @@
 @using ERP.XCore.Hotel.Shared.Resources.Base
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient Http
+@inject IDialogService DialogService
 
-<div class="row px-5">
-	<div class="d-flex justify-content-between">
-		<h3>Perfil</h3>
-		<button class="btn btn-primary" @onclick="() => ShowModalAsync(ModalType.New)">
-			<i class="fa fa-add"></i>
-			<span>Agregar</span>
-		</button>
-	</div>
-	<hr/>
-	<div class="col-md-12">
-		<div class="table-responsive">
+<PageTitle Typo="Typo.h3">Rol</PageTitle>
 
-			<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<ApplicationRole, bool>(FilterFunc1)">
-				<ToolBarContent>
-					<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-				</ToolBarContent>
-				<HeaderContent>
-				
-						<MudTh>Descripción</MudTh>
-						<MudTh>Acciones</MudTh>
-			</HeaderContent>
-			<RowTemplate>
-				
-							<MudTd>@context.Name</MudTd>
-							<MudTd>
-								<button class="btn btn-info" @onclick="() => ShowModalAsync(ModalType.Edit, context)">
-									<i class="fa fa-edit"></i>
-									<span>Editar</span>
-								</button>
-								<button class="btn btn-danger" @onclick="() => DeleteAsync(context)">
-									<i class="fa fa-trash"></i>
-									<span>Eliminar</span>
-								</button>
-							</MudTd>
-			</RowTemplate>
-		</MudTable>
+<MudPaper Elevation="1" Class="pa-4">
+	<MudText Typo="Typo.h3">Rol</MudText>
 
+	<MudDivider />
 
-		</div>
-	</div>
-</div>
+	<MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-2">
+		<MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowModalAsync(ModalType.New)">
+			Nuevo
+		</MudButton>
+	</MudStack>
+
+	<MudTable Items="@ItemsList" Hover="true" Breakpoint="Breakpoint.Sm" Loading="false" LoadingProgressColor="Color.Info" Filter="new Func<ApplicationRole, bool>(FilterFunc1)">
+		<ToolBarContent>
+			<MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+		</ToolBarContent>
+		<HeaderContent>
+
+			<MudTh>Descripción</MudTh>
+			<MudTh>Acciones</MudTh>
+		</HeaderContent>
+		<RowTemplate>
+
+			<MudTd>@context.Name</MudTd>
+			<MudTd>
+				<MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" OnClick="() => ShowModalAsync(ModalType.Edit, context)" aria-label="edit"></MudIconButton>
+				<MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="() => DeleteAsync(context)" aria-label="delete"></MudIconButton>
+			</MudTd>
+		</RowTemplate>
+	</MudTable>
+</MudPaper>
+
+<ERP.XCore.Components.Components.Dialogs.DialogForm @ref="DialogForm" Model="ApplicationRole" Title="Formulario Prueba" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
+	<Fields @ref="Fields" ApplicationRole="ApplicationRole" />
+</ERP.XCore.Components.Components.Dialogs.DialogForm>
+
+<MudDialog @bind-IsVisible="ShowModalTest" Options="DialogOptions">
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Edit rating
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm>
+			<Fields @ref="Fields" ApplicationRole="ApplicationRole" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Close</MudButton>
+	</DialogActions>
+</MudDialog>
 
 <ModalForm @ref="Modal" Title="@ModalTitle" Model="ApplicationRole" ValidSubmitCallback="SaveAsync" InvalidSubmitCallback="ShowError">
     <Fields @ref="Fields" ApplicationRole="ApplicationRole" />
@@ -54,12 +66,15 @@
 @code {
 	private ApplicationRole ApplicationRole = new ApplicationRole();
 	private ModalForm Modal;
+	private ERP.XCore.Components.Components.Dialogs.DialogForm DialogForm;
 	private Fields Fields;
 	private string ModalTitle;
 	private ApplicationRole[]? ItemsList;
 	private SelectResource<Guid>[]? Employees;
 	private SelectResource<Guid>[]? Status;
 	private string searchString1 = "";
+	private bool ShowModalTest = false;
+	private DialogOptions DialogOptions = new() { FullWidth = true };
 	public enum ModalType
 	{
 		New, Edit
@@ -84,9 +99,9 @@
 
 	public async Task ShowModalAsync(ModalType modalType, ApplicationRole applicationRole = null)
 	{
-		ModalTitle = $"{(modalType == ModalType.New ? "Nuevo" : "Editar")} Perfil";
-		ApplicationRole = applicationRole ?? new ApplicationRole();
-		await Modal.OpenAsync();
+		DialogForm.Open();
+		ModalTitle = $"{(applicationRole == null ? "Nuevo" : "Editor")} Cliente";
+		ApplicationRole = applicationRole ?? new();
 	}
 
 	private bool FilterFunc1(ApplicationRole role) => FilterFunc(role, searchString1);
@@ -97,7 +112,7 @@
 			return true;
 		if (role.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
 			return true;
-		
+
 		return false;
 	}
 
@@ -128,7 +143,11 @@
 
 	public async Task DeleteAsync(ApplicationRole applicationRole)
 	{
-		await Http.DeleteAsync(ApiRouteConfig.Management.Security.ROLE_ROUTE + "/" + applicationRole.Id);
-		await Load();
-    }
+		var result = await DialogService.ShowDeleteConfirmAsync();
+		if (result)
+		{
+			await Http.DeleteAsync(ApiRouteConfig.Management.Security.ROLE_ROUTE + "/" + applicationRole.Id);
+			await Load();
+		}
+	}
 }
