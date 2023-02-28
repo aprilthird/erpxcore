@@ -152,7 +152,7 @@
             <RowTemplate>
                 <MudTd>@RoomCheckInDetail.Fee.FeeType.Currency.Code</MudTd>
                 <MudTd Class="mud-success-text">@((RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights).ToString("#.##"))</MudTd>
-                <MudTd Class="mud-error-text">@(RoomCheckInDetail.StatusId == Constants.Status.ENABLED_ID ? "0.00" : (RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights).ToString("#.##"))</MudTd>
+                <MudTd Class="mud-error-text">@(RoomCheckInDetail.StatusId == Constants.Status.ENABLED_ID ? "0.00" : (RoomCheckInDetail.Amount == null ? RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights : (RoomCheckInDetail.Fee.Amount * RoomCheckInDetail.Nights) - RoomCheckInDetail.Amount.Value).ToString("#.##"))</MudTd>
             </RowTemplate>
         </MudTable>
     </MudStack>
@@ -167,7 +167,7 @@
             <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="ShowFormExtension" StartIcon="@Icons.Material.Filled.Extension">Extender Estadía</MudButton>
             @if (RoomCheckInDetail.Room.RoomStatus.Description == "Ocupado")
             {
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CheckOutAsync" StartIcon="@Icons.Material.Filled.DoorBack">Salida</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CheckOutAsync" StartIcon="@Icons.Material.Filled.DoorBack">CheckOut</MudButton>
             }
         </MudStack>
     }
@@ -177,9 +177,9 @@
             <MudStack Row="true">
                 <MudDatePicker Date="RoomCheckInExtension.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" Variant="Variant.Outlined" />
                 <MudSelect T="int" @bind-Value="RoomCheckInExtension.Hour" Label="Hora" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-                    @for (var i = 1; i <= 24; ++i)
+                    @foreach (var hour in Enumerable.Range(1, 12))
                     {
-                        <MudSelectItem Value="@i">@i.ToString("00")</MudSelectItem>
+                        <MudSelectItem Value="@hour">@hour</MudSelectItem>
                     }
                 </MudSelect>
                 <MudSelect T="int" @bind-Value="RoomCheckInExtension.Meridian" Label="Meridiano" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
@@ -197,7 +197,7 @@
     {
         <MudForm Model="RoomCheckInPayment" Class="mt-2">
             <MudStack Row="true">
-                <MudSelect T="Guid" @bind-Value="RoomCheckInPayment.PaymentMethodId" Label="Método de Pago" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @onchange="OnPaymentMethodChanged">
+                <MudSelect T="Guid" Label="Método de Pago" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" ValueChanged="(Guid value) => OnPaymentMethodChanged(value)">
                     @foreach(var item in PaymentMethods)
                     {
                         <MudSelectItem Value="@item.Id">@item.Description</MudSelectItem>
@@ -437,6 +437,7 @@
             HideFormExtension();
             RoomCheckInDetail = await Http.GetFromJsonAsync<RoomCheckIn>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{RoomCheckInDetail.RoomId}");
             StateHasChanged();
+            await Load();
         }
         catch (Exception ex)
         {
@@ -449,9 +450,10 @@
         try
         {
             await Http.PostAsJsonAsync(ApiRouteConfig.Rack.PAYMENT_ROUTE, RoomCheckInPayment);
-            HideFormExtension();
+            HideFormPayment();
             RoomCheckInDetail = await Http.GetFromJsonAsync<RoomCheckIn>($"{ApiRouteConfig.Rack.DETAIL_ROUTE}/{RoomCheckInDetail.RoomId}");
             StateHasChanged();
+            await Load();
         }
         catch (Exception ex)
         {
@@ -487,10 +489,10 @@
         }
     }
 
-    private void OnPaymentMethodChanged(ChangeEventArgs e)
+    private void OnPaymentMethodChanged(Guid value)
     {
-        RoomCheckInPayment.PaymentMethodId = Guid.Parse(e.Value.ToString());
-        SelectedPaymentMethod = PaymentMethods.First(x => x.Id == Guid.Parse(e.Value.ToString()));
+        RoomCheckInPayment.PaymentMethodId = value;
+        SelectedPaymentMethod = PaymentMethods.First(x => x.Id == value);
     }
 
     private void ShowFormExtension()
@@ -502,8 +504,8 @@
             {
                 RoomCheckInId = RoomCheckInDetail.Id,
                 ExitTime = nextDay.Date,
-                Hour = nextDay.Hour > 12 ? nextDay.Hour - 12 : nextDay.Hour == 0 ? 12 : nextDay.Hour,
-                Meridian = nextDay.Hour > 12 ? 1 : 0
+                Hour = 12,
+                Meridian = 1
             };
         }
 

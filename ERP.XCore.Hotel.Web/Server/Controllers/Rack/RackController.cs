@@ -134,7 +134,7 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
             rb.Code = (await _context.RoomCheckIns.CountAsync() + 1).ToString();
             rb.EntryTime = DateTime.UtcNow;
             rb.Nights = model.Nights;
-            rb.ExitTime = model.ExitTime;
+            rb.ExitTime = model.ExitTime.Date;
             rb.ExitTime = rb.ExitTime.AddHours(model.Meridian == 0 ? model.Hour : model.Hour + 12);
             if(model.GuestId == null)
 			{
@@ -227,11 +227,23 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
                 return BadRequest();
 
             var roomCheckIn = await _context.RoomCheckIns
-                    .FirstOrDefaultAsync(x => x.Id == model.RoomCheckInId);
-            roomCheckIn.ExitTime = model.ExitTime.Date;
-            roomCheckIn.ExitTime = roomCheckIn.ExitTime.AddHours(model.Meridian == 0 ? model.Hour : model.Hour + 12);
-			roomCheckIn.Nights = (roomCheckIn.ExitTime.Date - roomCheckIn.EntryTime.Date).Days;
-			await _context.SaveChangesAsync();
+                .Include(x => x.Fee)
+                .FirstOrDefaultAsync(x => x.Id == model.RoomCheckInId);
+
+            var prevNights = (roomCheckIn.ExitTime.Date - roomCheckIn.EntryTime.Date).Days;
+            var currentNights = (model.ExitTime.Date - roomCheckIn.EntryTime.Date).Days;
+            if (currentNights > prevNights && roomCheckIn.StatusId == Constants.Status.ENABLED_ID)
+            {
+                roomCheckIn.StatusId = Constants.Status.PENDING_ID;
+                var room = await _context.Rooms.FindAsync(roomCheckIn.RoomId);
+                var inDebtStatus = await _context.RoomStatus.Where(x => x.Description == "Con Deuda").FirstOrDefaultAsync();
+                room.RoomStatusId = inDebtStatus.Id;
+            }
+
+            roomCheckIn.ExitTime = model.ExitTime.Date.AddHours(model.Meridian == 0 ? model.Hour : model.Hour + 12);
+            roomCheckIn.Nights = (roomCheckIn.ExitTime.Date - roomCheckIn.EntryTime.Date).Days;
+
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
@@ -241,13 +253,35 @@ namespace ERP.XCore.Hotel.Web.Server.Controllers.Rack
             if (!ModelState.IsValid)
                 return BadRequest();
 
+            if (model.Amount <= 0)
+                return BadRequest();
+
             var roomCheckIn = await _context.RoomCheckIns
-                    .FirstOrDefaultAsync(x => x.Id == model.RoomCheckInId);
+                .Where(x => x.Id == model.RoomCheckInId)
+                .Include(x => x.Fee)
+                .FirstOrDefaultAsync();
+
+            var maxAmount = roomCheckIn.Fee.Amount * roomCheckIn.Nights;
+            var currentAmount = roomCheckIn.Amount == null 
+                ? model.Amount : roomCheckIn.Amount + model.Amount;
+
+            if (currentAmount > maxAmount)
+                return BadRequest();
+
             roomCheckIn.PaymentMethodId = model.PaymentMethodId;
             roomCheckIn.VoucherNumber = model.VoucherNumber;
             roomCheckIn.ChargedAmount = model.ChargedAmount;
-            roomCheckIn.Amount = model.Amount;
-            roomCheckIn.StatusId = Constants.Status.ENABLED_ID;
+            roomCheckIn.Amount ??= 0;
+            roomCheckIn.Amount += model.Amount;
+            
+            if(roomCheckIn.Amount == maxAmount)
+            {
+                roomCheckIn.StatusId = Constants.Status.ENABLED_ID;
+                var room = await _context.Rooms.FindAsync(roomCheckIn.RoomId);
+                var busyStatus = await _context.RoomStatus.Where(x => x.Description == "Ocupado").FirstOrDefaultAsync();
+                room.RoomStatusId = busyStatus.Id;
+            }
+
             await _context.SaveChangesAsync();
             return Ok();
         }

@@ -44,10 +44,10 @@ namespace ERP.XCore.Entities.Models
         public string? RelatedBookingCode { get; set; }
 
         [NotMapped]
-        public Guid[] CompanionIds { get; set; } = new Guid[] { };
+        public IEnumerable<Guid> CompanionIds { get; set; } = new List<Guid> { };
 
         [NotMapped]
-        public Guid[] SelectedCompanionIds { get; set; } = new Guid[] { };
+        public IEnumerable<Guid> SelectedCompanionIds { get; set; } = new List<Guid> { };
 
         [NotMapped]
         public Guest[] SelectedCompanions { get; set; } = new Guest[] { };
