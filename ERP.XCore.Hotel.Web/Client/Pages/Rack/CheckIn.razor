@@ -13,31 +13,33 @@
 
     <MudDivider />
 
-    <MudStack Row="true">
-        <MudStack Row="true">
-            <MudText><b>Habitación: </b></MudText>
-            <MudText>@Room.Description</MudText>
+    <MudPaper Elevation="4" Class="mt-2 pa-4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween">
+            <MudStack Row="true">
+                <MudText><b>Habitación: </b></MudText>
+                <MudText>@Room.Description</MudText>
+            </MudStack>
+            <MudStack Row="true">
+                <MudText><b>Tipo: </b></MudText>
+                <MudText>@Room.RoomType.Description</MudText>
+            </MudStack>
+            <MudStack Row="true">
+                <MudText><b>Entrada: </b></MudText>
+                <MudText>@RoomCheckIn.EntryTime.ToString("dd/MM/yyyy hh:mm tt")</MudText>
+            </MudStack>
         </MudStack>
-        <MudStack Row="true">
-            <MudText><b>Tipo: </b></MudText>
-            <MudText>@Room.RoomType.Description</MudText>
-        </MudStack>
-        <MudStack Row="true">
-            <MudText><b>Entrada: </b></MudText>
-            <MudText>@RoomCheckIn.EntryTime.ToString("dd/MM/yyyy hh:mm tt")</MudText>
-        </MudStack>
-    </MudStack>
+    </MudPaper>
 
-    <MudForm Model="RoomCheckIn">
-        <MudStack Row="true">
-            <MudStack>
-                <MudNumericField Value="RoomCheckIn.Nights" Label="Num. Noches" Variant="Variant.Text" Min="1" Placeholder="Num. Noches" ValueChanged="(int value) => OnNightsChanged(value)" />
+    <MudForm Model="RoomCheckIn" Class="mt-2">
+        <MudGrid>
+            <MudItem sm="6">
+                <MudNumericField Value="RoomCheckIn.Nights" Label="Num. Noches" Min="1" Placeholder="Num. Noches" Variant="Variant.Outlined" ValueChanged="(int value) => OnNightsChanged(value)" />
                 <MudStack Row="true">
-                    <MudDatePicker Date="RoomCheckIn.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" />
-                    <MudSelect T="int" @bind-Value="RoomCheckIn.Hour" Label="Hora" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-                        @for (var i = 1; i <= 12; ++i)
+                    <MudDatePicker Date="RoomCheckIn.ExitTime" Label="Salida" Editable="true" Placeholder="Escoge una fecha" DateChanged="OnDateChanged" Variant="Variant.Outlined" />
+                    <MudSelect @bind-Value="RoomCheckIn.Hour" Label="Hora" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        @foreach(var hour in Enumerable.Range(1, 12))
                         {
-                            <MudSelectItem Value="@i">@i.ToString("00")</MudSelectItem>
+                            <MudSelectItem Value="@hour">@hour</MudSelectItem>                            
                         }
                     </MudSelect>
                     <MudSelect T="int" @bind-Value="RoomCheckIn.Meridian" Label="Meridiano" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
@@ -45,39 +47,49 @@
                         <MudSelectItem Value="1">PM</MudSelectItem>
                     </MudSelect>
                 </MudStack>
-                <MudTextField T="string" Label="Búsqueda de Huésped" @onchange="OnSearchChanged" />
-                <Button Icon="fas fa-plus" OnClickCallback="OnNewCustomerAsync" />
-                <MudSelect @bind-Value="RoomCheckIn.GuestId" Label="Huésped">
-                    @foreach (var item in Guests)
+                
+                <MudTextField T="string" Label="Búsqueda de Huésped" Variant="Variant.Outlined" ValueChanged="(string value) => OnSearchChanged(value)" />
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="OnNewCustomerAsync" />
+                <MudSelect T="Guid?" @bind-Value="RoomCheckIn.GuestId" Label="Huésped" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                    @foreach (var item in GuestsSelect)
                     {
-                        <MudSelectItem Value="@item.Id">@item.FullName</MudSelectItem>
+                        <MudSelectItem T="Guid?" Value="@item.Value">@item.Text</MudSelectItem>
                     }
                 </MudSelect>
-                <MudTextField T="string" Label="Búsqueda de Invitados" @onchange="OnSearch2Changed" />
-                <Button Icon="fas fa-plus" OnClickCallback="OnNewCustomerAsync" />
-                <MudSelect MultiSelection="true" @bind-Value="RoomCheckIn.CompanionIds" Label="Invitados">
-                    @foreach (var item in Companions)
+
+                <MudTextField T="string" Label="Búsqueda de Invitados" Variant="Variant.Outlined" ValueChanged="(string value) => OnSearch2Changed(value)" />
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="OnNewCustomerAsync" />
+                <MudSelect T="Guid" MultiSelection="true" @bind-SelectedValues="RoomCheckIn.CompanionIds" Label="Invitados" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                    @foreach (var item in CompanionsSelect)
                     {
-                        <MudSelectItem Value="@item.Id">@item.FullName</MudSelectItem>
+                        <MudSelectItem T="Guid" Value="@item.Value">@item.Text</MudSelectItem>
                     }
                 </MudSelect>
-                <Button Icon="fas fa-arrow-right" OnClickCallback="OnSelectCompanionAsync" />
-                <Button Icon="fas fa-times" Theme="Shared.Button.ButtonTheme.Danger" OnClickCallback="OnClearCompanionsAsync" />
-                <MudSelect MultiSelection="true" @bind-Value="RoomCheckIn.SelectedCompanionIds" Label="Invitados">
+
+                <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.ArrowRight" OnClick="OnSelectCompanionAsync" />
+                <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.Cancel" OnClick="OnClearCompanionsAsync" />
+
+                <MudList>
                     @foreach (var item in SelectedCompanions)
                     {
-                        <MudSelectItem Value="@item.Id">@item.FullName</MudSelectItem>
+                        <MudListItem>
+                            <MudText>@item.FullName</MudText>
+                        </MudListItem>
                     }
-                </MudSelect>
-            </MudStack>
-            <MudStack>
-                <MudSelect @bind-Value="RoomCheckIn.FeeId" Label="Tarifa" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @onchange="OnFeeChanged">
-                    @foreach (var item in Fees)
+                </MudList>
+
+                @*<MudSelect T="Guid?" MultiSelection="true" @bind-Values="RoomCheckIn.SelectedCompanionIds" Label="Invitados" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                    
+                </MudSelect>*@
+            </MudItem>
+            <MudItem sm="6">
+                <MudSelect T="Guid?" Label="Tarifa" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" ValueChanged="(Guid? value) => OnFeeChanged(value)">
+                    @foreach (var item in FeesSelect)
                     {
-                        <MudSelectItem Value="@item.Id">@item.FeeType.Description (@item.RoomType.Description) - @item.FeeType.Currency.Sign @item.Amount</MudSelectItem>
+                        <MudSelectItem T="Guid?" Value="@item.Value">@item.Text</MudSelectItem>
                     }
                 </MudSelect>
-                <MudSelect @bind-Value="RoomCheckIn.PaymentMethodId" Label="Método de Pago" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" @onchange="OnPaymentMethodChanged">
+                <MudSelect Label="Método de Pago" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" ValueChanged="(Guid value) => OnPaymentMethodChanged(value)">
                     @foreach (var item in PaymentMethods)
                     {
                         <MudSelectItem Value="@item.Id">@item.Description</MudSelectItem>
@@ -91,11 +103,11 @@
                 {
                     <MudTextField @bind-Value="RoomCheckIn.VoucherNumber" Label="# Voucher/Operación" Variant="Variant.Outlined" />
                 }
-            </MudStack>
-        </MudStack>
+            </MudItem>
+        </MudGrid>
     </MudForm>
     
-    <MudStack Row="true">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-2">
         <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="BackAsync">Regresar</MudButton>
         <ButtonLoader Text="Guardar" LoadingText="Guardando" Icon="@Icons.Material.Filled.Save" OnClickCallback="SaveAsync" />
     </MudStack>
@@ -371,6 +383,9 @@
     public ICollection<Guest> SelectedCompanions { get; set; } = new List<Guest>() { };
     public ICollection<Fee> Fees { get; set; }
     public ICollection<SelectResource<Guid>> DocumentTypes { get; set; }
+    public ICollection<SelectResource<Guid>> GuestsSelect { get; set; }
+    public ICollection<SelectResource<Guid>> CompanionsSelect { get; set; }
+    public ICollection<SelectResource<Guid>> FeesSelect { get; set; }
     public Shared.Button SubmitButton { get; set; }
     public Shared.Button BackButton { get; set; }
 
@@ -392,8 +407,10 @@
                 current = current.AddMinutes(-current.Minute).AddHours(1);
             }
             var tomorrow = current.AddDays(1);
-            RoomCheckIn = new RoomCheckIn() { EntryTime = current, RoomId = RoomId, ExitTime = tomorrow, Hour = tomorrow.Hour > 12 ? tomorrow.Hour - 12 : tomorrow.Hour == 0 ? 12 : tomorrow.Hour, Meridian = tomorrow.Hour > 11 ? 1 : 0, Nights = 1 };
-            await Load();   
+            RoomCheckIn = new RoomCheckIn() { EntryTime = current, RoomId = RoomId, ExitTime = tomorrow, Hour = 12, Meridian = 1, Nights = 1 };
+            await LoadGuests();
+            await LoadCompanions();
+            await Load();
         }
         catch (AccessTokenNotAvailableException exception)
         {
@@ -404,11 +421,9 @@
     public async Task Load()
     {
         Room = await Http.GetFromJsonAsync<Room>(ApiRouteConfig.Management.Rooms.ROOM_ROUTE + "/" + RoomId);
-        Companions = Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
         PaymentMethods = await Http.GetFromJsonAsync<PaymentMethod[]>(ApiRouteConfig.Payment.PAYMENT_METHOD_ROUTE + "?inDebt=false");
         Fees = await Http.GetFromJsonAsync<Fee[]>($"{ApiRouteConfig.Configuration.FEE_ROUTE}?roomTypeId={Room.RoomTypeId}");
         DocumentTypes = await Http.GetFromJsonAsync<SelectResource<Guid>[]>(ApiRouteConfig.Select.SELECT_ROUTE + "/tipos-de-documento");
-
         if(PaymentMethods.Any())
         {
             SelectedPaymentMethod = PaymentMethods.FirstOrDefault();
@@ -416,10 +431,30 @@
         }
         if (Fees.Any())
         {
+            FeesSelect = Fees.Select(x => new SelectResource<Guid> { Value = x.Id, Text = $"{x.FeeType.Description} - ({x.RoomType.Description}) - {x.FeeType.Currency.Sign} {x.Amount}" }).ToList();
             SelectedFee = Fees.FirstOrDefault();
             RoomCheckIn.FeeId = Fees.Select(x => x.Id).FirstOrDefault();
         }
     }
+
+    private async Task LoadGuests(string search = null)
+    {
+        Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "?search=" + search);
+        if (Guests.Any())
+        {
+            GuestsSelect = Guests.Select(x => new SelectResource<Guid> { Value = x.Id, Text = x.FullName }).ToList();
+        }
+    }
+
+    private async Task LoadCompanions(string search = null)
+    {
+        Companions = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "?search=" + search);
+        if (Companions.Any())
+        {
+            CompanionsSelect = Companions.Select(x => new SelectResource<Guid> { Value = x.Id, Text = x.FullName }).ToList();
+        }
+    }
+
 
     private async Task OnDateChanged(DateTime? dateTime)
     {
@@ -437,13 +472,9 @@
         StateHasChanged();
     }
 
-    private async Task OnSearchChanged(ChangeEventArgs e)
+    private async Task OnSearchChanged(string search)
     {
-        Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "?search=" + e.Value.ToString());
-
-        if (!string.IsNullOrEmpty(e.Value.ToString()))
-        {
-        }
+        await LoadGuests();
     }
 
     private async Task OnSelectCompanionAsync()
@@ -451,6 +482,7 @@
         var selectedCompanions = Companions
             .Where(x => RoomCheckIn.CompanionIds.Any(c => c == x.Id))
             .Concat(SelectedCompanions)
+            .DistinctBy(x => x.Id)
             .ToArray();
         SelectedCompanions = selectedCompanions;
         RoomCheckIn.SelectedCompanionIds = selectedCompanions
@@ -469,25 +501,24 @@
         RoomCheckIn.SelectedCompanionIds = selectedCompanionIds.ToArray();
     }
 
-    private async Task OnSearch2Changed(ChangeEventArgs e)
+    private async Task OnSearch2Changed(string search)
     {
-        Companions = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE + "?search=" + e.Value.ToString());
+        await LoadCompanions();
+    }
 
-        if (!string.IsNullOrEmpty(e.Value.ToString()))
+    private void OnPaymentMethodChanged(Guid value)
+    {
+        RoomCheckIn.PaymentMethodId = value;
+        SelectedPaymentMethod = PaymentMethods.First(x => x.Id == value);
+    }
+
+    private void OnFeeChanged(Guid? value)
+    {
+        if(value.HasValue)
         {
+            RoomCheckIn.FeeId = value.Value;
+            SelectedFee = Fees.First(x => x.Id == RoomCheckIn.FeeId);
         }
-    }
-
-    private void OnPaymentMethodChanged(ChangeEventArgs e)
-    {
-        RoomCheckIn.PaymentMethodId = Guid.Parse(e.Value.ToString());
-        SelectedPaymentMethod = PaymentMethods.First(x => x.Id == Guid.Parse(e.Value.ToString()));
-    }
-
-    private void OnFeeChanged(ChangeEventArgs e)
-    {
-        RoomCheckIn.FeeId = Guid.Parse(e.Value.ToString());
-        SelectedFee = Fees.First(x => x.Id == Guid.Parse(e.Value.ToString()));
     }
 
     private async Task SaveAsync()
@@ -534,7 +565,8 @@
         {
             RoomCheckIn.NewGuest = Guest.Document;
             await Http.PostAsJsonAsync(ApiRouteConfig.Management.Guests.GUEST_ROUTE, Guest);
-            Companions = Guests = await Http.GetFromJsonAsync<Guest[]>(ApiRouteConfig.Management.Guests.GUEST_ROUTE);
+            await LoadGuests();
+            await LoadCompanions();
             DialogNewCustomer.Close();
             StateHasChanged();
         }
