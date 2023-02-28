@@ -240,6 +240,10 @@
         <MudText><b>Inicio: </b></MudText>
         <MudText>@RoomCleaningDetail.StartedAt?.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</MudText>
     </MudStack>
+    <MudStack Row="true">
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Concluido</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">En Mantenimiento</MudButton>
+    </MudStack>
 </Dialog>
 
 <Dialog @ref="DialogManagement" Title="@ModalTitle" MaxWidth="MaxWidth.Small" FullWidth="true">
@@ -254,6 +258,10 @@
     <MudStack Row="true">
         <MudText><b>Inicio: </b></MudText>
         <MudText>@RoomMaintenanceDetail.StartedAt.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</MudText>
+    </MudStack>
+        <MudStack Row="true">
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => { ShowModalTest = false; }" Class="px-10">Disponible</MudButton>
+        
     </MudStack>
 </Dialog>
 
@@ -280,6 +288,7 @@
     private ICollection<PaymentMethod> PaymentMethods;
     private SelectResource<Guid>[]? RoomTypes;
     private SelectResource<Guid>[]? RoomStatus;
+    private bool ShowModalTest = false;
     private Guid? filterType;
     private Guid? filterStatus;
 
